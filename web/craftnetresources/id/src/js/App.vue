@@ -6,6 +6,8 @@
             <renew-licenses-modal v-if="showRenewLicensesModal" :license="renewLicense" @cancel="$store.commit('app/updateShowRenewLicensesModal', false)" />
         </template>
 
+        <global-modal></global-modal>
+
         <template v-if="notification">
             <div id="notifications-wrapper" :class="{'hide': !notification }">
                 <div id="notifications">
@@ -31,6 +33,7 @@
     import router from './router'
     import helpers from './mixins/helpers'
     import AuthManager from './components/AuthManager'
+    import GlobalModal from './components/GlobalModal'
     import RenewLicensesModal from './components/licenses/renew-licenses/RenewLicensesModal'
     import AppLayout from './components/layouts/AppLayout'
     import SiteLayout from './components/layouts/SiteLayout'
@@ -42,6 +45,7 @@
 
         components: {
             AuthManager,
+            GlobalModal,
             RenewLicensesModal,
             AppLayout,
             SiteLayout,
