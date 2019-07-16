@@ -2,14 +2,11 @@
     <div>
         <h1>Support Plan</h1>
 
-        <div>
-            <p>The support plan only covers emails received from this address:</p>
-            <p><code>{{user.email}}</code></p>
-
-            <div class="mt-4">
-                <btn @click="changeEmail()">Change email</btn>
-            </div>
-        </div>
+        <p>The support plan only covers emails received from this address:</p>
+        <p><code>{{user.email}}</code></p>
+        <p>
+            <router-link to="/account/settings">Change email</router-link>
+        </p>
 
         <hr>
 
@@ -18,7 +15,10 @@
                 <div class="card flex-1 mx-4 mb-3">
                     <div class="card-body text-center">
                         <h2>{{plan.name}}</h2>
-                        <h3 class="text-3xl mb-4">${{plan.price}}</h3>
+
+                        <template v-if="plan.price > 0">
+                            <h3 class="text-3xl mb-4">${{plan.price}}</h3>
+                        </template>
 
                         <ul class="feature-list">
                             <li v-for="feature in plan.features">
@@ -26,25 +26,15 @@
                             </li>
                         </ul>
 
-                        <div class="mt-4">
-                            <template v-if="currentPlanKey === null">
-                                <btn kind="primary" @click="changePlan(planKey)">Choose plan</btn>
+                        <div v-if="plan.price > 0" class="mt-4">
+                            <template v-if="planKey === currentPlanKey">
+                                <btn kind="primary" :disabled="true">Current plan</btn>
+                                <div class="mt-2">
+                                    <a @click.prevent="currentPlanKey = null">Cancel subscription</a>
+                                </div>
                             </template>
                             <template v-else>
-                                <template v-if="planKey === currentPlanKey">
-                                    <btn kind="primary" :disabled="true">Current plan</btn>
-                                    <div class="mt-2">
-                                        <a @click.prevent="currentPlanKey = null">Cancel subscription</a>
-                                    </div>
-                                </template>
-                                <template v-else>
-                                    <template v-if="planKey > currentPlanKey">
-                                        <btn kind="primary" @click="changePlan(planKey)">Upgrade</btn>
-                                    </template>
-                                    <template v-else>
-                                        <btn kind="primary" @click="changePlan(planKey)">Downgrade</btn>
-                                    </template>
-                                </template>
+                                <btn kind="primary" @click="changePlan(planKey)">Select this plan</btn>
                             </template>
                         </div>
                     </div>
@@ -63,7 +53,7 @@
                 currentPlanKey: null,
                 plans: [
                     {
-                        name: "Free Support",
+                        name: "Community Support",
                         price: 0,
                         features: [
                             'Utilize Discord and Stack Exchange',
@@ -98,10 +88,6 @@
         },
 
         methods: {
-            changeEmail() {
-                this.$router.push({path: '/account/settings'})
-            },
-
             changePlan(planKey) {
                 this.$store.commit('app/updateGlobalModalComponent', 'support-plan-modal')
                 this.$store.commit('app/updateShowGlobalModal', true)
