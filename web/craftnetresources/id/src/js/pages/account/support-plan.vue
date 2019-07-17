@@ -14,17 +14,22 @@
             <template v-for="(plan, planKey) in plans">
                 <div class="card flex-1 mx-4 mb-3">
                     <div class="card-body text-center">
-                        <h2>{{plan.name}}</h2>
+                        <div class="plan-icon">
+                            <icon :icon="plan.icon" />
+                        </div>
 
-                        <template v-if="plan.price > 0">
-                            <h3 class="text-3xl mb-4">${{plan.price}}</h3>
-                        </template>
+                        <h2 class="mb-6">{{plan.name}}</h2>
 
                         <ul class="feature-list">
                             <li v-for="feature in plan.features">
-                                {{feature}}
+                                <icon icon="check" /> <span>{{feature}}</span>
                             </li>
                         </ul>
+
+                        <div v-if="plan.price > 0" class="my-4">
+                            <h3 class="text-3xl">${{plan.price}}</h3>
+                            <p class="text-grey">/month per seat</p>
+                        </div>
 
                         <div v-if="plan.price > 0" class="mt-4">
                             <template v-if="planKey === currentPlanKey">
@@ -53,6 +58,7 @@
                 currentPlanKey: null,
                 plans: [
                     {
+                        icon: 'book',
                         name: "Community Support",
                         price: 0,
                         features: [
@@ -61,6 +67,7 @@
                         ]
                     },
                     {
+                        icon: 'user',
                         name: "Developer Support",
                         price: 75,
                         features: [
@@ -69,6 +76,7 @@
                         ]
                     },
                     {
+                        icon: 'exclamation-triangle',
                         name: "Priority Developer Support",
                         price: 750,
                         features: [
@@ -98,11 +106,31 @@
 </script>
 
 <style lang="scss">
+    .plan-icon {
+        @apply .py-6;
+
+        svg.c-icon {
+            @apply .text-grey;
+
+            width: 50px;
+            height: 50px;
+        }
+    }
+
     .feature-list {
         @apply .list-reset .text-left;
 
         li {
-            @apply .border-t .py-2;
+            @apply .border-t .py-2 .flex;
+
+            .c-icon {
+                @apply .w-6 .mr-1;
+                top: 4px;
+            }
+
+            span {
+                @apply .flex-1;
+            }
 
             &:last-child {
                 @apply .border-b;
