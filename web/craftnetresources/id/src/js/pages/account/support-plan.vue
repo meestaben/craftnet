@@ -15,7 +15,12 @@
                 <div class="card flex-1 mx-4 mb-3">
                     <div class="card-body text-center">
                         <div class="plan-icon">
-                            <icon :icon="plan.icon" />
+                            <template v-if="planKey === 0">
+                                <img src="~@/images/community-support.svg" />
+                            </template>
+                            <template v-else>
+                                <icon :icon="plan.icon" />
+                            </template>
                         </div>
 
                         <h2 class="mb-6">{{plan.name}}</h2>
@@ -41,6 +46,11 @@
                             <template v-else>
                                 <btn kind="primary" @click="changePlan(planKey)">Select this plan</btn>
                             </template>
+                        </div>
+
+                        <div v-if="planKey === 0" class="mt-6 pt-4">
+                            <btn href="https://craftcms.com/discord" class="mr-2">Discord</btn>
+                            <btn href="https://craftcms.stackexchange.com/">Stack Exchange</btn>
                         </div>
                     </div>
                 </div>
@@ -108,6 +118,10 @@
 <style lang="scss">
     .plan-icon {
         @apply .py-6;
+
+        img {
+            max-height: 50px;
+        }
 
         svg.c-icon {
             @apply .text-grey;
