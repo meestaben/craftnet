@@ -2,14 +2,6 @@
     <div>
         <h1>Support Plan</h1>
 
-        <p>The support plan only covers emails received from this address:</p>
-        <p><code>{{user.email}}</code></p>
-        <p>
-            <router-link to="/account/settings">Change email</router-link>
-        </p>
-
-        <hr>
-
         <div class="flex -mx-4">
             <template v-for="(plan, planKey) in plans">
                 <div class="card flex-1 mx-4 mb-3">
@@ -55,6 +47,15 @@
                     </div>
                 </div>
             </template>
+        </div>
+
+
+        <div class="mt-8 text-center">
+            <p>The support plan only covers emails received from this address:</p>
+            <p><code>{{user.email}}</code></p>
+            <p>
+                <router-link to="/account/settings">Change email</router-link>
+            </p>
         </div>
     </div>
 </template>
