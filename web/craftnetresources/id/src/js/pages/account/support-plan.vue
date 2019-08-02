@@ -70,16 +70,17 @@
                 plans: [
                     {
                         icon: 'book',
-                        name: "Community Support",
+                        name: "Standard",
                         price: 0,
                         features: [
+                            'Comes standard with Craft Pro',
                             'Utilize Discord and Stack Exchange',
                             'While you can contact the team at CMS directly, there is no guaranteed response time',
                         ]
                     },
                     {
                         icon: 'user',
-                        name: "Developer Support",
+                        name: "Premium",
                         price: 75,
                         features: [
                             'Contact the team at Craft CMS directly via email',
@@ -88,12 +89,12 @@
                     },
                     {
                         icon: 'exclamation-triangle',
-                        name: "Priority Developer Support",
+                        name: "Priority",
                         price: 750,
                         features: [
                             'Contact the team at Craft CMS directly via email',
                             'Tickets go to top of queue',
-                            'Guaranteed 2 hour or less time to first response (M-F), 12 hours on Saturday, Sundays, and Holidays',
+                            'Guaranteed 2 hour or less time to first response (M-F), 12 hours on weekends',
                         ]
                     },
                 ]
