@@ -1,18 +1,14 @@
 <template>
     <div>
         <h1>Support Plan</h1>
+        <p><a href="https://craftcms.com/contact">Learn more about Craft support options</a></p>
 
-        <div class="flex -mx-4">
+        <div class="flex mt-8 -mx-4">
             <template v-for="(plan, planKey) in plans">
                 <div class="card flex-1 mx-4 mb-3">
                     <div class="card-body text-center">
                         <div class="plan-icon">
-                            <template v-if="planKey === 0">
-                                <img src="~@/images/community-support.svg" />
-                            </template>
-                            <template v-else>
-                                <icon :icon="plan.icon" />
-                            </template>
+                            <img :src="staticImageUrl(plan.icon + '.svg')" />
                         </div>
 
                         <h2 class="mb-6">{{plan.name}}</h2>
@@ -50,11 +46,10 @@
         </div>
 
 
-        <div class="mt-8 text-center">
-            <p>The support plan only covers emails received from this address:</p>
-            <p><code>{{user.email}}</code></p>
+        <div class="mt-8 text-center text-grey">
+            <p>The support plan only covers emails received from <code>{{user.email}}</code>.</p>
             <p>
-                <router-link to="/account/settings">Change email</router-link>
+                Go to your <router-link to="/account/settings">account’s settings</router-link> to change this email address.
             </p>
         </div>
     </div>
@@ -62,14 +57,17 @@
 
 <script>
     import {mapState} from 'vuex'
+    import helpers from '../../mixins/helpers'
 
     export default {
+        mixins: [helpers],
+
         data() {
             return {
                 currentPlanKey: null,
                 plans: [
                     {
-                        icon: 'book',
+                        icon: 'support-plan-standard',
                         name: "Standard",
                         price: 0,
                         features: [
@@ -79,7 +77,7 @@
                         ]
                     },
                     {
-                        icon: 'user',
+                        icon: 'support-plan-premium',
                         name: "Premium",
                         price: 75,
                         features: [
@@ -88,7 +86,7 @@
                         ]
                     },
                     {
-                        icon: 'exclamation-triangle',
+                        icon: 'support-plan-priority',
                         name: "Priority",
                         price: 750,
                         features: [
