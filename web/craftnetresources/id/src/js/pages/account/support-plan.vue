@@ -36,9 +36,13 @@
                             </template>
                         </div>
 
-                        <div v-if="planKey === 0" class="mt-6 pt-4">
-                            <btn href="https://craftcms.com/discord" class="mr-2">Discord</btn>
-                            <btn href="https://craftcms.stackexchange.com/">Stack Exchange</btn>
+                        <div v-if="planKey === 0">
+                            <div class="my-6 pt-4">
+                                <btn href="https://craftcms.com/discord" class="mr-2">Discord</btn>
+                                <btn href="https://craftcms.stackexchange.com/">Stack Exchange</btn>
+                            </div>
+
+                            <p class="text-grey"><em>Comes standard with Craft Pro.</em></p>
                         </div>
                     </div>
                 </div>
@@ -71,7 +75,6 @@
                         name: "Standard",
                         price: 0,
                         features: [
-                            'Comes standard with Craft Pro',
                             'Utilize Discord and Stack Exchange',
                             'While you can contact the team at CMS directly, there is no guaranteed response time',
                         ]
