@@ -8,44 +8,50 @@
         <div class="mx-auto max-w-2xl">
             <div class="flex mt-8 -mx-4">
                 <template v-for="(plan, planKey) in plans">
-                    <div class="card flex-1 mx-4 mb-3">
-                        <div class="card-body text-center">
-                            <div class="plan-icon">
-                                <img :src="staticImageUrl(plan.icon + '.svg')" />
-                            </div>
-
-                            <h2 class="mb-6">{{plan.name}}</h2>
-
-                            <ul class="feature-list">
-                                <li v-for="feature in plan.features">
-                                    <icon icon="check" /> <span>{{feature}}</span>
-                                </li>
-                            </ul>
-
-                            <div v-if="plan.price > 0" class="my-4">
-                                <h3 class="text-3xl">${{plan.price}}</h3>
-                                <p class="text-grey">/month per seat</p>
-                            </div>
-
-                            <div v-if="plan.price > 0" class="mt-4">
-                                <template v-if="planKey === currentPlanKey">
-                                    <btn kind="primary" :disabled="true">Current plan</btn>
-                                    <div class="mt-2">
-                                        <a @click.prevent="currentPlanKey = null">Cancel subscription</a>
+                    <div class="card flex flex-1 mx-4 mb-3">
+                        <div class="support-plan-wrapper card-body text-center">
+                            <div class="support-plan">
+                                <div class="details">
+                                    <div class="plan-icon">
+                                        <img :src="staticImageUrl(plan.icon + '.svg')" />
                                     </div>
-                                </template>
-                                <template v-else>
-                                    <btn kind="primary" @click="changePlan(planKey)">Select this plan</btn>
-                                </template>
-                            </div>
 
-                            <div v-if="planKey === 0">
-                                <div class="my-6 pt-4">
-                                    <btn href="https://craftcms.com/discord" class="mr-2">Discord</btn>
-                                    <btn href="https://craftcms.stackexchange.com/">Stack Exchange</btn>
+                                    <h2 class="mb-6">{{plan.name}}</h2>
+
+                                    <ul class="feature-list">
+                                        <li v-for="feature in plan.features">
+                                            <icon icon="check" /> <span>{{feature}}</span>
+                                        </li>
+                                    </ul>
                                 </div>
 
-                                <p class="text-grey"><em>Comes standard with Craft Pro.</em></p>
+                                <div class="actions">
+                                    <div v-if="plan.price > 0" class="my-4">
+                                        <h3 class="text-3xl">${{plan.price}}</h3>
+                                        <p class="text-grey">/month per seat</p>
+                                    </div>
+
+                                    <div v-if="plan.price > 0" class="mt-4">
+                                        <template v-if="planKey === currentPlanKey">
+                                            <btn kind="primary" :disabled="true">Current plan</btn>
+                                            <div class="mt-2">
+                                                <a @click.prevent="currentPlanKey = null">Cancel subscription</a>
+                                            </div>
+                                        </template>
+                                        <template v-else>
+                                            <btn kind="primary" @click="changePlan(planKey)">Select this plan</btn>
+                                        </template>
+                                    </div>
+
+                                    <div v-if="planKey === 0">
+                                        <div class="mb-4">
+                                            <btn href="https://craftcms.com/discord" class="mr-2 inline-block">Discord</btn>
+                                            <btn href="https://craftcms.stackexchange.com/" class="inline-block">Stack Exchange</btn>
+                                        </div>
+
+                                        <p class="mb-0 text-grey"><em>Comes standard with Craft Pro.</em></p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -123,6 +129,18 @@
 </script>
 
 <style lang="scss">
+    .support-plan-wrapper {
+        @apply .h-full .flex-1 .flex;
+
+        .support-plan {
+            @apply .flex .flex-col .justify-between;
+
+            .actions {
+                @apply .py-4;
+            }
+        }
+    }
+
     .plan-icon {
         @apply .py-6;
 
