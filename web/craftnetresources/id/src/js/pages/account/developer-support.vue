@@ -1,52 +1,56 @@
 <template>
     <div>
-        <h1>Support Plan</h1>
-        <p><a href="https://craftcms.com/contact">Learn more about Craft support options</a></p>
+        <div class="text-center">
+            <h1>Choose Your Developer Support Plan</h1>
+            <p class="-mt-2"><a href="https://craftcms.com/contact">Learn more about Craft support options</a></p>
+        </div>
 
-        <div class="flex mt-8 -mx-4">
-            <template v-for="(plan, planKey) in plans">
-                <div class="card flex-1 mx-4 mb-3">
-                    <div class="card-body text-center">
-                        <div class="plan-icon">
-                            <img :src="staticImageUrl(plan.icon + '.svg')" />
-                        </div>
-
-                        <h2 class="mb-6">{{plan.name}}</h2>
-
-                        <ul class="feature-list">
-                            <li v-for="feature in plan.features">
-                                <icon icon="check" /> <span>{{feature}}</span>
-                            </li>
-                        </ul>
-
-                        <div v-if="plan.price > 0" class="my-4">
-                            <h3 class="text-3xl">${{plan.price}}</h3>
-                            <p class="text-grey">/month per seat</p>
-                        </div>
-
-                        <div v-if="plan.price > 0" class="mt-4">
-                            <template v-if="planKey === currentPlanKey">
-                                <btn kind="primary" :disabled="true">Current plan</btn>
-                                <div class="mt-2">
-                                    <a @click.prevent="currentPlanKey = null">Cancel subscription</a>
-                                </div>
-                            </template>
-                            <template v-else>
-                                <btn kind="primary" @click="changePlan(planKey)">Select this plan</btn>
-                            </template>
-                        </div>
-
-                        <div v-if="planKey === 0">
-                            <div class="my-6 pt-4">
-                                <btn href="https://craftcms.com/discord" class="mr-2">Discord</btn>
-                                <btn href="https://craftcms.stackexchange.com/">Stack Exchange</btn>
+        <div class="mx-auto max-w-3xl">
+            <div class="flex mt-8 -mx-4">
+                <template v-for="(plan, planKey) in plans">
+                    <div class="card flex-1 mx-4 mb-3">
+                        <div class="card-body text-center">
+                            <div class="plan-icon">
+                                <img :src="staticImageUrl(plan.icon + '.svg')" />
                             </div>
 
-                            <p class="text-grey"><em>Comes standard with Craft Pro.</em></p>
+                            <h2 class="mb-6">{{plan.name}}</h2>
+
+                            <ul class="feature-list">
+                                <li v-for="feature in plan.features">
+                                    <icon icon="check" /> <span>{{feature}}</span>
+                                </li>
+                            </ul>
+
+                            <div v-if="plan.price > 0" class="my-4">
+                                <h3 class="text-3xl">${{plan.price}}</h3>
+                                <p class="text-grey">/month per seat</p>
+                            </div>
+
+                            <div v-if="plan.price > 0" class="mt-4">
+                                <template v-if="planKey === currentPlanKey">
+                                    <btn kind="primary" :disabled="true">Current plan</btn>
+                                    <div class="mt-2">
+                                        <a @click.prevent="currentPlanKey = null">Cancel subscription</a>
+                                    </div>
+                                </template>
+                                <template v-else>
+                                    <btn kind="primary" @click="changePlan(planKey)">Select this plan</btn>
+                                </template>
+                            </div>
+
+                            <div v-if="planKey === 0">
+                                <div class="my-6 pt-4">
+                                    <btn href="https://craftcms.com/discord" class="mr-2">Discord</btn>
+                                    <btn href="https://craftcms.stackexchange.com/">Stack Exchange</btn>
+                                </div>
+
+                                <p class="text-grey"><em>Comes standard with Craft Pro.</em></p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </template>
+                </template>
+            </div>
         </div>
 
 

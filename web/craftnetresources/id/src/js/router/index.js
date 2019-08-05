@@ -7,7 +7,7 @@ import ForgotPassword from '../pages/forgot-password'
 import AccountBillingIndex from '../pages/account/billing/index'
 import AccountBillingInvoiceNumber from '../pages/account/billing/invoices/_number'
 import AccountSettings from '../pages/account/settings'
-import AccountSupportPlan from '../pages/account/support-plan'
+import AccountDeveloperSupport from '../pages/account/developer-support'
 import BuyPlugin from '../pages/buy-plugin/index'
 import BuyCms from '../pages/buy-cms/index'
 import Cart from '../pages/cart'
@@ -100,9 +100,9 @@ const router = new VueRouter({
             component: AccountSettings
         },
         {
-            path: '/account/support-plan',
-            name: 'AccountSupportPlan',
-            component: AccountSupportPlan
+            path: '/account/developer-support',
+            name: 'AccountDeveloperSupport',
+            component: AccountDeveloperSupport
         },
         {
             path: '/buy-plugin/:handle/:edition',
