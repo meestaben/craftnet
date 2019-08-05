@@ -5,7 +5,7 @@
             <p class="-mt-2"><a href="https://craftcms.com/contact">Learn more about Craft support options</a></p>
         </div>
 
-        <div class="mx-auto max-w-3xl">
+        <div class="mx-auto max-w-2xl">
             <div class="flex mt-8 -mx-4">
                 <template v-for="(plan, planKey) in plans">
                     <div class="card flex-1 mx-4 mb-3">
