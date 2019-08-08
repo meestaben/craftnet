@@ -28,7 +28,7 @@
                                 <div class="actions">
                                     <div v-if="plan.price > 0" class="my-4">
                                         <h3 class="text-3xl">${{plan.price}}</h3>
-                                        <p class="text-grey">/month per seat</p>
+                                        <p class="text-grey">per month</p>
                                     </div>
 
                                     <div v-if="plan.price > 0" class="mt-4">
