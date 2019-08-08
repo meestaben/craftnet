@@ -7,7 +7,7 @@
 
         <div class="mx-auto max-w-2xl">
             <div class="flex mt-8 -mx-4">
-                <template v-for="(plan, planKey) in plans">
+                <template v-for="plan in plans">
                     <div class="card flex flex-1 mx-4 mb-3">
                         <div class="support-plan-wrapper card-body text-center">
                             <div class="support-plan">
@@ -32,10 +32,10 @@
                                     </div>
 
                                     <div v-if="plan.price > 0" class="mt-4">
-                                        <template v-if="plan.handle === currentPlanHandle">
+                                        <template v-if="supportPlan && plan.handle === supportPlan.handle">
                                             <btn kind="primary" :disabled="true">Current plan</btn>
                                             <div class="mt-2">
-                                                <a @click.prevent="currentPlanHandle = null">Cancel subscription</a>
+                                                <a @click.prevent="supportPlan.handle = null">Cancel subscription</a>
                                             </div>
                                         </template>
                                         <template v-else>
@@ -73,7 +73,6 @@
 
         data() {
             return {
-                currentPlanHandle: null,
                 plans: [
                     {
                         icon: 'support-plan-standard',
@@ -113,6 +112,7 @@
         computed: {
             ...mapState({
                 user: state => state.account.user,
+                supportPlan: state => state.account.supportPlan,
             }),
         },
 
@@ -120,7 +120,7 @@
             changePlan(plan) {
                 this.$store.commit('app/updateGlobalModalComponent', 'support-plan-modal')
                 this.$store.commit('app/updateShowGlobalModal', true)
-                this.currentPlanHandle = plan.handle
+                this.$store.commit('account/updateSupportPlan', {supportPlan: plan})
             },
         }
     }
