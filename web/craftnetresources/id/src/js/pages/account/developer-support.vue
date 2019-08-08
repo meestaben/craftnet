@@ -32,18 +32,18 @@
                                     </div>
 
                                     <div v-if="plan.price > 0" class="mt-4">
-                                        <template v-if="planKey === currentPlanKey">
+                                        <template v-if="plan.handle === currentPlanHandle">
                                             <btn kind="primary" :disabled="true">Current plan</btn>
                                             <div class="mt-2">
-                                                <a @click.prevent="currentPlanKey = null">Cancel subscription</a>
+                                                <a @click.prevent="currentPlanHandle = null">Cancel subscription</a>
                                             </div>
                                         </template>
                                         <template v-else>
-                                            <btn kind="primary" @click="changePlan(planKey)">Select this plan</btn>
+                                            <btn kind="primary" @click="changePlan(plan)">Select this plan</btn>
                                         </template>
                                     </div>
 
-                                    <div v-if="planKey === 0">
+                                    <div v-if="plan.handle === 'standard'">
                                         <p class="mb-0 text-grey"><em>Comes standard with Craft Pro.</em></p>
                                     </div>
                                 </div>
@@ -73,10 +73,11 @@
 
         data() {
             return {
-                currentPlanKey: null,
+                currentPlanHandle: null,
                 plans: [
                     {
                         icon: 'support-plan-standard',
+                        handle: "standard",
                         name: "Standard",
                         price: 0,
                         features: [
@@ -86,6 +87,7 @@
                     },
                     {
                         icon: 'support-plan-premium',
+                        handle: "premium",
                         name: "Premium",
                         price: 75,
                         features: [
@@ -95,6 +97,7 @@
                     },
                     {
                         icon: 'support-plan-priority',
+                        handle: "priority",
                         name: "Priority",
                         price: 750,
                         features: [
@@ -114,10 +117,10 @@
         },
 
         methods: {
-            changePlan(planKey) {
+            changePlan(plan) {
                 this.$store.commit('app/updateGlobalModalComponent', 'support-plan-modal')
                 this.$store.commit('app/updateShowGlobalModal', true)
-                this.currentPlanKey = planKey
+                this.currentPlanHandle = plan.handle
             },
         }
     }
