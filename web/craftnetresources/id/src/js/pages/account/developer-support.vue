@@ -44,11 +44,6 @@
                                     </div>
 
                                     <div v-if="planKey === 0">
-                                        <div class="mb-4">
-                                            <btn href="https://craftcms.com/discord" class="mr-2 inline-block">Discord</btn>
-                                            <btn href="https://craftcms.stackexchange.com/" class="inline-block">Stack Exchange</btn>
-                                        </div>
-
                                         <p class="mb-0 text-grey"><em>Comes standard with Craft Pro.</em></p>
                                     </div>
                                 </div>
