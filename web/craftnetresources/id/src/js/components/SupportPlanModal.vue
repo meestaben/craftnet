@@ -2,14 +2,30 @@
     <div>
         <h2>Upgrade support plan</h2>
 
-        <ul>
-            <li>Total cost to be billed</li>
-            <li>New plan billing date</li>
-            <li>Reimbursement credit (if upgrading from standard to priority)</li>
-            <li>Optional promo code box</li>
-            <li>Confirm/Cancel buttons</li>
-            <li>If they haven’t entered their billing info yet, disable the Confirm button and link to the Billing page</li>
-        </ul>
+        <p>Your billing info is missing. Go to <router-link to="/account/billing">Account → Billing</router-link> to add a credit card and update billing infos.</p>
+
+        <table class="table border-b mt-6 mb-8">
+            <thead class="hidden">
+            <tr>
+                <th>Item</th>
+                <th>Price</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Refund old plan</td>
+                <td class="text-right">- $50</td>
+            </tr>
+            <tr>
+                <td>New plan name</td>
+                <td class="text-right">$750</td>
+            </tr>
+            <tr>
+                <td class="font-bold">Total</td>
+                <td class="font-bold text-right">$700</td>
+            </tr>
+            </tbody>
+        </table>
 
         <div>
             <btn @click="$emit('close')">Cancel</btn>
