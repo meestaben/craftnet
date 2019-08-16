@@ -71,6 +71,7 @@ return [
     'psclients.net',
     'rantsports.org',
     'sandboxdsm.com',
+    'servd.dev',
     'sib.nz',
     'siebirdclients.com',
     'siebirdstaging.com',
