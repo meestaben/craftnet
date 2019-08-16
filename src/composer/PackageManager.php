@@ -1019,7 +1019,6 @@ class PackageManager extends Component
         // Did we just save the first version of an already approved plugin?
         if (
             $hasValidNewVersion &&
-            empty($storedVersionInfo) &&
             isset($plugin) &&
             $plugin->enabled
         ) {
