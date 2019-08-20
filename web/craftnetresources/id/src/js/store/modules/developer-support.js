@@ -21,6 +21,7 @@ const state = {
             upgradeCost: 29,
         },
     },
+    selectedPlan: null,
     plans: [
         {
             icon: 'support-plan-standard',
@@ -74,8 +75,12 @@ const actions = {}
  * Mutations
  */
 const mutations = {
-    updateCurrentPlan(state, plan){
-        state.subscriptionInfo.currentPlan = plan
+    updateCurrentPlan(state, planHandle){
+        state.subscriptionInfo.currentPlan = planHandle
+    },
+
+    updateSelectedPlan(state, planHandle){
+        state.selectedPlan = planHandle
     },
 }
 

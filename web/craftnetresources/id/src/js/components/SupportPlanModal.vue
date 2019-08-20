@@ -28,8 +28,33 @@
         </table>
 
         <div>
-            <btn @click="$emit('close')">Cancel</btn>
-            <btn kind="primary">Upgrade Plan</btn>
+            <btn @click="cancel()">Cancel</btn>
+            <btn kind="primary" @click="changePlan()">Upgrade Plan</btn>
         </div>
     </div>
 </template>
+
+<script>
+    import {mapState} from 'vuex'
+
+    export default {
+
+        computed: {
+            ...mapState({
+                selectedPlan: state => state.developerSupport.selectedPlan,
+            }),
+        },
+
+        methods: {
+            cancel() {
+                this.$emit('close')
+                this.$store.commit('developerSupport/updateSelectedPlan', null)
+            },
+
+            changePlan() {
+                this.$store.commit('developerSupport/updateCurrentPlan', this.selectedPlan)
+                this.$emit('close')
+            }
+        }
+    }
+</script>
