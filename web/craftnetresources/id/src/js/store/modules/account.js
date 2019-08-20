@@ -15,7 +15,6 @@ const state = {
     userLoaded: false,
     craftSessionLoaded: false,
     hasApiToken: false,
-    supportPlan: null,
 }
 
 /**
@@ -230,10 +229,6 @@ const mutations = {
                 }
             }
         }
-    },
-
-    updateSupportPlan(state, {supportPlan}){
-        state.supportPlan = supportPlan
     },
 }
 

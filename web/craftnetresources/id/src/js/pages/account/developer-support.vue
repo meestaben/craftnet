@@ -32,10 +32,10 @@
                                     </div>
 
                                     <div v-if="plan.price > 0" class="mt-4">
-                                        <template v-if="supportPlan && plan.handle === supportPlan.handle">
+                                        <template v-if="plan.handle === currentPlan">
                                             <btn kind="primary" :disabled="true">Current plan</btn>
                                             <div class="mt-2">
-                                                <a @click.prevent="supportPlan.handle = null">Cancel subscription</a>
+                                                <a @click.prevent="currentPlan = null">Cancel subscription</a>
                                             </div>
                                         </template>
                                         <template v-else>
@@ -65,54 +65,21 @@
 </template>
 
 <script>
-    import {mapState} from 'vuex'
+    import {mapState, mapGetters} from 'vuex'
     import helpers from '../../mixins/helpers'
 
     export default {
         mixins: [helpers],
 
-        data() {
-            return {
-                plans: [
-                    {
-                        icon: 'support-plan-standard',
-                        handle: "standard",
-                        name: "Standard",
-                        price: 0,
-                        features: [
-                            'Utilize Discord and Stack Exchange',
-                            'While you can contact the team at CMS directly, there is no guaranteed response time',
-                        ]
-                    },
-                    {
-                        icon: 'support-plan-premium',
-                        handle: "premium",
-                        name: "Premium",
-                        price: 75,
-                        features: [
-                            'Contact the team at Craft CMS directly via email',
-                            'Guaranteed 12 hour or less time to first response (M-F)',
-                        ]
-                    },
-                    {
-                        icon: 'support-plan-priority',
-                        handle: "priority",
-                        name: "Priority",
-                        price: 750,
-                        features: [
-                            'Contact the team at Craft CMS directly via email',
-                            'Tickets go to top of queue',
-                            'Guaranteed 2 hour or less time to first response (M-F), 12 hours on weekends',
-                        ]
-                    },
-                ]
-            }
-        },
-
         computed: {
             ...mapState({
                 user: state => state.account.user,
-                supportPlan: state => state.account.supportPlan,
+                subscriptionInfo: state => state.developerSupport.subscriptionInfo,
+                plans: state => state.developerSupport.plans,
+            }),
+
+            ...mapGetters({
+                currentPlan: 'developerSupport/currentPlan',
             }),
         },
 
@@ -120,7 +87,7 @@
             changePlan(plan) {
                 this.$store.commit('app/updateGlobalModalComponent', 'support-plan-modal')
                 this.$store.commit('app/updateShowGlobalModal', true)
-                this.$store.commit('account/updateSupportPlan', {supportPlan: plan})
+                this.$store.commit('developerSupport/updateCurrentPlan', plan.handle)
             },
         }
     }
