@@ -35,7 +35,7 @@
                                         <template v-if="plan.handle === currentPlan">
                                             <btn kind="primary" :disabled="true">Current plan</btn>
                                             <div class="mt-2">
-                                                <a @click.prevent="currentPlan = null">Cancel subscription</a>
+                                                <a @click.prevent="cancelSubscription">Cancel subscription</a>
                                             </div>
                                         </template>
                                         <template v-else>
@@ -89,6 +89,10 @@
                 this.$store.commit('app/updateShowGlobalModal', true)
                 this.$store.commit('developerSupport/updateCurrentPlan', plan.handle)
             },
+            
+            cancelSubscription() {
+                this.$store.commit('developerSupport/updateCurrentPlan', null)
+            }
         }
     }
 </script>
