@@ -1,7 +1,10 @@
 <template>
-    <div>
+    <div class="support-plan-modal">
         <h2>Upgrade support plan</h2>
-        <p>Your billing info is missing. Go to <router-link to="/account/billing">Account → Billing</router-link> to add a credit card and update billing infos.</p>
+
+        <template v-if="!card">
+            <p>Your billing info is missing. Go to <a @click="goToBilling">Account → Billing</a> to add a credit card and update billing infos.</p>
+        </template>
 
         <table class="table border-b mt-6 mb-8">
             <thead class="hidden">
@@ -30,7 +33,7 @@
 
         <div>
             <btn @click="cancel()">Cancel</btn>
-            <btn kind="primary" @click="changePlan()">Upgrade Plan</btn>
+            <btn kind="primary" :disabled="!card" @click="changePlan()">Upgrade Plan</btn>
         </div>
     </div>
 </template>
@@ -43,6 +46,7 @@
         computed: {
             ...mapState({
                 selectedPlan: state => state.developerSupport.selectedPlan,
+                card: state => state.stripe.card,
             }),
 
             ...mapGetters({
@@ -57,9 +61,25 @@
             },
 
             changePlan() {
+                if (!this.card) {
+                    return null
+                }
+
                 this.$store.commit('developerSupport/updateCurrentPlan', this.selectedPlan)
                 this.$emit('close')
-            }
+            },
+
+            goToBilling(ev) {
+                ev.preventDefault()
+                this.$router.push({path: '/account/billing'})
+                this.$emit('close')
+            },
         }
     }
 </script>
+
+<style lang="scss">
+    .support-plan-modal {
+        width: 450px;
+    }
+</style>
