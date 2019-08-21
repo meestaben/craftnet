@@ -50,6 +50,11 @@ class PackagesController extends Controller
     public $queue = false;
 
     /**
+     * @var string The specific version to update.
+     */
+    public $onlyVersion;
+
+    /**
      * @var bool Whether the Composer repository JSON files should be regenerated after the action is complete
      */
     public $dumpJson = false;
@@ -97,6 +102,10 @@ class PackagesController extends Controller
                 $options[] = 'type';
                 break;
             case 'update':
+                $options[] = 'force';
+                $options[] = 'queue';
+                $options[] = 'onlyVersion';
+                break;
             case 'update-deps':
             case 'update-managed-packages':
                 $options[] = 'force';
@@ -243,7 +252,7 @@ class PackagesController extends Controller
      */
     public function actionUpdate(string $name): int
     {
-        $this->module->getPackageManager()->updatePackage($name, $this->force, $this->queue, $this->dumpJson);
+        $this->module->getPackageManager()->updatePackage($name, $this->force, $this->queue, $this->dumpJson, $this->onlyVersion);
         return ExitCode::OK;
     }
 
