@@ -8,8 +8,8 @@ Vue.use(Vuex)
  */
 const state = {
     subscriptionInfo: {
-        currentPlan: 'premium',
-        priority: {
+        currentPlan: 'pro',
+        pro: {
             uid: 1234,
             canceled: false,
             cycleEnd: '2019-09-19',
@@ -18,15 +18,15 @@ const state = {
             uid: 4567,
             canceled: false,
             cycleEnd: '2019-09-19',
-            upgradeCost: 29,
+            upgradeCost: 412.5,
         },
     },
     selectedPlan: null,
     plans: [
         {
-            icon: 'support-plan-standard',
-            handle: "standard",
-            name: "Standard",
+            icon: 'support-plan-basic',
+            handle: "basic",
+            name: "Basic",
             price: 0,
             features: [
                 'Utilize Discord and Stack Exchange',
@@ -34,9 +34,9 @@ const state = {
             ]
         },
         {
-            icon: 'support-plan-premium',
-            handle: "premium",
-            name: "Premium",
+            icon: 'support-plan-pro',
+            handle: "pro",
+            name: "Pro",
             price: 75,
             features: [
                 'Contact the team at Craft CMS directly via email',
@@ -44,9 +44,9 @@ const state = {
             ]
         },
         {
-            icon: 'support-plan-priority',
-            handle: "priority",
-            name: "Priority",
+            icon: 'support-plan-premium',
+            handle: "premium",
+            name: "Premium",
             price: 750,
             features: [
                 'Contact the team at Craft CMS directly via email',
@@ -64,6 +64,18 @@ const getters = {
     currentPlan(state) {
         return state.subscriptionInfo.currentPlan
     },
+
+    newSubscriptionInfo(state) {
+        if (!state.selectedPlan) {
+            return null
+        }
+
+        if (!state.subscriptionInfo[state.selectedPlan]) {
+            return null
+        }
+
+        return state.subscriptionInfo[state.selectedPlan]
+    }
 }
 
 /**

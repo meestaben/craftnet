@@ -1,7 +1,6 @@
 <template>
     <div>
         <h2>Upgrade support plan</h2>
-
         <p>Your billing info is missing. Go to <router-link to="/account/billing">Account → Billing</router-link> to add a credit card and update billing infos.</p>
 
         <table class="table border-b mt-6 mb-8">
@@ -13,17 +12,19 @@
             </thead>
             <tbody>
             <tr>
-                <td>Refund old plan</td>
-                <td class="text-right">- $50</td>
+                <td>New Plan</td>
+                <td class="text-right">{{selectedPlan}}</td>
             </tr>
-            <tr>
-                <td>New plan name</td>
-                <td class="text-right">$750</td>
-            </tr>
-            <tr>
-                <td class="font-bold">Total</td>
-                <td class="font-bold text-right">$700</td>
-            </tr>
+            <template v-if="newSubscriptionInfo">
+                <tr>
+                    <td>Cycle End</td>
+                    <td class="text-right">{{newSubscriptionInfo.cycleEnd}}</td>
+                </tr>
+                <tr>
+                    <td>Upgrade cost</td>
+                    <td class="text-right">{{newSubscriptionInfo.upgradeCost}}</td>
+                </tr>
+            </template>
             </tbody>
         </table>
 
@@ -35,13 +36,17 @@
 </template>
 
 <script>
-    import {mapState} from 'vuex'
+    import {mapState, mapGetters} from 'vuex'
 
     export default {
 
         computed: {
             ...mapState({
                 selectedPlan: state => state.developerSupport.selectedPlan,
+            }),
+
+            ...mapGetters({
+                newSubscriptionInfo: 'developerSupport/newSubscriptionInfo',
             }),
         },
 
