@@ -14,9 +14,9 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
+            <tr v-if="selectedPlan">
                 <td>New Plan</td>
-                <td class="text-right">{{selectedPlan}}</td>
+                <td class="text-right">{{selectedPlan.name}}</td>
             </tr>
             <template v-if="newSubscriptionInfo">
                 <tr>
@@ -25,7 +25,7 @@
                 </tr>
                 <tr>
                     <td>Upgrade cost</td>
-                    <td class="text-right">{{newSubscriptionInfo.upgradeCost}}</td>
+                    <td class="text-right">{{newSubscriptionInfo.upgradeCost|currency}}</td>
                 </tr>
             </template>
             </tbody>
@@ -45,12 +45,13 @@
 
         computed: {
             ...mapState({
-                selectedPlan: state => state.developerSupport.selectedPlan,
+                selectedPlanHandle: state => state.developerSupport.selectedPlanHandle,
                 card: state => state.stripe.card,
             }),
 
             ...mapGetters({
                 newSubscriptionInfo: 'developerSupport/newSubscriptionInfo',
+                selectedPlan: 'developerSupport/selectedPlan',
             }),
         },
 
@@ -65,7 +66,7 @@
                     return null
                 }
 
-                this.$store.commit('developerSupport/updateCurrentPlan', this.selectedPlan)
+                this.$store.commit('developerSupport/updateCurrentPlan', this.selectedPlanHandle)
                 this.$emit('close')
             },
 

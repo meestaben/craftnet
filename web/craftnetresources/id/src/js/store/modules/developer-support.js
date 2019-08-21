@@ -21,7 +21,7 @@ const state = {
             upgradeCost: 412.5,
         },
     },
-    selectedPlan: null,
+    selectedPlanHandle: null,
     plans: [
         {
             icon: 'support-plan-basic',
@@ -66,16 +66,24 @@ const getters = {
     },
 
     newSubscriptionInfo(state) {
-        if (!state.selectedPlan) {
+        if (!state.selectedPlanHandle) {
             return null
         }
 
-        if (!state.subscriptionInfo[state.selectedPlan]) {
+        if (!state.subscriptionInfo[state.selectedPlanHandle]) {
             return null
         }
 
-        return state.subscriptionInfo[state.selectedPlan]
-    }
+        return state.subscriptionInfo[state.selectedPlanHandle]
+    },
+
+    selectedPlan(state) {
+        if (!state.selectedPlanHandle) {
+            return null
+        }
+
+        return state.plans.find(plan => plan.handle === state.selectedPlanHandle)
+    },
 }
 
 /**
@@ -92,7 +100,7 @@ const mutations = {
     },
 
     updateSelectedPlan(state, planHandle){
-        state.selectedPlan = planHandle
+        state.selectedPlanHandle = planHandle
     },
 }
 
