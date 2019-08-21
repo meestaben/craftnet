@@ -102,10 +102,10 @@ class UpdatesController extends BaseApiController
             $toVersion = '3.0.41.1';
         } else if (
             version_compare($this->cmsVersion, '3.1.20', '>=') &&
-            version_compare($this->cmsVersion, '3.1.34.2', '<')
+            version_compare($this->cmsVersion, '3.1.34.3', '<')
         ) {
             // Treat 3.1.34 as a breakpoint for 3.1.20+ releases (where project-config/rebuild was added)
-            $toVersion = '3.1.34.2';
+            $toVersion = '3.1.34.3';
         } else {
             $toVersion = null;
         }
