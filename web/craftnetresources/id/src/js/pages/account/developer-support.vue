@@ -5,62 +5,69 @@
             <p class="-mt-2"><a href="https://craftcms.com/contact">Learn more about Craft support options</a></p>
         </div>
 
-        <div class="mx-auto max-w-2xl">
-            <div class="flex mt-8 -mx-4">
-                <template v-for="plan in plans">
-                    <div class="card flex flex-1 mx-4 mb-3">
-                        <div class="support-plan-wrapper card-body text-center">
-                            <div class="support-plan">
-                                <div class="details">
-                                    <div class="plan-icon">
-                                        <img :src="staticImageUrl(plan.icon + '.svg')" />
+        <template v-if="loading">
+            <div class="mt-6 text-center">
+                <spinner></spinner>
+            </div>
+        </template>
+
+        <template v-if="!loading && subscriptionInfo">
+            <div class="mx-auto max-w-2xl">
+                <div class="flex mt-8 -mx-4">
+                    <template v-for="plan in plans">
+                        <div class="card flex flex-1 mx-4 mb-3">
+                            <div class="support-plan-wrapper card-body text-center">
+                                <div class="support-plan">
+                                    <div class="details">
+                                        <div class="plan-icon">
+                                            <img :src="staticImageUrl(plan.icon + '.svg')" />
+                                        </div>
+
+                                        <h2 class="mb-6">{{plan.name}}</h2>
+
+                                        <ul class="feature-list">
+                                            <li v-for="feature in plan.features">
+                                                <icon icon="check" /> <span>{{feature}}</span>
+                                            </li>
+                                        </ul>
                                     </div>
 
-                                    <h2 class="mb-6">{{plan.name}}</h2>
+                                    <div class="actions">
+                                        <div v-if="plan.price > 0" class="my-4">
+                                            <h3 class="text-3xl">${{plan.price}}</h3>
+                                            <p class="text-grey">per month</p>
+                                        </div>
 
-                                    <ul class="feature-list">
-                                        <li v-for="feature in plan.features">
-                                            <icon icon="check" /> <span>{{feature}}</span>
-                                        </li>
-                                    </ul>
-                                </div>
+                                        <div v-if="plan.price > 0" class="mt-4">
+                                            <template v-if="plan.handle === currentPlan">
+                                                <btn kind="primary" :disabled="true">Current plan</btn>
+                                                <div class="mt-2">
+                                                    <a @click.prevent="cancelSubscription">Cancel subscription</a>
+                                                </div>
+                                            </template>
+                                            <template v-else>
+                                                <btn kind="primary" @click="selectPlan(plan)">Select this plan</btn>
+                                            </template>
+                                        </div>
 
-                                <div class="actions">
-                                    <div v-if="plan.price > 0" class="my-4">
-                                        <h3 class="text-3xl">${{plan.price}}</h3>
-                                        <p class="text-grey">per month</p>
-                                    </div>
-
-                                    <div v-if="plan.price > 0" class="mt-4">
-                                        <template v-if="plan.handle === currentPlan">
-                                            <btn kind="primary" :disabled="true">Current plan</btn>
-                                            <div class="mt-2">
-                                                <a @click.prevent="cancelSubscription">Cancel subscription</a>
-                                            </div>
-                                        </template>
-                                        <template v-else>
-                                            <btn kind="primary" @click="selectPlan(plan)">Select this plan</btn>
-                                        </template>
-                                    </div>
-
-                                    <div v-if="plan.handle === 'standard'">
-                                        <p class="mb-0 text-grey"><em>Comes standard with Craft Pro.</em></p>
+                                        <div v-if="plan.handle === 'standard'">
+                                            <p class="mb-0 text-grey"><em>Comes standard with Craft Pro.</em></p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </template>
+                    </template>
+                </div>
             </div>
-        </div>
 
-
-        <div class="mt-8 text-center text-grey">
-            <p>The support plan only covers emails received from <code>{{user.email}}</code>.</p>
-            <p>
-                Go to your <router-link to="/account/settings">account’s settings</router-link> to change this email address.
-            </p>
-        </div>
+            <div class="mt-8 text-center text-grey">
+                <p>The support plan only covers emails received from <code>{{user.email}}</code>.</p>
+                <p>
+                    Go to your <router-link to="/account/settings">account’s settings</router-link> to change this email address.
+                </p>
+            </div>
+        </template>
     </div>
 </template>
 
@@ -70,6 +77,12 @@
 
     export default {
         mixins: [helpers],
+
+        data() {
+            return {
+                loading: false,
+            }
+        },
 
         computed: {
             ...mapState({
@@ -94,6 +107,15 @@
             cancelSubscription() {
                 this.$store.commit('developerSupport/updateCurrentPlan', null)
             }
+        },
+
+        mounted() {
+            this.loading = true
+
+            this.$store.dispatch('developerSupport/getSubscriptionInfo')
+                .then(() => {
+                    this.loading = false
+                })
         }
     }
 </script>

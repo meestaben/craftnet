@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import developerSupportApi from '../../api/developer-support'
 
 Vue.use(Vuex)
 
@@ -7,20 +8,7 @@ Vue.use(Vuex)
  * State
  */
 const state = {
-    subscriptionInfo: {
-        currentPlan: 'pro',
-        pro: {
-            uid: 1234,
-            canceled: false,
-            cycleEnd: '2019-09-19',
-        },
-        premium: {
-            uid: 4567,
-            canceled: false,
-            cycleEnd: '2019-09-19',
-            upgradeCost: 412.5,
-        },
-    },
+    subscriptionInfo: null,
     selectedPlanHandle: null,
     plans: [
         {
@@ -89,7 +77,21 @@ const getters = {
 /**
  * Actions
  */
-const actions = {}
+const actions = {
+    getSubscriptionInfo({commit}) {
+        return developerSupportApi.getSubscriptionInfo()
+            .then((response) => {
+                commit('updateSubscriptionInfo', response)
+            })
+    },
+
+    switchPlan({commit}, newPlan) {
+        return developerSupportApi.switchPlan(newPlan)
+            .then((response) => {
+                commit('updateSubscriptionInfo', response)
+            })
+    },
+}
 
 /**
  * Mutations
@@ -101,6 +103,10 @@ const mutations = {
 
     updateSelectedPlan(state, planHandle){
         state.selectedPlanHandle = planHandle
+    },
+
+    updateSubscriptionInfo(state, subscriptionInfo){
+        state.subscriptionInfo = subscriptionInfo
     },
 }
 

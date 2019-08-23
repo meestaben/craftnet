@@ -33,7 +33,10 @@
 
         <div>
             <btn @click="cancel()">Cancel</btn>
-            <btn kind="primary" :disabled="!card" @click="changePlan()">Upgrade Plan</btn>
+            <btn kind="primary" :disabled="!card" @click="switchPlan()">Upgrade Plan</btn>
+            <template v-if="loading">
+                <spinner class="ml-2"></spinner>
+            </template>
         </div>
     </div>
 </template>
@@ -42,7 +45,11 @@
     import {mapState, mapGetters} from 'vuex'
 
     export default {
-
+        data() {
+            return {
+                loading: false,
+            }
+        },
         computed: {
             ...mapState({
                 selectedPlanHandle: state => state.developerSupport.selectedPlanHandle,
@@ -61,13 +68,22 @@
                 this.$store.commit('developerSupport/updateSelectedPlan', null)
             },
 
-            changePlan() {
+            switchPlan() {
                 if (!this.card) {
                     return null
                 }
 
-                this.$store.commit('developerSupport/updateCurrentPlan', this.selectedPlanHandle)
-                this.$emit('close')
+                this.loading = true
+
+                this.$store.dispatch('developerSupport/switchPlan', this.selectedPlanHandle)
+                    .then(() => {
+                        this.loading = false
+                        this.$emit('close')
+                    })
+                    .catch(() => {
+                        this.loading = false
+                        this.$emit('close')
+                    })
             },
 
             goToBilling(ev) {
@@ -75,7 +91,7 @@
                 this.$router.push({path: '/account/billing'})
                 this.$emit('close')
             },
-        }
+        },
     }
 </script>
 
