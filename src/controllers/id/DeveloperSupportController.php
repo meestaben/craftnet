@@ -20,9 +20,9 @@ use yii\web\Response;
  */
 class DeveloperSupportController extends Controller
 {
-    const PLAN_STANDARD = 'standard';
-    const PLAN_PREMIUM = 'premium';
-    const PLAN_PRIORITY = 'priority';
+    const PLAN_STANDARD = 'basic';
+    const PLAN_PREMIUM = 'pro';
+    const PLAN_PRIORITY = 'premium';
 
     // Public Methods
     // =========================================================================
