@@ -110,7 +110,26 @@
             },
 
             cancelSubscription() {
-                this.$store.commit('developerSupport/updateCurrentPlan', null)
+                if (!window.confirm("Are you sure you want to cancel your subscription?")) {
+                    return false
+                }
+
+                this.loading = true
+                
+                const defaultPlanHandle = 'basic'
+
+                this.$store.dispatch('developerSupport/switchPlan', defaultPlanHandle)
+                    .then(() => {
+                        this.loading = false
+                        this.$emit('close')
+                        this.$store.dispatch('app/displayNotice', 'Support plan switched to ' + defaultPlanHandle + '.')
+                    })
+                    .catch((error) => {
+                        this.loading = false
+                        this.$emit('close')
+                        const errorMessage = error ? error : 'Couldn’t switch support plan.'
+                        this.$store.dispatch('app/displayError', errorMessage)
+                    })
             }
         },
 
