@@ -183,5 +183,7 @@ class DeveloperSupportController extends Controller
                     break;
             }
         }
+
+        return $data;
     }
 }
