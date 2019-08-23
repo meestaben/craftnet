@@ -42,8 +42,11 @@ export default {
 
     switchPlan(newPlan) {
         console.log('api:switchPlan', newPlan)
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             setTimeout(function() {
+                // reject('Some error')
+                // return null
+
                 const response = this.mockedSubscriptionInfo(newPlan)
 
                 resolve(response)
