@@ -79,10 +79,13 @@
                     .then(() => {
                         this.loading = false
                         this.$emit('close')
+                        this.$store.dispatch('app/displayNotice', 'Support plan switched to ' + this.selectedPlanHandle + '.')
                     })
-                    .catch(() => {
+                    .catch((error) => {
                         this.loading = false
                         this.$emit('close')
+                        const errorMessage = error ? error : 'Couldn’t switch support plan.'
+                        this.$store.dispatch('app/displayError', errorMessage)
                     })
             },
 
