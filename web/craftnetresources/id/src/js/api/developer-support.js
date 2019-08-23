@@ -1,6 +1,7 @@
 /* global Craft */
 
 import axios from 'axios'
+import qs from 'qs'
 
 export default {
     mockedSubscriptionInfo(currentPlan) {
@@ -21,44 +22,44 @@ export default {
     },
 
     getSubscriptionInfo() {
-        return new Promise((resolve, reject) => {
-            setTimeout(function() {
-                // reject('Some error')
-                // return null
-
-                const response = this.mockedSubscriptionInfo('pro')
-
-                resolve(response)
-            }.bind(this), 2000)
-        })
-
-        // return axios.get(Craft.actionUrl + '/craftnet/id/developer-support/get-subscription-info', {}, {
-        //     headers: {
-        //         'X-CSRF-Token': Craft.csrfTokenValue,
-        //     }
+        // return new Promise((resolve, reject) => {
+        //     setTimeout(function() {
+        //         // reject('Some error')
+        //         // return null
+        //
+        //         const response = this.mockedSubscriptionInfo('pro')
+        //
+        //         resolve(response)
+        //     }.bind(this), 2000)
         // })
+
+        return axios.get(Craft.actionUrl + '/craftnet/id/developer-support/get-subscription-info', {}, {
+            headers: {
+                'X-CSRF-Token': Craft.csrfTokenValue,
+            }
+        })
     },
 
     switchPlan(newPlan) {
-        return new Promise((resolve, reject) => {
-            setTimeout(function() {
-                // reject('Some error')
-                // return null
-
-                const response = this.mockedSubscriptionInfo(newPlan)
-
-                resolve(response)
-            }.bind(this), 2000)
-        })
-
-        // const data = {
-        //     newPlan
-        // }
+        // return new Promise((resolve, reject) => {
+        //     setTimeout(function() {
+        //         // reject('Some error')
+        //         // return null
         //
-        // return axios.post(Craft.actionUrl + '/craftnet/id/developer-support/switch-plan', qs.stringify(data), {
-        //     headers: {
-        //         'X-CSRF-Token': Craft.csrfTokenValue,
-        //     }
+        //         const response = this.mockedSubscriptionInfo(newPlan)
+        //
+        //         resolve(response)
+        //     }.bind(this), 2000)
         // })
+
+        const data = {
+            newPlan
+        }
+
+        return axios.post(Craft.actionUrl + '/craftnet/id/developer-support/switch-plan', qs.stringify(data), {
+            headers: {
+                'X-CSRF-Token': Craft.csrfTokenValue,
+            }
+        })
     }
 }
