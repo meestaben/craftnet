@@ -22,8 +22,11 @@ export default {
 
     getSubscriptionInfo() {
         console.log('api:getSubscriptionInfo')
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             setTimeout(function() {
+                // reject('Some error')
+                // return null
+
                 const response = this.mockedSubscriptionInfo('pro')
 
                 resolve(response)
