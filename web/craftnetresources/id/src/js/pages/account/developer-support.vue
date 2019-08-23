@@ -106,7 +106,6 @@
             selectPlan(plan) {
                 this.$store.commit('app/updateGlobalModalComponent', 'support-plan-modal')
                 this.$store.commit('app/updateShowGlobalModal', true)
-                // this.$store.commit('developerSupport/updateCurrentPlan', plan.handle)
                 this.$store.commit('developerSupport/updateSelectedPlan', plan.handle)
             },
 
