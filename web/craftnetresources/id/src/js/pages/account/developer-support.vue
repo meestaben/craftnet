@@ -11,6 +11,12 @@
             </div>
         </template>
 
+        <template v-if="error">
+            <div class="mt-6 text-center">
+                <p class="text-red">{{error}}</p>
+            </div>
+        </template>
+
         <template v-if="!loading && subscriptionInfo">
             <div class="mx-auto max-w-2xl">
                 <div class="flex mt-8 -mx-4">
@@ -115,6 +121,10 @@
             this.$store.dispatch('developerSupport/getSubscriptionInfo')
                 .then(() => {
                     this.loading = false
+                })
+                .catch((response) => {
+                    this.loading = false
+                    this.error = response
                 })
         }
     }
