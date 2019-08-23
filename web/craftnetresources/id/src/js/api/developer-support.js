@@ -21,7 +21,6 @@ export default {
     },
 
     getSubscriptionInfo() {
-        console.log('api:getSubscriptionInfo')
         return new Promise((resolve, reject) => {
             setTimeout(function() {
                 // reject('Some error')
@@ -41,7 +40,6 @@ export default {
     },
 
     switchPlan(newPlan) {
-        console.log('api:switchPlan', newPlan)
         return new Promise((resolve, reject) => {
             setTimeout(function() {
                 // reject('Some error')
@@ -52,6 +50,7 @@ export default {
                 resolve(response)
             }.bind(this), 2000)
         })
+
         // const data = {
         //     newPlan
         // }
