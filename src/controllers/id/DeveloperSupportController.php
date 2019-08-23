@@ -135,7 +135,7 @@ class DeveloperSupportController extends Controller
      * @return array
      * @throws \yii\base\InvalidConfigException
      */
-    private function _getSubscriptionData(bool $fetchUpgradeCost = false): array
+    private function _getSubscriptionData(bool $fetchUpgradeCost = false)
     {
         $user = Craft::$app->getUser()->getIdentity();
 
