@@ -86,6 +86,7 @@
 
         data() {
             return {
+                error: null,
                 loading: false,
             }
         },
@@ -115,7 +116,7 @@
                 }
 
                 this.loading = true
-                
+
                 const defaultPlanHandle = 'basic'
 
                 this.$store.dispatch('developerSupport/switchPlan', defaultPlanHandle)
@@ -140,9 +141,10 @@
                 .then(() => {
                     this.loading = false
                 })
-                .catch((response) => {
+                .catch((error) => {
+                    const errorMessage = error.response.data && error.response.data.error ? error.response.data.error : 'Couldn’t get subscription info.'
+                    this.error = errorMessage
                     this.loading = false
-                    this.error = response
                 })
         }
     }
