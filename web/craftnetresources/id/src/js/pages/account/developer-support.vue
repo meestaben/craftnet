@@ -19,11 +19,11 @@
 
         <template v-if="!loading && subscriptionInfo">
             <div class="mx-auto max-w-2xl">
-                <div class="flex mt-8 -mx-4">
+                <div class="lg:flex mt-8 -mx-4">
                     <template v-for="(plan, planKey) in plans">
-                        <div class="card flex flex-1 mx-4 mb-3" :key="'plan-'+planKey">
-                            <div class="support-plan-wrapper card-body text-center">
-                                <div class="support-plan">
+                        <div class="card lg:flex lg:flex-1 mx-4 mb-3" :key="'plan-'+planKey">
+                            <div class="support-plan-wrapper card-body text-center lg:h-full lg:flex-1 lg:flex">
+                                <div class="support-plan flex flex-col justify-between">
                                     <div class="details">
                                         <div class="plan-icon">
                                             <img :src="staticImageUrl(plan.icon + '.svg')" />
@@ -38,7 +38,7 @@
                                         </ul>
                                     </div>
 
-                                    <div class="actions">
+                                    <div class="actions py-4">
                                         <div v-if="plan.price > 0" class="my-4">
                                             <h3 class="text-3xl">${{plan.price}}</h3>
                                             <p class="text-grey">per month</p>
@@ -151,18 +151,6 @@
 </script>
 
 <style lang="scss">
-    .support-plan-wrapper {
-        @apply .h-full .flex-1 .flex;
-
-        .support-plan {
-            @apply .flex .flex-col .justify-between;
-
-            .actions {
-                @apply .py-4;
-            }
-        }
-    }
-
     .plan-icon {
         @apply .py-6;
 
