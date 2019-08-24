@@ -20,8 +20,8 @@
         <template v-if="!loading && subscriptionInfo">
             <div class="mx-auto max-w-2xl">
                 <div class="flex mt-8 -mx-4">
-                    <template v-for="plan in plans">
-                        <div class="card flex flex-1 mx-4 mb-3">
+                    <template v-for="(plan, planKey) in plans">
+                        <div class="card flex flex-1 mx-4 mb-3" :key="'plan-'+planKey">
                             <div class="support-plan-wrapper card-body text-center">
                                 <div class="support-plan">
                                     <div class="details">
@@ -32,7 +32,7 @@
                                         <h2 class="mb-6">{{plan.name}}</h2>
 
                                         <ul class="feature-list">
-                                            <li v-for="feature in plan.features">
+                                            <li v-for="(feature, featureKey) in plan.features" :key="planKey+'-features-'+featureKey">
                                                 <icon icon="check" /> <span>{{feature}}</span>
                                             </li>
                                         </ul>
