@@ -97,10 +97,6 @@ const actions = {
  * Mutations
  */
 const mutations = {
-    updateCurrentPlan(state, planHandle){
-        state.subscriptionInfo.currentPlan = planHandle
-    },
-
     updateSelectedPlan(state, planHandle){
         state.selectedPlanHandle = planHandle
     },
