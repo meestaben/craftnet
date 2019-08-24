@@ -56,7 +56,7 @@
                                             </template>
                                         </div>
 
-                                        <div v-if="plan.handle === 'standard'">
+                                        <div v-if="plan.handle === 'basic'">
                                             <p class="mb-0 text-grey"><em>Comes standard with Craft Pro.</em></p>
                                         </div>
                                     </div>
