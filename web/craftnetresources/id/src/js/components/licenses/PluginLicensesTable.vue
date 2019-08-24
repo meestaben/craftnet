@@ -103,12 +103,12 @@
         },
 
         methods: {
-            savePluginLicenseAutoRenew(license, $event) {
+            savePluginLicenseAutoRenew(license, checked) {
                 if (!license.key) {
                     return false;
                 }
 
-                const autoRenew = $event.target.checked
+                const autoRenew = checked
                 const data = {
                     pluginHandle: license.plugin.handle,
                     key: license.key,

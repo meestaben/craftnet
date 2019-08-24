@@ -715,12 +715,13 @@ class PackageManager extends Component
      * @param bool $force Whether to update package releases even if their SHA hasn't changed
      * @param bool $queue Whether to queue the update
      * @param bool $dumpJson Whether to update the JSON if anything changed
+     * @param string|null $onlyVersion The specific version to update
      * @return int The total number of added/removed package releases
      * @throws InvalidArgumentException if the package name doesn't exist
      * @throws MissingTokenException if the package is a plugin, but we don't have a VCS token for it
      * @throws \Throwable if reasons
      */
-    public function updatePackage(string $name, bool $force = false, bool $queue = false, bool $dumpJson = false): int
+    public function updatePackage(string $name, bool $force = false, bool $queue = false, bool $dumpJson = false, $onlyVersion = null): int
     {
         if ($queue) {
             Craft::$app->getQueue()->push(new UpdatePackage([
@@ -830,7 +831,11 @@ class PackageManager extends Component
 
             $updatedVersions = [];
             foreach (array_intersect($normalizedStoredVersions, $normalizedVcsVersions) as $version) {
-                if ($force || $storedVersionInfo[$version]['sha'] !== $vcsVersionInfo[$version]['sha']) {
+                if (
+                     $force ||
+                     $version === $onlyVersion ||
+                     $storedVersionInfo[$version]['sha'] !== $vcsVersionInfo[$version]['sha']
+                ) {
                     $updatedVersions[] = $version;
                 }
             }
@@ -1019,7 +1024,6 @@ class PackageManager extends Component
         // Did we just save the first version of an already approved plugin?
         if (
             $hasValidNewVersion &&
-            empty($storedVersionInfo) &&
             isset($plugin) &&
             $plugin->enabled
         ) {
