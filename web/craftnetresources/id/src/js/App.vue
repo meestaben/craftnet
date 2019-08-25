@@ -8,6 +8,8 @@
 
         <global-modal></global-modal>
 
+        <developer-support-modal></developer-support-modal>
+
         <template v-if="notification">
             <div id="notifications-wrapper" :class="{'hide': !notification }">
                 <div id="notifications">
@@ -37,6 +39,7 @@
     import RenewLicensesModal from './components/licenses/renew-licenses/RenewLicensesModal'
     import AppLayout from './components/layouts/AppLayout'
     import SiteLayout from './components/layouts/SiteLayout'
+    import DeveloperSupportModal from './components/DeveloperSupportModal'
 
     export default {
         router,
@@ -49,6 +52,7 @@
             RenewLicensesModal,
             AppLayout,
             SiteLayout,
+            DeveloperSupportModal,
         },
 
         computed: {

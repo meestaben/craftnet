@@ -8,6 +8,7 @@ Vue.use(Vuex)
  * State
  */
 const state = {
+    showModal: false,
     subscriptionInfo: null,
     selectedPlanHandle: null,
     plans: [
@@ -103,6 +104,10 @@ const mutations = {
 
     updateSubscriptionInfo(state, subscriptionInfo){
         state.subscriptionInfo = subscriptionInfo
+    },
+
+    updateShowModal(state, showModal){
+        state.showModal = showModal
     },
 }
 

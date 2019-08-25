@@ -9,12 +9,10 @@
 <script>
     import {mapState} from 'vuex'
     import Modal from './Modal'
-    import SupportPlanModal from './SupportPlanModal'
 
     export default {
         components: {
             Modal,
-            SupportPlanModal,
         },
 
         computed: {
