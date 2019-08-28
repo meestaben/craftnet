@@ -172,13 +172,13 @@ class DeveloperSupportController extends Controller
                     if ($data['currentPlan'] == self::PLAN_PRO && $fetchUpgradeCost) {
                         /** @var SubscriptionGateway $gateway */
                         $gateway = $subscription->getGateway();
-                        $premiumPlan = Commerce::getInstance()->getPlans()->getPlanByHandle(self::PLAN_PRO);
+                        $premiumPlan = Commerce::getInstance()->getPlans()->getPlanByHandle(self::PLAN_PREMIUM);
 
                         if (!$premiumPlan) {
                             continue 2;
                         }
 
-                        $data[self::PLAN_PRO]['upgradeCost'] = $gateway->previewSwitchCost($subscription, $premiumPlan);
+                        $data[self::PLAN_PREMIUM]['upgradeCost'] = $gateway->previewSwitchCost($subscription, $premiumPlan);
                     }
 
                     break;
