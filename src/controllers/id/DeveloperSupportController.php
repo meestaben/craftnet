@@ -21,8 +21,8 @@ use yii\web\Response;
 class DeveloperSupportController extends Controller
 {
     const PLAN_STANDARD = 'basic';
-    const PLAN_PREMIUM = 'pro';
-    const PLAN_PRIORITY = 'premium';
+    const PLAN_PRO = 'pro';
+    const PLAN_PREMIUM = 'premium';
 
     // Public Methods
     // =========================================================================
@@ -54,17 +54,17 @@ class DeveloperSupportController extends Controller
         /** @var PaymentIntents $gateway */
         $gateway = $commerce->getGateways()->getGatewayById(getenv('STRIPE_GATEWAY_ID'));
 
-        $prioritySubscription = null;
         $premiumSubscription = null;
-
-        if (!empty($subscriptionData[self::PLAN_PRIORITY])) {
-            /** @var Subscription $prioritySubscription */
-            $prioritySubscription = Subscription::find()->uid($subscriptionData[self::PLAN_PRIORITY]['uid']);
-        }
+        $proSubscription = null;
 
         if (!empty($subscriptionData[self::PLAN_PREMIUM])) {
             /** @var Subscription $premiumSubscription */
             $premiumSubscription = Subscription::find()->uid($subscriptionData[self::PLAN_PREMIUM]['uid']);
+        }
+
+        if (!empty($subscriptionData[self::PLAN_PRO])) {
+            /** @var Subscription $proSubscription */
+            $proSubscription = Subscription::find()->uid($subscriptionData[self::PLAN_PRO]['uid']);
         }
 
         /** @var CancelSubscription $cancelForm */
@@ -74,13 +74,33 @@ class DeveloperSupportController extends Controller
         switch ($requestedPlan) {
             case self::PLAN_STANDARD:
                 // Cancel existing subscriptions, if any
-                if ($prioritySubscription) {
-                    $subscriptionService->cancelSubscription($prioritySubscription, $cancelForm);
-                }
-
                 if ($premiumSubscription) {
                     $subscriptionService->cancelSubscription($premiumSubscription, $cancelForm);
                 }
+
+                if ($proSubscription) {
+                    $subscriptionService->cancelSubscription($proSubscription, $cancelForm);
+                }
+
+                break;
+            case self::PLAN_PRO:
+                // No duplicates
+                if ($proSubscription) {
+                    Craft::warning('Tried to subscribe to pro while on it already. (' . Json::encode($subscriptionData) . ')', 'developerSupport');
+                    return $this->asErrorJson('You are already subscribed to that plan.');
+                }
+
+                /** @var SubscriptionForm $subscriptionForm */
+                $subscriptionForm = $gateway->getSubscriptionFormModel();
+
+                // If downgrading, set trial to end as priority expires
+                if ($premiumSubscription) {
+                    $subscriptionService->cancelSubscription($premiumSubscription, $cancelForm);
+                    $trialEndTime = new \DateTime($premiumSubscription->dateCanceled, new \DateTimeZone('UTC'));
+                    $subscriptionForm->trialEnd = $trialEndTime;
+                }
+
+                $subscription = $subscriptionService->createSubscription(Craft::$app->getUser()->getIdentity(), $commerce->getPlans()->getPlanByHandle(self::PLAN_PRO), $subscriptionForm);
 
                 break;
             case self::PLAN_PREMIUM:
@@ -90,37 +110,18 @@ class DeveloperSupportController extends Controller
                     return $this->asErrorJson('You are already subscribed to that plan.');
                 }
 
-                /** @var SubscriptionForm $subscriptionForm */
-                $subscriptionForm = $gateway->getSubscriptionFormModel();
-
-                // If downgrading, set trial to end as priority expires
-                if ($prioritySubscription) {
-                    $subscriptionService->cancelSubscription($prioritySubscription, $cancelForm);
-                    $trialEndTime = new \DateTime($prioritySubscription->dateCanceled, new \DateTimeZone('UTC'));
-                    $subscriptionForm->trialEnd = $trialEndTime;
-                }
-
-                $subscriptionService->createSubscription(Craft::$app->getUser()->getIdentity(), $commerce->getPlans()->getPlanByHandle(self::PLAN_PREMIUM), $subscriptionForm);
-
-                break;
-            case self::PLAN_PRIORITY:
-                // No duplicates
-                if ($prioritySubscription) {
-                    Craft::warning('Tried to subscribe to priority while on it already. (' . Json::encode($subscriptionData) . ')', 'developerSupport');
-                    return $this->asErrorJson('You are already subscribed to that plan.');
-                }
-
                 // If upgrading, reset the billing anchor and prorate
-                if ($premiumSubscription) {
+                if ($proSubscription) {
                     /** @var SwitchPlans $switchPlansForm */
                     $switchPlansForm = $gateway->getSwitchPlansFormModel();
                     $switchPlansForm->prorate = true;
                     $switchPlansForm->billingCycleAnchor = 'now';
-                    $subscriptionService->switchSubscriptionPlan($premiumSubscription, $switchPlansForm);
+                    $subscriptionService->switchSubscriptionPlan($proSubscription, $switchPlansForm);
+                    $subscription = $proSubscription;
                 } else {
                     /** @var SubscriptionForm $subscriptionForm */
                     $subscriptionForm = $gateway->getSubscriptionFormModel();
-                    $subscriptionService->createSubscription(Craft::$app->getUser()->getIdentity(), $commerce->getPlans()->getPlanByHandle(self::PLAN_PREMIUM), $subscriptionForm);
+                    $subscription = $subscriptionService->createSubscription(Craft::$app->getUser()->getIdentity(), $commerce->getPlans()->getPlanByHandle(self::PLAN_PRO), $subscriptionForm);
                 }
 
                 break;
@@ -151,33 +152,33 @@ class DeveloperSupportController extends Controller
             $subscriptionUntil = $subscription->nextPaymentDate->format('Y-m-d');
 
             switch ($plan->handle) {
-                case self::PLAN_PRIORITY:
-                    $data['currentPlan'] = self::PLAN_PRIORITY;
-                    $data[self::PLAN_PRIORITY] = [
-                        'uid' => $subscription->uid,
-                        'canceled' => $subscription->isCanceled,
-                        'cycleEnd' => $subscriptionUntil
-                    ];
-
-                    break;
                 case self::PLAN_PREMIUM:
-                    $data['currentPlan'] = $data['currentPlan'] == self::PLAN_STANDARD ? self::PLAN_PREMIUM : $data['currentPlan'];
+                    $data['currentPlan'] = self::PLAN_PREMIUM;
                     $data[self::PLAN_PREMIUM] = [
                         'uid' => $subscription->uid,
                         'canceled' => $subscription->isCanceled,
                         'cycleEnd' => $subscriptionUntil
                     ];
 
-                    if ($data['currentPlan'] == self::PLAN_PREMIUM && $fetchUpgradeCost) {
+                    break;
+                case self::PLAN_PRO:
+                    $data['currentPlan'] = $data['currentPlan'] == self::PLAN_STANDARD ? self::PLAN_PRO : $data['currentPlan'];
+                    $data[self::PLAN_PRO] = [
+                        'uid' => $subscription->uid,
+                        'canceled' => $subscription->isCanceled,
+                        'cycleEnd' => $subscriptionUntil
+                    ];
+
+                    if ($data['currentPlan'] == self::PLAN_PRO && $fetchUpgradeCost) {
                         /** @var SubscriptionGateway $gateway */
                         $gateway = $subscription->getGateway();
-                        $premiumPlan = Commerce::getInstance()->getPlans()->getPlanByHandle(self::PLAN_PREMIUM);
+                        $premiumPlan = Commerce::getInstance()->getPlans()->getPlanByHandle(self::PLAN_PRO);
 
                         if (!$premiumPlan) {
                             continue 2;
                         }
 
-                        $data[self::PLAN_PREMIUM]['upgradeCost'] = $gateway->previewSwitchCost($subscription, $premiumPlan);
+                        $data[self::PLAN_PRO]['upgradeCost'] = $gateway->previewSwitchCost($subscription, $premiumPlan);
                     }
 
                     break;
