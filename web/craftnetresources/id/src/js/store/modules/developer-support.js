@@ -54,16 +54,22 @@ const getters = {
         return state.subscriptionInfo.currentPlan
     },
 
-    newSubscriptionInfo(state) {
+    newSubscriptionInfo(state, getters) {
         if (!state.selectedPlanHandle) {
             return null
         }
 
-        if (!state.subscriptionInfo[state.selectedPlanHandle]) {
-            return null
-        }
+        return getters.planSubscriptionInfo(state.selectedPlanHandle)
+    },
 
-        return state.subscriptionInfo[state.selectedPlanHandle]
+    planSubscriptionInfo(state) {
+        return (planHandle) => {
+            if (!state.subscriptionInfo[planHandle]) {
+                return null
+            }
+
+            return state.subscriptionInfo[planHandle]
+        }
     },
 
     selectedPlan(state) {
