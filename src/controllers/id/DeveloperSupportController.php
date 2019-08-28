@@ -64,7 +64,7 @@ class DeveloperSupportController extends Controller
 
         if (!empty($subscriptionData[self::PLAN_PRO])) {
             /** @var Subscription $proSubscription */
-            $proSubscription = Subscription::find()->uid($subscriptionData[self::PLAN_PRO]['uid']);
+            $proSubscription = Subscription::find()->uid($subscriptionData[self::PLAN_PRO]['uid'])->one();
         }
 
         /** @var CancelSubscription $cancelForm */
