@@ -25,13 +25,13 @@
                 this.$emit('beforeSave');
 
                 let vm = this;
-                this.stripe.createSource(this.card).then(function(result) {
+                this.stripe.createPaymentMethod('card', this.card).then(function(result) {
                     if (result.error) {
                         let errorElement = document.getElementById('card-errors');
                         errorElement.textContent = result.error.message;
                         vm.$emit('error', result.error);
                     } else {
-                        vm.$emit('save', vm.card, result.source);
+                        vm.$emit('save', vm.card, result.paymentMethod);
                     }
                 });
             },
