@@ -89,7 +89,7 @@ const actions = {
     switchPlan({commit}, newPlan) {
         return developerSupportApi.switchPlan(newPlan)
             .then((response) => {
-                commit('updateSubscriptionInfo', response)
+                commit('updateSubscriptionInfo', response.data)
             })
     },
 }
