@@ -20,11 +20,11 @@
                     <td class="text-right">{{selectedPlan.name}}</td>
                 </tr>
                 <template v-if="newSubscriptionInfo">
-                    <tr>
+                    <tr v-if="newSubscriptionInfo.cycleEnd">
                         <td>Cycle End</td>
                         <td class="text-right">{{newSubscriptionInfo.cycleEnd}}</td>
                     </tr>
-                    <tr>
+                    <tr v-if="newSubscriptionInfo.upgradeCost">
                         <td>Upgrade cost</td>
                         <td class="text-right">{{newSubscriptionInfo.upgradeCost|currency}}</td>
                     </tr>
@@ -33,7 +33,7 @@
             </table>
 
             <div>
-                <btn @click="cancel()">Cancel</btn>
+                <btn ref="cancelBtn" @click="cancel()">Cancel</btn>
                 <btn kind="primary" :disabled="!card" @click="switchPlan()">Upgrade Plan</btn>
                 <template v-if="loading">
                     <spinner class="ml-2"></spinner>
@@ -55,6 +55,16 @@
         data() {
             return {
                 loading: false,
+            }
+        },
+
+        watch: {
+            showModal(show) {
+                if (show) {
+                    this.$nextTick(() => {
+                        this.$refs.cancelBtn.$el.focus()
+                    })
+                }
             }
         },
 

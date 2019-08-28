@@ -82,7 +82,7 @@ const actions = {
     getSubscriptionInfo({commit}) {
         return developerSupportApi.getSubscriptionInfo()
             .then((response) => {
-                commit('updateSubscriptionInfo', response)
+                commit('updateSubscriptionInfo', response.data)
             })
     },
 
