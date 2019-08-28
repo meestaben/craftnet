@@ -59,7 +59,7 @@ class DeveloperSupportController extends Controller
 
         if (!empty($subscriptionData[self::PLAN_PREMIUM])) {
             /** @var Subscription $premiumSubscription */
-            $premiumSubscription = Subscription::find()->uid($subscriptionData[self::PLAN_PREMIUM]['uid']);
+            $premiumSubscription = Subscription::find()->uid($subscriptionData[self::PLAN_PREMIUM]['uid'])->one();
         }
 
         if (!empty($subscriptionData[self::PLAN_PRO])) {
