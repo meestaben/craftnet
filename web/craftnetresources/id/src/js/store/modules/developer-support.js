@@ -95,6 +95,10 @@ const actions = {
     switchPlan({commit}, newPlan) {
         return developerSupportApi.switchPlan(newPlan)
             .then((response) => {
+                if (response.data.error) {
+                    throw response.data.error
+                }
+
                 commit('updateSubscriptionInfo', response.data)
             })
     },
