@@ -6,6 +6,7 @@ use AdamPaterson\OAuth2\Client\Provider\Stripe as StripeOauthProvider;
 use Craft;
 use craft\commerce\base\Gateway;
 use craft\commerce\Plugin as Commerce;
+use craft\commerce\stripe\gateways\PaymentIntents;
 use craft\elements\User;
 use craft\helpers\UrlHelper;
 use craftnet\developers\UserBehavior;
@@ -146,7 +147,7 @@ class StripeController extends BaseController
             throw new HttpException(401, Craft::t('commerce', 'Not authorized to save a credit card.'));
         }
 
-        /** @var Gateway $gateway */
+        /** @var PaymentIntents $gateway */
         $gateway = $plugin->getGateways()->getGatewayById(getenv('STRIPE_GATEWAY_ID'));
 
         if (!$gateway || !$gateway->supportsPaymentSources()) {

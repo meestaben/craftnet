@@ -18,7 +18,7 @@ export default {
 
     saveCard(source) {
         const data = {
-            token: source.id
+            paymentMethodId: source.id
         }
 
         return axios.post(window.craftIdUrl + '/stripe/save-card', qs.stringify(data), {

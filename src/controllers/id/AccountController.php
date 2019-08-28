@@ -263,10 +263,17 @@ class AccountController extends Controller
         $paymentSource = $paymentSources[0];
         $response = Json::decode($paymentSource->response);
 
-        if (isset($response['object']) && $response['object'] === 'card') {
-            return $response;
-        } elseif (isset($response['object']) && $response['object'] === 'source') {
-            return $response['card'];
+        if (isset($response['object'])) {
+            switch ($response['object']) {
+                case 'card':
+                    return $response;
+
+                case 'source':
+                    return $response['card'];
+                    
+                case 'payment_method':
+                    return $response['card'];
+            }
         }
 
         return null;
