@@ -116,7 +116,7 @@ class DeveloperSupportController extends Controller
                     $switchPlansForm = $gateway->getSwitchPlansFormModel();
                     $switchPlansForm->prorate = true;
                     $switchPlansForm->billingCycleAnchor = 'now';
-                    $subscriptionService->switchSubscriptionPlan($proSubscription, $switchPlansForm);
+                    $subscriptionService->switchSubscriptionPlan($proSubscription, $commerce->getPlans()->getPlanByHandle(self::PLAN_PREMIUM), $switchPlansForm);
                     $subscription = $proSubscription;
                 } else {
                     /** @var SubscriptionForm $subscriptionForm */
