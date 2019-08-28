@@ -36,7 +36,7 @@ class DeveloperSupportController extends Controller
     {
         return $this->asJson($this->_getSubscriptionData(true));
     }
-
+    
     /**
      * This action switches the subscription plan for a user.
      *
@@ -96,7 +96,7 @@ class DeveloperSupportController extends Controller
                 // If downgrading, set trial to end as priority expires
                 if ($premiumSubscription) {
                     $subscriptionService->cancelSubscription($premiumSubscription, $cancelForm);
-                    $trialEndTime = new \DateTime($premiumSubscription->dateCanceled, new \DateTimeZone('UTC'));
+                    $trialEndTime = $premiumSubscription->getSubscriptionData()['current_period_end'];
                     $subscriptionForm->trialEnd = $trialEndTime;
                 }
 
@@ -178,7 +178,9 @@ class DeveloperSupportController extends Controller
                             continue 2;
                         }
 
-                        $data[self::PLAN_PREMIUM]['upgradeCost'] = $gateway->previewSwitchCost($subscription, $premiumPlan);
+                        if ($subscription->getSubscriptionData()['status'] !== 'trialing') {
+                            $data[self::PLAN_PREMIUM]['upgradeCost'] = $gateway->previewSwitchCost($subscription, $premiumPlan);
+                        }
                     }
 
                     break;
