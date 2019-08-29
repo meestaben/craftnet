@@ -1,14 +1,12 @@
 <template>
     <modal :show.sync="showModal" modal-type="wide">
-        <template slot="body">
-            <template v-if="selectedPlan && currentPlan">
-                <template v-if="selectedPlan.price > currentPlan.price">
-                    <h2>Upgrade support plan</h2>
-                </template>
-                <template>
-                    <h2>Switch support plan</h2>
-                    <p>Your plan will switch to the pro tier at the end of the billing cycle</p>
-                </template>
+        <template v-if="selectedPlan" slot="body">
+            <template v-if="selectedPlan.price > currentPlan.price">
+                <h2>Upgrade support plan</h2>
+            </template>
+            <template>
+                <h2>Switch support plan</h2>
+                <p>Your plan will switch to the pro tier at the end of the billing cycle</p>
             </template>
 
             <template v-if="!card">
@@ -23,11 +21,11 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-if="currentPlan">
+                <tr>
                     <td>Current Plan</td>
                     <td class="text-right">{{currentPlan.name}}</td>
                 </tr>
-                <tr v-if="selectedPlan">
+                <tr>
                     <td>New Plan</td>
                     <td class="text-right">{{selectedPlan.name}}</td>
                 </tr>
@@ -47,7 +45,7 @@
             <div>
                 <btn ref="cancelBtn" @click="cancel()">Cancel</btn>
                 <btn kind="primary" :disabled="!card" @click="switchPlan()">
-                    <template v-if="selectedPlan && currentPlan && selectedPlan.price > currentPlan.price">
+                    <template v-if="selectedPlan.price > currentPlan.price">
                         Upgrade plan
                     </template>
                     <template>
@@ -94,6 +92,7 @@
                 card: state => state.stripe.card,
                 showModal: state => state.developerSupport.showModal,
                 plans: state => state.developerSupport.plans,
+                subscriptionInfo: state => state.developerSupport.subscriptionInfo,
             }),
 
             ...mapGetters({
