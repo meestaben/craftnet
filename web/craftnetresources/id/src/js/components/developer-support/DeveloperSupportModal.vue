@@ -1,7 +1,15 @@
 <template>
     <modal :show.sync="showModal" modal-type="wide">
         <template slot="body">
-            <h2>Upgrade support plan</h2>
+            <template v-if="selectedPlan && currentPlan">
+                <template v-if="selectedPlan.price > currentPlan.price">
+                    <h2>Upgrade support plan</h2>
+                </template>
+                <template>
+                    <h2>Switch support plan</h2>
+                    <p>Your plan will switch to the pro tier at the end of the billing cycle</p>
+                </template>
+            </template>
 
             <template v-if="!card">
                 <p>Your billing info is missing. Go to <a @click="goToBilling">Account → Billing</a> to add a credit card and update billing infos.</p>
@@ -15,6 +23,10 @@
                 </tr>
                 </thead>
                 <tbody>
+                <tr v-if="currentPlan">
+                    <td>Current Plan</td>
+                    <td class="text-right">{{currentPlan.name}}</td>
+                </tr>
                 <tr v-if="selectedPlan">
                     <td>New Plan</td>
                     <td class="text-right">{{selectedPlan.name}}</td>
@@ -34,7 +46,15 @@
 
             <div>
                 <btn ref="cancelBtn" @click="cancel()">Cancel</btn>
-                <btn kind="primary" :disabled="!card" @click="switchPlan()">Upgrade Plan</btn>
+                <btn kind="primary" :disabled="!card" @click="switchPlan()">
+                    <template v-if="selectedPlan && currentPlan && selectedPlan.price > currentPlan.price">
+                        Upgrade plan
+                    </template>
+                    <template>
+                        Switch plan
+                    </template>
+                </btn>
+
                 <template v-if="loading">
                     <spinner class="ml-2"></spinner>
                 </template>
@@ -73,12 +93,18 @@
                 selectedPlanHandle: state => state.developerSupport.selectedPlanHandle,
                 card: state => state.stripe.card,
                 showModal: state => state.developerSupport.showModal,
+                plans: state => state.developerSupport.plans,
             }),
 
             ...mapGetters({
                 newSubscriptionInfo: 'developerSupport/newSubscriptionInfo',
                 selectedPlan: 'developerSupport/selectedPlan',
             }),
+
+            currentPlan() {
+                const currentPlanHandle = this.$store.getters['developerSupport/currentPlan']
+                return this.plans.find(p => p.handle === currentPlanHandle)
+            }
         },
 
         methods: {

@@ -51,6 +51,10 @@ const state = {
  */
 const getters = {
     currentPlan(state) {
+        if (!state.subscriptionInfo) {
+            return null
+        }
+
         return state.subscriptionInfo.currentPlan
     },
 
