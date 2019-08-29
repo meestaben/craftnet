@@ -1,10 +1,7 @@
 <template>
     <div class="app">
-        <template v-if="user">
-            <renew-licenses-modal v-if="showRenewLicensesModal" :license="renewLicense" @cancel="$store.commit('app/updateShowRenewLicensesModal', false)" />
-        </template>
-
-        <developer-support-modal></developer-support-modal>
+        <renew-licenses-modal />
+        <developer-support-modal />
 
         <global-header :showingSidebar="showingSidebar" @toggleSidebar="toggleSidebar()"></global-header>
 
@@ -65,9 +62,6 @@
             ...mapState({
                 expiringCmsLicensesTotal: state => state.cmsLicenses.expiringCmsLicensesTotal,
                 expiringPluginLicensesTotal: state => state.pluginLicenses.expiringPluginLicensesTotal,
-                showRenewLicensesModal: state => state.app.showRenewLicensesModal,
-                renewLicense: state => state.app.renewLicense,
-                user: state => state.account.user,
             }),
         },
 
