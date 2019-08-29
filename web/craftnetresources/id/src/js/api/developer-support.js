@@ -12,9 +12,9 @@ export default {
         })
     },
 
-    switchPlan(newPlan) {
+    switchPlan(plan) {
         const data = {
-            newPlan
+            plan
         }
 
         return axios.post(Craft.actionUrl + '/craftnet/id/developer-support/switch-plan', qs.stringify(data), {
