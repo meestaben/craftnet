@@ -66,6 +66,14 @@ const getters = {
         return 'basic'
     },
 
+    selectedPlan(state) {
+        if (!state.selectedPlanHandle) {
+            return null
+        }
+
+        return state.plans.find(plan => plan.handle === state.selectedPlanHandle)
+    },
+
     subscriptionInfoPlan(state) {
         return (planHandle) => {
             if (!state.subscriptionInfo.plans[planHandle]) {
@@ -84,14 +92,6 @@ const getters = {
 
             return state.subscriptionInfo.subscriptionData[planHandle]
         }
-    },
-
-    selectedPlan(state) {
-        if (!state.selectedPlanHandle) {
-            return null
-        }
-
-        return state.plans.find(plan => plan.handle === state.selectedPlanHandle)
     },
 }
 
