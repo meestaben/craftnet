@@ -101,17 +101,17 @@
                 showModal: state => state.developerSupport.showModal,
                 plans: state => state.developerSupport.plans,
                 subscriptionInfo: state => state.developerSupport.subscriptionInfo,
-                currentPlanHandle: state => state.developerSupport.currentPlanHandle,
             }),
 
             ...mapGetters({
                 selectedPlan: 'developerSupport/selectedPlan',
+                currentPlanHandle: 'developerSupport/currentPlanHandle',
             }),
 
             currentPlan() {
-                const currentPlanHandle = this.$store.getters['developerSupport/currentPlanHandle']
-                return this.plans.find(p => p.handle === currentPlanHandle)
-            }
+                return this.plans.find(p => p.handle === this.currentPlanHandle)
+            },
+
             subscriptionInfoPlan() {
                 return this.$store.getters['developerSupport/subscriptionInfoPlan'](this.selectedPlanHandle)
             },

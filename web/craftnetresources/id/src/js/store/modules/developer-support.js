@@ -56,6 +56,7 @@ const getters = {
         }
 
         const subscriptionData = state.subscriptionInfo.subscriptionData
+
         for(let planHandle in subscriptionData) {
             if (subscriptionData[planHandle].status === 'active') {
                 return planHandle
