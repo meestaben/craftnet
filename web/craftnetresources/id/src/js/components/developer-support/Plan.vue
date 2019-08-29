@@ -53,10 +53,6 @@
                     <div v-if="plan.handle === 'basic'">
                         <p class="mb-0 text-grey"><em>Comes standard with Craft Pro.</em></p>
                     </div>
-
-                    <div v-if="planSubscriptionInfo" class="mt-8 text-left p-4 min-w-0 text-sm border">
-                        {{planSubscriptionInfo}}
-                    </div>
                 </div>
             </div>
         </div>
