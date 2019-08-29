@@ -50,7 +50,7 @@ const state = {
  * Getters
  */
 const getters = {
-    currentPlan(state) {
+    currentPlanHandle(state) {
         if (!state.subscriptionInfo) {
             return null
         }

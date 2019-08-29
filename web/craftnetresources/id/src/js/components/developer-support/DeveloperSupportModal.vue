@@ -97,7 +97,7 @@
             }),
 
             currentPlan() {
-                const currentPlanHandle = this.$store.getters['developerSupport/currentPlan']
+                const currentPlanHandle = this.$store.getters['developerSupport/currentPlanHandle']
                 return this.plans.find(p => p.handle === currentPlanHandle)
             }
         },
