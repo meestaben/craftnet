@@ -75,11 +75,11 @@ const getters = {
 
     planSubscriptionInfo(state) {
         return (planHandle) => {
-            if (!state.subscriptionInfo[planHandle]) {
+            if (!state.subscriptionInfo.plans[planHandle]) {
                 return null
             }
 
-            return state.subscriptionInfo[planHandle]
+            return state.subscriptionInfo.plans[planHandle]
         }
     },
 
