@@ -37,7 +37,7 @@
 </template>
 
 <script>
-    import {mapState} from 'vuex'
+    import {mapState, mapGetters} from 'vuex'
     import Plan from '../../components/developer-support/Plan'
 
     export default {
@@ -58,6 +58,11 @@
                 subscriptionInfo: state => state.developerSupport.subscriptionInfo,
                 plans: state => state.developerSupport.plans,
             }),
+
+            ...mapGetters({
+                currentPlanHandle: 'developerSupport/currentPlanHandle',
+                subscriptionInfoSubscriptionData: 'developerSupport/subscriptionInfoSubscriptionData',
+            }),
         },
 
         methods: {
@@ -71,11 +76,13 @@
                     return false
                 }
 
+                const currentSubscription = this.subscriptionInfoSubscriptionData(this.currentPlanHandle)
+
                 this.loading = true
 
                 const defaultPlanHandle = 'basic'
 
-                this.$store.dispatch('developerSupport/switchPlan', defaultPlanHandle)
+                this.$store.dispatch('developerSupport/cancelSubscription', currentSubscription.uid)
                     .then(() => {
                         this.loading = false
                         this.$emit('close')

@@ -83,6 +83,16 @@ const getters = {
         }
     },
 
+    subscriptionInfoSubscriptionData(state) {
+        return (planHandle) => {
+            if (!state.subscriptionInfo.subscriptionData[planHandle]) {
+                return null
+            }
+
+            return state.subscriptionInfo.subscriptionData[planHandle]
+        }
+    },
+
     selectedPlan(state) {
         if (!state.selectedPlanHandle) {
             return null
@@ -96,6 +106,17 @@ const getters = {
  * Actions
  */
 const actions = {
+    cancelSubscription({commit}, subscriptionUid) {
+        return developerSupportApi.cancelSubscription(subscriptionUid)
+            .then((response) => {
+                if (response.data.error) {
+                    throw response.data.error
+                }
+
+                commit('updateSubscriptionInfo', response.data)
+            })
+    },
+
     getSubscriptionInfo({commit}) {
         return developerSupportApi.getSubscriptionInfo()
             .then((response) => {
