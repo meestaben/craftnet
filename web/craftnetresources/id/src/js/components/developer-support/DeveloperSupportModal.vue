@@ -2,7 +2,7 @@
     <modal :show.sync="showModal" modal-type="wide">
         <template v-if="selectedPlan" slot="body">
             <template v-if="currentPlan.handle === 'basic'">
-                <h2>Subscribe support plan</h2>
+                <h2>Subscribe to this support plan</h2>
             </template>
             <template v-else-if="selectedPlan.price > currentPlan.price">
                 <h2>Upgrade support plan</h2>
