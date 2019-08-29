@@ -39,7 +39,7 @@
     import RenewLicensesModal from './components/licenses/renew-licenses/RenewLicensesModal'
     import AppLayout from './components/layouts/AppLayout'
     import SiteLayout from './components/layouts/SiteLayout'
-    import DeveloperSupportModal from './components/DeveloperSupportModal'
+    import DeveloperSupportModal from './components/developer-support/DeveloperSupportModal'
 
     export default {
         router,
