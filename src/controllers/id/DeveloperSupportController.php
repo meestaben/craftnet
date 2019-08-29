@@ -3,14 +3,13 @@
 namespace craftnet\controllers\id;
 
 use Craft;
-use craft\commerce\base\Plan;
 use craft\commerce\elements\Subscription;
 use craft\commerce\Plugin as Commerce;
-use craft\commerce\stripe\base\SubscriptionGateway;
 use craft\commerce\stripe\gateways\PaymentIntents;
 use craft\commerce\stripe\models\forms\CancelSubscription;
 use craft\commerce\stripe\models\forms\Subscription as SubscriptionForm;
 use craft\commerce\stripe\models\forms\SwitchPlans;
+use craft\elements\User;
 use craft\helpers\DateTimeHelper;
 use craft\web\Controller;
 use yii\helpers\Json;
@@ -21,10 +20,18 @@ use yii\web\Response;
  */
 class DeveloperSupportController extends Controller
 {
+    // Constants
+    // =========================================================================
+
     const PLAN_STANDARD = 'basic';
     const PLAN_STANDARD_NAME = 'Basic';
     const PLAN_PRO = 'pro';
     const PLAN_PREMIUM = 'premium';
+
+    // Properties
+    // =========================================================================
+    /** @var User */
+    private $_user;
 
     // Public Methods
     // =========================================================================
@@ -32,6 +39,7 @@ class DeveloperSupportController extends Controller
     public function beforeAction($action)
     {
         $this->requireLogin();
+        $this->user = Craft::$app->getUser()->getIdentity();
 
         return parent::beforeAction($action);
     }
@@ -43,22 +51,105 @@ class DeveloperSupportController extends Controller
      */
     public function actionGetSubscriptionInfo(): Response
     {
-        return $this->asJson($this->_getSubscriptionData(true));
+        return $this->asJson($this->_getSubscriptionData());
     }
 
-    public function actionCancelPlan(): Response
+    /**
+     * This action cancels an active subscription.
+     *
+     * @return Response
+     */
+    public function actionCancelSubscription(): Response
     {
+        $subscriptionUid = Craft::$app->getRequest()->getRequiredBodyParam('subscription');
+        $subscription = Subscription::find()->userId($this->_user->id)->uid($subscriptionUid)->one();
 
+        if ($subscription) {
+            /** @var CancelSubscription $cancelForm */
+            $cancelForm = $subscription->getGateway()->getCancelSubscriptionFormModel();
+            $cancelForm->cancelImmediately = false;
+
+            Commerce::getInstance()->getSubscriptions()->cancelSubscription($subscription, $cancelForm);
+        }
+
+        return $this->asJson($this->_getSubscriptionData());
     }
 
-    public function actionReactivatePlan(): Response
+    /**
+     * This action reactivates an active subscription.
+     *
+     * @return Response
+     */
+    public function actionReactivateSubscription(): Response
     {
+        $subscriptionUid = Craft::$app->getRequest()->getRequiredBodyParam('subscription');
+        $subscription = Subscription::find()->userId($this->_user->id)->uid($subscriptionUid)->one();
 
+        if ($subscription) {
+            Commerce::getInstance()->getSubscriptions()->reactivateSubscription($subscription);
+        }
+
+        return $this->asJson($this->_getSubscriptionData());
     }
 
+
+    /**
+     * This action subscribes user to a plan.
+     *
+     * @return Response
+     */
     public function actionSubscribe(): Response
     {
+        $plan = Craft::$app->getRequest()->getRequiredBodyParam('plan');
 
+        $commerce = Commerce::getInstance();
+        $subscriptionService = $commerce->getSubscriptions();
+
+        $proSubscription = Subscription::find()->plan(self::PLAN_PRO)->userId($this->_user->id)->isExpired(false)->one();
+        $premiumSubscription = Subscription::find()->plan(self::PLAN_PREMIUM)->userId($this->_user->id)->isExpired(false)->one();
+
+        /** @var PaymentIntents $gateway */
+        $gateway = $commerce->getGateways()->getGatewayById(getenv('STRIPE_GATEWAY_ID'));
+
+        switch ($plan) {
+            case self::PLAN_PRO:
+                // No doubles
+                if ($proSubscription) {
+                    break;
+                }
+
+                // If premiums exists, can only be expiring.
+                if ($premiumSubscription && !$premiumSubscription->getSubscriptionData()['cancel_at_period_end']) {
+                    break;
+                }
+
+                $subscriptionForm = $gateway->getSubscriptionFormModel();
+
+                // If premium is expiring, mark it's end the end of this subscription's trial.
+                if ($premiumSubscription) {
+                    $trialEndTime = $premiumSubscription->getSubscriptionData()['current_period_end'];
+                    $subscriptionForm->trialEnd = $trialEndTime;
+                }
+
+                $subscriptionService->createSubscription($this->_user, $commerce->getPlans()->getPlanByHandle(self::PLAN_PRO), $subscriptionForm);
+                break;
+
+            case self::PLAN_PREMIUM:
+                // No doubles
+                if ($premiumSubscription) {
+                    break;
+                }
+
+                // If pro exists, they should be using "switch"
+                if ($proSubscription) {
+                    break;
+                }
+
+                $subscriptionService->createSubscription($this->_user, $commerce->getPlans()->getPlanByHandle(self::PLAN_PREMIUM), $gateway->getSubscriptionFormModel());
+                break;
+        }
+
+        return $this->asJson($this->_getSubscriptionData());
     }
 
     /**
@@ -70,88 +161,66 @@ class DeveloperSupportController extends Controller
      */
     public function actionSwitchPlan(): Response
     {
-//        $commerce = Commerce::getInstance();
-//        $requestedPlan = Craft::$app->getRequest()->getRequiredBodyParam('newPlan');
-//
-//        $subscriptionData = $this->_getSubscriptionData();
-//        $subscriptionService = $commerce->getSubscriptions();
-//        /** @var PaymentIntents $gateway */
-//        $gateway = $commerce->getGateways()->getGatewayById(getenv('STRIPE_GATEWAY_ID'));
-//
-//        $premiumSubscription = null;
-//        $proSubscription = null;
-//
-//        if (!empty($subscriptionData[self::PLAN_PREMIUM])) {
-//            /** @var Subscription $premiumSubscription */
-//            $premiumSubscription = Subscription::find()->uid($subscriptionData[self::PLAN_PREMIUM]['uid'])->one();
-//        }
-//
-//        if (!empty($subscriptionData[self::PLAN_PRO])) {
-//            /** @var Subscription $proSubscription */
-//            $proSubscription = Subscription::find()->uid($subscriptionData[self::PLAN_PRO]['uid'])->one();
-//        }
-//
-//        /** @var CancelSubscription $cancelForm */
-//        $cancelForm = $gateway->getCancelSubscriptionFormModel();
-//        $cancelForm->cancelImmediately = false;
-//
-//        switch ($requestedPlan) {
-//            case self::PLAN_STANDARD:
-//                // Cancel existing subscriptions, if any
-//                if ($premiumSubscription) {
-//                    $subscriptionService->cancelSubscription($premiumSubscription, $cancelForm);
-//                }
-//
-//                if ($proSubscription) {
-//                    $subscriptionService->cancelSubscription($proSubscription, $cancelForm);
-//                }
-//
-//                break;
-//            case self::PLAN_PRO:
-//                // No duplicates
-//                if ($proSubscription) {
-//                    Craft::warning('Tried to subscribe to pro while on it already. (' . Json::encode($subscriptionData) . ')', 'developerSupport');
-//                    return $this->asErrorJson('You are already subscribed to that plan.');
-//                }
-//
-//                /** @var SubscriptionForm $subscriptionForm */
-//                $subscriptionForm = $gateway->getSubscriptionFormModel();
-//
-//                // If downgrading, set trial to end as priority expires
-//                if ($premiumSubscription) {
-//                    $subscriptionService->cancelSubscription($premiumSubscription, $cancelForm);
-//                    $trialEndTime = $premiumSubscription->getSubscriptionData()['current_period_end'];
-//                    $subscriptionForm->trialEnd = $trialEndTime;
-//                }
-//
-//                $subscription = $subscriptionService->createSubscription(Craft::$app->getUser()->getIdentity(), $commerce->getPlans()->getPlanByHandle(self::PLAN_PRO), $subscriptionForm);
-//
-//                break;
-//            case self::PLAN_PREMIUM:
-//                // No duplicates
-//                if ($premiumSubscription) {
-//                    Craft::warning('Tried to subscribe to premium while on it already. (' . Json::encode($subscriptionData) . ')', 'developerSupport');
-//                    return $this->asErrorJson('You are already subscribed to that plan.');
-//                }
-//
-//                // If upgrading, reset the billing anchor and prorate
-//                if ($proSubscription) {
-//                    /** @var SwitchPlans $switchPlansForm */
-//                    $switchPlansForm = $gateway->getSwitchPlansFormModel();
-//                    $switchPlansForm->prorate = true;
-//                    $switchPlansForm->billingCycleAnchor = 'now';
-//                    $subscriptionService->switchSubscriptionPlan($proSubscription, $commerce->getPlans()->getPlanByHandle(self::PLAN_PREMIUM), $switchPlansForm);
-//                    $subscription = $proSubscription;
-//                } else {
-//                    /** @var SubscriptionForm $subscriptionForm */
-//                    $subscriptionForm = $gateway->getSubscriptionFormModel();
-//                    $subscription = $subscriptionService->createSubscription(Craft::$app->getUser()->getIdentity(), $commerce->getPlans()->getPlanByHandle(self::PLAN_PRO), $subscriptionForm);
-//                }
-//
-//                break;
-//        }
-//
-//        return $this->asJson($this->_getSubscriptionData(true));
+        $plan = Craft::$app->getRequest()->getRequiredBodyParam('plan');
+
+        $commerce = Commerce::getInstance();
+        $subscriptionService = $commerce->getSubscriptions();
+
+        $proSubscription = Subscription::find()->plan(self::PLAN_PRO)->userId($this->_user->id)->isExpired(false)->one();
+        $premiumSubscription = Subscription::find()->plan(self::PLAN_PREMIUM)->userId($this->_user->id)->isExpired(false)->one();
+
+        /** @var PaymentIntents $gateway */
+        $gateway = $commerce->getGateways()->getGatewayById(getenv('STRIPE_GATEWAY_ID'));
+
+        /** @var SubscriptionForm $subscriptionForm */
+        $subscriptionForm = $gateway->getSubscriptionFormModel();
+
+        /** @var CancelSubscription $cancelForm */
+        $cancelForm = $gateway->getCancelSubscriptionFormModel();
+        $cancelForm->cancelImmediately = false;
+
+        switch ($plan) {
+            case self::PLAN_PRO:
+                // No doubles
+                if ($proSubscription) {
+                    break;
+                }
+
+                // Premium must exist in active state
+                if (!$premiumSubscription
+                    || $premiumSubscription->getSubscriptionData()['status'] !== 'active'
+                    || $premiumSubscription->getSubscriptionData()['cancel_at_period_end']
+                ) {
+                    break;
+                }
+
+                $subscriptionService->cancelSubscription($premiumSubscription, $cancelForm);
+                $trialEndTime = $premiumSubscription->getSubscriptionData()['current_period_end'];
+                $subscriptionForm->trialEnd = $trialEndTime;
+
+                $subscriptionService->createSubscription($this->_user, $commerce->getPlans()->getPlanByHandle(self::PLAN_PRO), $gateway->getSubscriptionFormModel());
+                break;
+
+            case self::PLAN_PREMIUM:
+                // No doubles
+                if ($premiumSubscription) {
+                    break;
+                }
+
+                // Pro must exist and be active.
+                if (!$proSubscription && $proSubscription->getSubscriptionData()['status'] === 'active') {
+                    break;
+                }
+
+                $switchPlansForm = $gateway->getSwitchPlansFormModel();
+                $switchPlansForm->prorate = true;
+                $switchPlansForm->billingCycleAnchor = 'now';
+                $subscriptionService->switchSubscriptionPlan($proSubscription, $commerce->getPlans()->getPlanByHandle(self::PLAN_PREMIUM), $switchPlansForm);
+
+                break;
+        }
+
+        return $this->asJson($this->_getSubscriptionData(true));
     }
 
     /**
@@ -200,6 +269,7 @@ class DeveloperSupportController extends Controller
 
         if ($proSubscription) {
             $proSubscriptionData = $proSubscription->getSubscriptionData();
+            $proData['uid'] = $proSubscription->uid;
 
             if ($proSubscriptionData['status'] === 'trialing') {
                 $proData['status'] = 'upcoming';
@@ -215,6 +285,7 @@ class DeveloperSupportController extends Controller
 
         if ($premiumSubscription) {
             $premiumSubscriptionData = $premiumSubscription->getSubscriptionData();
+            $premiumData['uid'] = $premiumSubscription->uid;
 
             if ($premiumSubscriptionData['cancel_at_period_end']) {
                $premiumData['status'] = 'expiring';
