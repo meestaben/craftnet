@@ -65,14 +65,6 @@ const getters = {
         return 'basic'
     },
 
-    newSubscriptionInfo(state, getters) {
-        if (!state.selectedPlanHandle) {
-            return null
-        }
-
-        return getters.subscriptionInfoPlan(state.selectedPlanHandle)
-    },
-
     subscriptionInfoPlan(state) {
         return (planHandle) => {
             if (!state.subscriptionInfo.plans[planHandle]) {

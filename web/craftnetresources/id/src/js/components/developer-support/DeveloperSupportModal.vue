@@ -32,12 +32,13 @@
                     <td>New Plan</td>
                     <td class="text-right">{{selectedPlan.name}}</td>
                 </tr>
-                <template v-if="newSubscriptionInfo">
-                    <tr v-if="newSubscriptionInfo.upgradeCost">
-                        <td>Upgrade cost</td>
-                        <td class="text-right">{{newSubscriptionInfo.upgradeCost|currency}}</td>
-                    </tr>
-                </template>
+                <tr>
+                    <td>Price</td>
+                    <td class="text-right">
+                        {{subscriptionInfoPlan.cost.switch|currency}}<br />
+                        <small class="text-grey-dark">Then {{subscriptionInfoPlan.cost.recurring|currency}} every month</small>
+                    </td>
+                </tr>
                 </tbody>
             </table>
 
@@ -104,7 +105,6 @@
             }),
 
             ...mapGetters({
-                newSubscriptionInfo: 'developerSupport/newSubscriptionInfo',
                 selectedPlan: 'developerSupport/selectedPlan',
             }),
 
@@ -112,6 +112,9 @@
                 const currentPlanHandle = this.$store.getters['developerSupport/currentPlanHandle']
                 return this.plans.find(p => p.handle === currentPlanHandle)
             }
+            subscriptionInfoPlan() {
+                return this.$store.getters['developerSupport/subscriptionInfoPlan'](this.selectedPlanHandle)
+            },
         },
 
         methods: {
