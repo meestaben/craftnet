@@ -51,19 +51,29 @@ const state = {
  */
 const getters = {
     currentPlan(state) {
+        if (!state.subscriptionInfo) {
+            return null
+        }
+
         return state.subscriptionInfo.currentPlan
     },
 
-    newSubscriptionInfo(state) {
+    newSubscriptionInfo(state, getters) {
         if (!state.selectedPlanHandle) {
             return null
         }
 
-        if (!state.subscriptionInfo[state.selectedPlanHandle]) {
-            return null
-        }
+        return getters.planSubscriptionInfo(state.selectedPlanHandle)
+    },
 
-        return state.subscriptionInfo[state.selectedPlanHandle]
+    planSubscriptionInfo(state) {
+        return (planHandle) => {
+            if (!state.subscriptionInfo[planHandle]) {
+                return null
+            }
+
+            return state.subscriptionInfo[planHandle]
+        }
     },
 
     selectedPlan(state) {
@@ -89,7 +99,11 @@ const actions = {
     switchPlan({commit}, newPlan) {
         return developerSupportApi.switchPlan(newPlan)
             .then((response) => {
-                commit('updateSubscriptionInfo', response)
+                if (response.data.error) {
+                    throw response.data.error
+                }
+
+                commit('updateSubscriptionInfo', response.data)
             })
     },
 }

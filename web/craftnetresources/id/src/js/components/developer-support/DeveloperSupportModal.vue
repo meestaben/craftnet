@@ -1,7 +1,13 @@
 <template>
     <modal :show.sync="showModal" modal-type="wide">
-        <template slot="body">
-            <h2>Upgrade support plan</h2>
+        <template v-if="selectedPlan" slot="body">
+            <template v-if="selectedPlan.price > currentPlan.price">
+                <h2>Upgrade support plan</h2>
+            </template>
+            <template>
+                <h2>Switch support plan</h2>
+                <p>Your plan will switch to the pro tier at the end of the billing cycle</p>
+            </template>
 
             <template v-if="!card">
                 <p>Your billing info is missing. Go to <a @click="goToBilling">Account → Billing</a> to add a credit card and update billing infos.</p>
@@ -15,15 +21,15 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-if="selectedPlan">
+                <tr>
+                    <td>Current Plan</td>
+                    <td class="text-right">{{currentPlan.name}}</td>
+                </tr>
+                <tr>
                     <td>New Plan</td>
                     <td class="text-right">{{selectedPlan.name}}</td>
                 </tr>
                 <template v-if="newSubscriptionInfo">
-                    <tr v-if="newSubscriptionInfo.cycleEnd">
-                        <td>Cycle End</td>
-                        <td class="text-right">{{newSubscriptionInfo.cycleEnd}}</td>
-                    </tr>
                     <tr v-if="newSubscriptionInfo.upgradeCost">
                         <td>Upgrade cost</td>
                         <td class="text-right">{{newSubscriptionInfo.upgradeCost|currency}}</td>
@@ -34,7 +40,15 @@
 
             <div>
                 <btn ref="cancelBtn" @click="cancel()">Cancel</btn>
-                <btn kind="primary" :disabled="!card" @click="switchPlan()">Upgrade Plan</btn>
+                <btn kind="primary" :disabled="!card" @click="switchPlan()">
+                    <template v-if="selectedPlan.price > currentPlan.price">
+                        Upgrade plan
+                    </template>
+                    <template>
+                        Switch plan
+                    </template>
+                </btn>
+
                 <template v-if="loading">
                     <spinner class="ml-2"></spinner>
                 </template>
@@ -45,7 +59,7 @@
 
 <script>
     import {mapState, mapGetters} from 'vuex'
-    import Modal from './Modal'
+    import Modal from '../Modal'
 
     export default {
         components: {
@@ -73,12 +87,19 @@
                 selectedPlanHandle: state => state.developerSupport.selectedPlanHandle,
                 card: state => state.stripe.card,
                 showModal: state => state.developerSupport.showModal,
+                plans: state => state.developerSupport.plans,
+                subscriptionInfo: state => state.developerSupport.subscriptionInfo,
             }),
 
             ...mapGetters({
                 newSubscriptionInfo: 'developerSupport/newSubscriptionInfo',
                 selectedPlan: 'developerSupport/selectedPlan',
             }),
+
+            currentPlan() {
+                const currentPlanHandle = this.$store.getters['developerSupport/currentPlan']
+                return this.plans.find(p => p.handle === currentPlanHandle)
+            }
         },
 
         methods: {
@@ -101,7 +122,7 @@
                     })
                     .catch((error) => {
                         this.loading = false
-                        const errorMessage = error.response.data.error ? error.response.data.error : (error ? error : 'Couldn’t switch support plan.')
+                        const errorMessage = error.response && error.response.data.error ? error.response.data.error : (error ? error : 'Couldn’t switch support plan.')
                         this.$store.dispatch('app/displayError', errorMessage)
                         this.closeModal()
                     })

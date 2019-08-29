@@ -1,24 +1,37 @@
 <template>
-    <div v-if="license" id="renew-licenses-modal">
-        <modal :show="true" @background-click="$emit('cancel')">
+    <div v-if="user && showRenewLicensesModal && renewLicense" id="renew-licenses-modal">
+        <modal :show="true" @background-click="cancel">
             <template slot="body">
-                <renew-licenses-form :license="license" @cancel="$emit('cancel')" />
+                <renew-licenses-form :license="renewLicense" @cancel="cancel" />
             </template>
         </modal>
     </div>
 </template>
 
 <script>
+    import {mapState} from 'vuex'
     import Modal from '../../Modal';
     import RenewLicensesForm from './RenewLicensesForm'
 
     export default {
-        props: ['license'],
-
         components: {
             Modal,
             RenewLicensesForm,
         },
+
+        computed: {
+            ...mapState({
+                showRenewLicensesModal: state => state.app.showRenewLicensesModal,
+                renewLicense: state => state.app.renewLicense,
+                user: state => state.account.user,
+            }),
+        },
+
+        methods: {
+            cancel() {
+                this.$store.commit('app/updateShowRenewLicensesModal', false)
+            }
+        }
     }
 </script>
 

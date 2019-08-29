@@ -1,5 +1,8 @@
 <template>
     <div class="app">
+        <renew-licenses-modal />
+        <developer-support-modal />
+
         <global-header :showingSidebar="showingSidebar" @toggleSidebar="toggleSidebar()"></global-header>
 
         <div class="flex-container">
@@ -36,6 +39,8 @@
     import AppSidebar from '../AppSidebar'
     import StripeAccountAlert from '../StripeAccountAlert'
     import LicenseRenewAlert from '../LicenseRenewAlert'
+    import DeveloperSupportModal from '../developer-support/DeveloperSupportModal'
+    import RenewLicensesModal from '../licenses/renew-licenses/RenewLicensesModal'
 
     export default {
         components: {
@@ -43,6 +48,8 @@
             AppSidebar,
             StripeAccountAlert,
             LicenseRenewAlert,
+            DeveloperSupportModal,
+            RenewLicensesModal,
         },
 
         data() {
