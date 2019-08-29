@@ -1,5 +1,11 @@
 <template>
     <div class="app">
+        <template v-if="user">
+            <renew-licenses-modal v-if="showRenewLicensesModal" :license="renewLicense" @cancel="$store.commit('app/updateShowRenewLicensesModal', false)" />
+        </template>
+
+        <developer-support-modal></developer-support-modal>
+
         <global-header :showingSidebar="showingSidebar" @toggleSidebar="toggleSidebar()"></global-header>
 
         <div class="flex-container">
@@ -36,6 +42,8 @@
     import AppSidebar from '../AppSidebar'
     import StripeAccountAlert from '../StripeAccountAlert'
     import LicenseRenewAlert from '../LicenseRenewAlert'
+    import DeveloperSupportModal from '../developer-support/DeveloperSupportModal'
+    import RenewLicensesModal from '../licenses/renew-licenses/RenewLicensesModal'
 
     export default {
         components: {
@@ -43,6 +51,8 @@
             AppSidebar,
             StripeAccountAlert,
             LicenseRenewAlert,
+            DeveloperSupportModal,
+            RenewLicensesModal,
         },
 
         data() {
@@ -55,6 +65,9 @@
             ...mapState({
                 expiringCmsLicensesTotal: state => state.cmsLicenses.expiringCmsLicensesTotal,
                 expiringPluginLicensesTotal: state => state.pluginLicenses.expiringPluginLicensesTotal,
+                showRenewLicensesModal: state => state.app.showRenewLicensesModal,
+                renewLicense: state => state.app.renewLicense,
+                user: state => state.account.user,
             }),
         },
 

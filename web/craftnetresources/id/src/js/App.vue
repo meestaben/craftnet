@@ -2,13 +2,7 @@
     <div id="app" :class="{'has-sidebar': (!$route.meta.layout || $route.meta.layout !== 'no-sidebar')}">
         <auth-manager ref="authManager"></auth-manager>
 
-        <template v-if="user">
-            <renew-licenses-modal v-if="showRenewLicensesModal" :license="renewLicense" @cancel="$store.commit('app/updateShowRenewLicensesModal', false)" />
-        </template>
-
         <global-modal></global-modal>
-
-        <developer-support-modal></developer-support-modal>
 
         <template v-if="notification">
             <div id="notifications-wrapper" :class="{'hide': !notification }">
@@ -36,10 +30,8 @@
     import helpers from './mixins/helpers'
     import AuthManager from './components/AuthManager'
     import GlobalModal from './components/GlobalModal'
-    import RenewLicensesModal from './components/licenses/renew-licenses/RenewLicensesModal'
     import AppLayout from './components/layouts/AppLayout'
     import SiteLayout from './components/layouts/SiteLayout'
-    import DeveloperSupportModal from './components/developer-support/DeveloperSupportModal'
 
     export default {
         router,
@@ -49,19 +41,14 @@
         components: {
             AuthManager,
             GlobalModal,
-            RenewLicensesModal,
             AppLayout,
             SiteLayout,
-            DeveloperSupportModal,
         },
 
         computed: {
             ...mapState({
                 notification: state => state.app.notification,
-                showRenewLicensesModal: state => state.app.showRenewLicensesModal,
                 loading: state => state.app.loading,
-                renewLicense: state => state.app.renewLicense,
-                user: state => state.account.user,
             }),
 
             layoutComponent() {
