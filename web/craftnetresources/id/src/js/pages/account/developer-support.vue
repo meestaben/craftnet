@@ -21,7 +21,7 @@
             <div class="mx-auto max-w-2xl">
                 <div class="lg:flex mt-8 -mx-4">
                     <template v-for="(plan, planKey) in plans">
-                        <plan :plan="plan" :key="'plan-'+planKey" @selectPlan="onSelectPlan" @cancelSubscription="onCancelSubscription"></plan>
+                        <plan :plan="plan" :key="'plan-'+planKey" @selectPlan="onSelectPlan" @cancelSubscription="onCancelSubscription" @reactivateSubscription="onReactivateSubscription"></plan>
                     </template>
                 </div>
             </div>
@@ -92,6 +92,23 @@
                         this.loading = false
                         this.$emit('close')
                         const errorMessage = error ? error : 'Couldn’t switch support plan.'
+                        this.$store.dispatch('app/displayError', errorMessage)
+                    })
+            },
+
+            onReactivateSubscription(subscriptionUid) {
+                this.loading = true
+                
+                this.$store.dispatch('developerSupport/reactivateSubscription', subscriptionUid)
+                    .then(() => {
+                        this.loading = false
+                        this.$emit('close')
+                        this.$store.dispatch('app/displayNotice', 'Subscription reactivated.')
+                    })
+                    .catch((error) => {
+                        this.loading = false
+                        this.$emit('close')
+                        const errorMessage = error ? error : 'Couldn’t reactivate subscription.'
                         this.$store.dispatch('app/displayError', errorMessage)
                     })
             }

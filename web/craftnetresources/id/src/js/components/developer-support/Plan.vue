@@ -24,28 +24,21 @@
 
                     <div v-if="plan.price > 0" class="mt-4">
                         <template v-if="subscriptionInfoPlan">
-                            <template v-if="!subscriptionInfoPlan.canceled">
-                                <template v-if="plan.handle === currentPlanHandle && !subscriptionInfoPlan.canceled">
-                                    <btn kind="primary" :disabled="true">Current plan</btn>
-                                    <div class="mt-2">
-                                        <a @click.prevent="$emit('cancelSubscription')">Cancel subscription</a>
-                                    </div>
-                                </template>
-                                <template v-else>
-                                    <btn kind="primary" @click="$emit('selectPlan', plan)">Select this plan</btn>
-                                </template>
+                            <template v-if="subscriptionInfoSubscriptionData.status === 'inactive'">
+                                <btn kind="primary" @click="$emit('selectPlan', plan)">Select this plan</btn>
                             </template>
-                            <template v-else>
-                                <btn kind="primary" @click="$emit('selectPlan', plan)">Reactivate this plan</btn>
-
-                                <div class="mt-6 text-grey-dark">
-                                    <template v-if="subscriptionInfoPlan.cycleEnd">
-                                        <p>Your subscription to this plan has been canceled, its cycle ends on {{subscriptionInfoPlan.cycleEnd}}.</p>
-                                    </template>
-                                    <template v-else>
-                                        <p>Your subscription to this plan has been canceled.</p>
-                                    </template>
+                            <template v-else-if="subscriptionInfoSubscriptionData.status === 'active'">
+                                <btn kind="primary" :disabled="true">Current plan</btn>
+                                <p class="mt-4">
+                                    Next billing date: {{subscriptionInfoSubscriptionData.nextBillingDate}}
+                                </p>
+                                <div class="mt-2">
+                                    <a @click.prevent="$emit('cancelSubscription')">Cancel subscription</a>
                                 </div>
+                            </template>
+                            <template v-else-if="subscriptionInfoSubscriptionData.status === 'expiring'">
+                                <btn kind="primary" @click="$emit('reactivateSubscription', subscriptionInfoSubscriptionData.uid)">Reactivate</btn>
+                                <p class="mt-4">Expires on {{subscriptionInfoSubscriptionData.expiringDate}}.</p>
                             </template>
                         </template>
                     </div>
@@ -76,6 +69,10 @@
 
             subscriptionInfoPlan() {
                 return this.$store.getters['developerSupport/subscriptionInfoPlan'](this.plan.handle)
+            },
+
+            subscriptionInfoSubscriptionData() {
+                return this.$store.getters['developerSupport/subscriptionInfoSubscriptionData'](this.plan.handle)
             }
         },
     }

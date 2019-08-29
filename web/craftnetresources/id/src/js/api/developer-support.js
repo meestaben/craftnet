@@ -24,6 +24,30 @@ export default {
         })
     },
 
+    reactivateSubscription(subscription) {
+        const data = {
+            subscription
+        }
+
+        return axios.post(Craft.actionUrl + '/craftnet/id/developer-support/reactivate-subscription', qs.stringify(data), {
+            headers: {
+                'X-CSRF-Token': Craft.csrfTokenValue,
+            }
+        })
+    },
+
+    subscribe(plan) {
+        const data = {
+            plan
+        }
+
+        return axios.post(Craft.actionUrl + '/craftnet/id/developer-support/subscribe', qs.stringify(data), {
+            headers: {
+                'X-CSRF-Token': Craft.csrfTokenValue,
+            }
+        })
+    },
+
     switchPlan(plan) {
         const data = {
             plan

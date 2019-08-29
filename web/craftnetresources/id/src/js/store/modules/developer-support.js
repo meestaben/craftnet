@@ -124,6 +124,28 @@ const actions = {
             })
     },
 
+    reactivateSubscription({commit}, subscriptionUid) {
+        return developerSupportApi.reactivateSubscription(subscriptionUid)
+            .then((response) => {
+                if (response.data.error) {
+                    throw response.data.error
+                }
+
+                commit('updateSubscriptionInfo', response.data)
+            })
+    },
+
+    subscribe({commit}, planHandle) {
+        return developerSupportApi.subscribe(planHandle)
+            .then((response) => {
+                if (response.data.error) {
+                    throw response.data.error
+                }
+
+                commit('updateSubscriptionInfo', response.data)
+            })
+    },
+
     switchPlan({commit}, newPlan) {
         return developerSupportApi.switchPlan(newPlan)
             .then((response) => {
