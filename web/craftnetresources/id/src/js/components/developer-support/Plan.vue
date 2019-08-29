@@ -23,9 +23,9 @@
                     </div>
 
                     <div v-if="plan.price > 0" class="mt-4">
-                        <template v-if="planSubscriptionInfo">
-                            <template v-if="!planSubscriptionInfo.canceled">
-                                <template v-if="plan.handle === currentPlanHandle && !planSubscriptionInfo.canceled">
+                        <template v-if="subscriptionInfoPlan">
+                            <template v-if="!subscriptionInfoPlan.canceled">
+                                <template v-if="plan.handle === currentPlanHandle && !subscriptionInfoPlan.canceled">
                                     <btn kind="primary" :disabled="true">Current plan</btn>
                                     <div class="mt-2">
                                         <a @click.prevent="$emit('cancelSubscription')">Cancel subscription</a>
@@ -39,8 +39,8 @@
                                 <btn kind="primary" @click="$emit('selectPlan', plan)">Reactivate this plan</btn>
 
                                 <div class="mt-6 text-grey-dark">
-                                    <template v-if="planSubscriptionInfo.cycleEnd">
-                                        <p>Your subscription to this plan has been canceled, its cycle ends on {{planSubscriptionInfo.cycleEnd}}.</p>
+                                    <template v-if="subscriptionInfoPlan.cycleEnd">
+                                        <p>Your subscription to this plan has been canceled, its cycle ends on {{subscriptionInfoPlan.cycleEnd}}.</p>
                                     </template>
                                     <template v-else>
                                         <p>Your subscription to this plan has been canceled.</p>
@@ -74,8 +74,8 @@
                 currentPlanHandle: 'developerSupport/currentPlanHandle',
             }),
 
-            planSubscriptionInfo() {
-                return this.$store.getters['developerSupport/planSubscriptionInfo'](this.plan.handle)
+            subscriptionInfoPlan() {
+                return this.$store.getters['developerSupport/subscriptionInfoPlan'](this.plan.handle)
             }
         },
     }
