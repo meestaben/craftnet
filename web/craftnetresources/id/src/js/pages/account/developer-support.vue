@@ -21,52 +21,7 @@
             <div class="mx-auto max-w-2xl">
                 <div class="lg:flex mt-8 -mx-4">
                     <template v-for="(plan, planKey) in plans">
-                        <div class="card lg:flex lg:flex-1 mx-4 mb-3" :key="'plan-'+planKey">
-                            <div class="support-plan-wrapper card-body text-center lg:h-full lg:flex-1 lg:flex">
-                                <div class="support-plan flex flex-col justify-between">
-                                    <div class="details">
-                                        <div class="plan-icon">
-                                            <img :src="staticImageUrl(plan.icon + '.svg')" />
-                                        </div>
-
-                                        <h2 class="mb-6">{{plan.name}}</h2>
-
-                                        <ul class="feature-list">
-                                            <li v-for="(feature, featureKey) in plan.features" :key="planKey+'-features-'+featureKey">
-                                                <icon icon="check" /> <span>{{feature}}</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-
-                                    <div class="actions py-4">
-                                        <div v-if="plan.price > 0" class="my-4">
-                                            <h3 class="text-3xl">${{plan.price}}</h3>
-                                            <p class="text-grey">per month</p>
-                                        </div>
-
-                                        <div v-if="plan.price > 0" class="mt-4">
-                                            <template v-if="plan.handle === currentPlan">
-                                                <btn kind="primary" :disabled="true">Current plan</btn>
-                                                <div class="mt-2">
-                                                    <a @click.prevent="cancelSubscription">Cancel subscription</a>
-                                                </div>
-                                            </template>
-                                            <template v-else>
-                                                <btn kind="primary" @click="selectPlan(plan)">Select this plan</btn>
-                                            </template>
-                                        </div>
-
-                                        <div v-if="plan.handle === 'basic'">
-                                            <p class="mb-0 text-grey"><em>Comes standard with Craft Pro.</em></p>
-                                        </div>
-
-                                        <div v-if="planSubscriptionInfo(plan.handle)" class="mt-8 text-left p-4 min-w-0 text-sm border">
-                                            {{planSubscriptionInfo(plan.handle)}}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <plan :plan="plan" :key="'plan-'+planKey" @selectPlan="onSelectPlan" @cancelSubscription="onCancelSubscription"></plan>
                     </template>
                 </div>
             </div>
@@ -82,11 +37,13 @@
 </template>
 
 <script>
-    import {mapState, mapGetters} from 'vuex'
-    import helpers from '../../mixins/helpers'
+    import {mapState} from 'vuex'
+    import Plan from '../../components/developer-support/Plan'
 
     export default {
-        mixins: [helpers],
+        components: {
+            Plan,
+        },
 
         data() {
             return {
@@ -101,20 +58,15 @@
                 subscriptionInfo: state => state.developerSupport.subscriptionInfo,
                 plans: state => state.developerSupport.plans,
             }),
-
-            ...mapGetters({
-                currentPlan: 'developerSupport/currentPlan',
-                planSubscriptionInfo: 'developerSupport/planSubscriptionInfo',
-            }),
         },
 
         methods: {
-            selectPlan(plan) {
+            onSelectPlan(plan) {
                 this.$store.commit('developerSupport/updateSelectedPlan', plan.handle)
                 this.$store.commit('developerSupport/updateShowModal', true)
             },
 
-            cancelSubscription() {
+            onCancelSubscription() {
                 if (!window.confirm("Are you sure you want to cancel your subscription?")) {
                     return false
                 }
