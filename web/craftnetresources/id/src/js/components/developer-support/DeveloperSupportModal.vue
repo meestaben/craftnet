@@ -30,10 +30,6 @@
                     <td class="text-right">{{selectedPlan.name}}</td>
                 </tr>
                 <template v-if="newSubscriptionInfo">
-                    <tr v-if="newSubscriptionInfo.cycleEnd">
-                        <td>Cycle End</td>
-                        <td class="text-right">{{newSubscriptionInfo.cycleEnd}}</td>
-                    </tr>
                     <tr v-if="newSubscriptionInfo.upgradeCost">
                         <td>Upgrade cost</td>
                         <td class="text-right">{{newSubscriptionInfo.upgradeCost|currency}}</td>
