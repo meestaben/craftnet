@@ -25,7 +25,7 @@
                     <div v-if="plan.price > 0" class="mt-4">
                         <template v-if="planSubscriptionInfo">
                             <template v-if="!planSubscriptionInfo.canceled">
-                                <template v-if="plan.handle === currentPlan && !planSubscriptionInfo.canceled">
+                                <template v-if="plan.handle === currentPlanHandle && !planSubscriptionInfo.canceled">
                                     <btn kind="primary" :disabled="true">Current plan</btn>
                                     <div class="mt-2">
                                         <a @click.prevent="$emit('cancelSubscription')">Cancel subscription</a>
@@ -71,7 +71,7 @@
 
         computed: {
             ...mapGetters({
-                currentPlan: 'developerSupport/currentPlan',
+                currentPlanHandle: 'developerSupport/currentPlanHandle',
             }),
 
             planSubscriptionInfo() {
