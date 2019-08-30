@@ -117,6 +117,10 @@ const actions = {
     getSubscriptionInfo({commit}) {
         return developerSupportApi.getSubscriptionInfo()
             .then((response) => {
+                if (response.data.error) {
+                    throw response.data.error
+                }
+
                 commit('updateSubscriptionInfo', response.data)
             })
     },

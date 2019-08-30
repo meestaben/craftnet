@@ -122,7 +122,7 @@
                     this.loading = false
                 })
                 .catch((error) => {
-                    const errorMessage = error.response.data && error.response.data.error ? error.response.data.error : 'Couldn’t get subscription info.'
+                    const errorMessage = error ? error : 'Couldn’t get subscription info.'
                     this.error = errorMessage
                     this.loading = false
                 })

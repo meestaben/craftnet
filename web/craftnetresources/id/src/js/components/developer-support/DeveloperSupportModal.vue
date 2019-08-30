@@ -131,7 +131,7 @@
                     })
                     .catch((error) => {
                         this.loading = false
-                        const errorMessage = error.response && error.response.data.error ? error.response.data.error : (error ? error : 'Couldn’t switch support plan.')
+                        const errorMessage = error ? error : 'Couldn’t switch support plan.'
                         this.$store.dispatch('app/displayError', errorMessage)
                         this.closeModal()
                     })
@@ -152,7 +152,7 @@
                     })
                     .catch((error) => {
                         this.loading = false
-                        const errorMessage = error.response && error.response.data.error ? error.response.data.error : (error ? error : 'Couldn’t subscribe to support plan.')
+                        const errorMessage = error ? error : 'Couldn’t subscribe to support plan.'
                         this.$store.dispatch('app/displayError', errorMessage)
                         this.closeModal()
                     })
