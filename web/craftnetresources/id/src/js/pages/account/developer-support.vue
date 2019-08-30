@@ -71,22 +71,18 @@
                 this.$store.commit('developerSupport/updateShowModal', true)
             },
 
-            onCancelSubscription() {
+            onCancelSubscription(subscriptionUid) {
                 if (!window.confirm("Are you sure you want to cancel your subscription?")) {
                     return false
                 }
 
-                const currentSubscription = this.subscriptionInfoSubscriptionData(this.currentPlanHandle)
-
                 this.loading = true
 
-                const defaultPlanHandle = 'basic'
-
-                this.$store.dispatch('developerSupport/cancelSubscription', currentSubscription.uid)
+                this.$store.dispatch('developerSupport/cancelSubscription', subscriptionUid)
                     .then(() => {
                         this.loading = false
                         this.$emit('close')
-                        this.$store.dispatch('app/displayNotice', 'Support plan switched to ' + defaultPlanHandle + '.')
+                        this.$store.dispatch('app/displayNotice', 'Subscription canceled.')
                     })
                     .catch((error) => {
                         this.loading = false

@@ -61,12 +61,21 @@ const getters = {
 
         const subscriptionData = state.subscriptionInfo.subscriptionData
 
+        // Check if we have an active plan
         for(let planHandle in subscriptionData) {
             if (subscriptionData[planHandle].status === 'active') {
                 return planHandle
             }
         }
 
+        // Check if we have an expiring plan
+        for(let planHandle in subscriptionData) {
+            if (subscriptionData[planHandle].status === 'expiring') {
+                return planHandle
+            }
+        }
+
+        // Otherwise assume we're on basic
         return 'basic'
     },
 

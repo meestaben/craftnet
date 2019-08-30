@@ -33,7 +33,7 @@
                                     Next billing date: {{subscriptionInfoSubscriptionData.nextBillingDate}}
                                 </p>
                                 <div class="mt-2">
-                                    <a @click.prevent="$emit('cancelSubscription')">Cancel subscription</a>
+                                    <a @click.prevent="$emit('cancelSubscription', subscriptionInfoSubscriptionData.uid)">Cancel subscription</a>
                                 </div>
                             </template>
                             <template v-else-if="subscriptionInfoSubscriptionData.status === 'expiring'">
@@ -46,7 +46,7 @@
                                 </p>
 
                                 <div class="mt-2">
-                                    <a @click.prevent="$emit('cancelSubscription')">Cancel subscription</a>
+                                    <a @click.prevent="$emit('cancelSubscription', subscriptionInfoSubscriptionData.uid)">Cancel subscription</a>
                                 </div>
                             </template>
                         </template>
