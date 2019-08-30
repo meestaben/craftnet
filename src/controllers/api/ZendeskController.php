@@ -6,6 +6,7 @@ use Craft;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use yii\web\BadRequestHttpException;
+use Zendesk\API\HttpClient;
 
 /**
  * @author Pixel & Tonic, Inc. <support@pixelandtonic.com>
@@ -23,13 +24,9 @@ class ZendeskController extends BaseApiController
         if (true) {
             $tag = 'pro';
 
-            $this->_client()->post("tickets/{$payload->id}.json", [
-                RequestOptions::JSON => [
-                    'ticket' => [
-                        'priority' => 'normal',
-                        'tags' => [$tag],
-                    ],
-                ],
+            $this->_client()->tickets()->update($payload->id, [
+                'priority' => 'normal',
+                'tags' => [$tag],
             ]);
         }
 
@@ -49,13 +46,12 @@ class ZendeskController extends BaseApiController
     }
 
     /**
-     * @return Client
+     * @return HttpClient
      */
-    private function _client(): Client
+    private function _client(): HttpClient
     {
-        return Craft::createGuzzleClient([
-            'base_uri' => 'https://craftcms.zendesk.com/api/v2/',
-            'auth' => [getenv('ZENDESK_USERNAME'), getenv('ZENDESK_PASSWORD')],
-        ]);
+        $client = new HttpClient('craftcms');
+        $client->setAuth('basic', ['username' => getenv('ZENDESK_USERNAME'), 'token' => getenv('ZENDESK_TOKEN')]);
+        return $client;
     }
 }
