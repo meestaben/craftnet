@@ -97,6 +97,26 @@ const getters = {
             return state.subscriptionInfo.subscriptionData[planHandle]
         }
     },
+
+    subscriptionMode(state, getters) {
+        const proSubscription = getters.subscriptionInfoSubscriptionData('pro')
+        const premiumSubscription = getters.subscriptionInfoSubscriptionData('premium')
+
+        switch (state.selectedPlanHandle) {
+            case 'pro':
+                if ((proSubscription.status === 'inactive' && premiumSubscription.status === 'inactive') || premiumSubscription.status === 'expiring') {
+                    return 'subscribe'
+                }
+                break
+            case 'premium':
+                if ((proSubscription.status === 'inactive' && premiumSubscription.status === 'inactive')) {
+                    return 'subscribe'
+                }
+                break
+        }
+
+        return 'switch'
+    }
 }
 
 /**

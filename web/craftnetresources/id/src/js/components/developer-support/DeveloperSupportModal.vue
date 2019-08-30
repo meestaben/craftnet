@@ -1,7 +1,7 @@
 <template>
     <modal :show.sync="showModal" modal-type="wide">
         <template v-if="selectedPlan" slot="body">
-            <template v-if="currentPlan.handle === 'basic'">
+            <template v-if="subscriptionMode === 'subscribe'">
                 <h2>Subscribe to this support plan</h2>
             </template>
             <template v-else-if="selectedPlan.price > currentPlan.price">
@@ -45,7 +45,7 @@
             <div>
                 <btn ref="cancelBtn" @click="cancel()">Cancel</btn>
 
-                <template v-if="currentPlan.handle === 'basic'">
+                <template v-if="subscriptionMode === 'subscribe'">
                     <btn  ref="submitBtn" kind="primary" :disabled="!card" @click="subscribePlan()">
                         Subscribe to this plan
                     </btn>
@@ -104,6 +104,7 @@
             ...mapGetters({
                 selectedPlan: 'developerSupport/selectedPlan',
                 currentPlan: 'developerSupport/currentPlan',
+                subscriptionMode: 'developerSupport/subscriptionMode',
             }),
 
             subscriptionInfoPlan() {
