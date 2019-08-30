@@ -3,7 +3,9 @@
 namespace craftnet\controllers\api;
 
 use Craft;
-use craft\helpers\Json;
+use GuzzleHttp\Client;
+use GuzzleHttp\RequestOptions;
+use yii\web\BadRequestHttpException;
 
 /**
  * @author Pixel & Tonic, Inc. <support@pixelandtonic.com>
@@ -12,12 +14,50 @@ class ZendeskController extends BaseApiController
 {
     public function actionCreateTicket()
     {
-        Craft::$app->getMailer()->compose()
-            ->setSubject('Zendesk Webhook')
-            ->setTextBody(Json::encode($this->getPayload(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))
-            ->setTo(explode(',', getenv('TEST_EMAIL')))
-            ->send();
+        $this->_validateSecret();
+        $payload = $this->getPayload('zendesk-create-ticket');
+
+        // See if the the email is on a paid plan
+        // ...
+
+        if (true) {
+            $tag = 'pro';
+
+            $this->_client()->post("tickets/{$payload->id}.json", [
+                RequestOptions::JSON => [
+                    'ticket' => [
+                        'priority' => 'normal',
+                        'tags' => [$tag],
+                    ],
+                ],
+            ]);
+        }
 
         return '';
+    }
+
+    /**
+     * @throws BadRequestHttpException
+     */
+    private function _validateSecret()
+    {
+        $secret = Craft::$app->getRequest()->getRequiredQueryParam('secret');
+
+        if ($secret !== getenv('ZENDESK_SECRET')) {
+            throw new BadRequestHttpException('Invalid request body.');
+        }
+    }
+
+    /**
+     * @return Client
+     */
+    private function _client(): Client
+    {
+        return Craft::createGuzzleClient([
+            'base_uri' => 'https://craftcms.zendesk.com/api/v2/',
+            'headers' => [
+                'Authorization' => 'Basic ' . base64_encode(getenv('ZENDESK_AUTH')),
+            ],
+        ]);
     }
 }
