@@ -46,12 +46,12 @@
                 <btn ref="cancelBtn" @click="cancel()">Cancel</btn>
 
                 <template v-if="currentPlan.handle === 'basic'">
-                    <btn kind="primary" :disabled="!card" @click="subscribePlan()">
+                    <btn  ref="submitBtn" kind="primary" :disabled="!card" @click="subscribePlan()">
                         Subscribe to this plan
                     </btn>
                 </template>
                 <template v-else>
-                    <btn kind="primary" :disabled="!card" @click="switchPlan()">
+                    <btn  ref="submitBtn" kind="primary" :disabled="!card" @click="switchPlan()">
                         <template v-if="selectedPlan.price > currentPlan.price">
                             Upgrade plan
                         </template>
@@ -88,7 +88,7 @@
             showModal(show) {
                 if (show) {
                     this.$nextTick(() => {
-                        this.$refs.cancelBtn.$el.focus()
+                        this.$refs.submitBtn.$el.focus()
                     })
                 }
             }
