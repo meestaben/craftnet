@@ -42,7 +42,7 @@
                             </template>
                             <template v-else-if="subscriptionInfoSubscriptionData.status === 'upcoming'">
                                 <p class="mt-4">
-                                    Starts on [date].
+                                    Starts on {{subscriptionInfoSubscriptionData.startingDate}}.
                                 </p>
 
                                 <div class="mt-2">
