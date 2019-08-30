@@ -9,7 +9,7 @@
             </template>
             <template v-else>
                 <h2>Switch support plan</h2>
-                <p>Your plan will switch to the pro tier at the end of the billing cycle</p>
+                <p>Your plan will switch to the {{selectedPlan.name}} tier at the end of the billing cycle</p>
             </template>
 
             <template v-if="!card">
