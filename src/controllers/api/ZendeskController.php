@@ -3,10 +3,9 @@
 namespace craftnet\controllers\api;
 
 use Craft;
-use GuzzleHttp\Client;
-use GuzzleHttp\RequestOptions;
 use yii\web\BadRequestHttpException;
 use Zendesk\API\HttpClient;
+use Zendesk\API\Utilities\Auth;
 
 /**
  * @author Pixel & Tonic, Inc. <support@pixelandtonic.com>
@@ -51,7 +50,10 @@ class ZendeskController extends BaseApiController
     private function _client(): HttpClient
     {
         $client = new HttpClient('craftcms');
-        $client->setAuth('basic', ['username' => getenv('ZENDESK_USERNAME'), 'token' => getenv('ZENDESK_TOKEN')]);
+        $client->setAuth(Auth::BASIC, [
+            'username' => getenv('ZENDESK_USERNAME'),
+            'token' => getenv('ZENDESK_TOKEN'),
+        ]);
         return $client;
     }
 }
