@@ -55,9 +55,7 @@ class ZendeskController extends BaseApiController
     {
         return Craft::createGuzzleClient([
             'base_uri' => 'https://craftcms.zendesk.com/api/v2/',
-            'headers' => [
-                'Authorization' => 'Basic ' . base64_encode(getenv('ZENDESK_AUTH')),
-            ],
+            'auth' => [getenv('ZENDESK_USERNAME'), getenv('ZENDESK_PASSWORD')],
         ]);
     }
 }
