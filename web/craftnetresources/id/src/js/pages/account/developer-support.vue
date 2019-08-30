@@ -2,7 +2,7 @@
     <div>
         <div class="text-center">
             <h1>Choose Your Developer Support Plan</h1>
-            <p class="-mt-2"><a href="https://craftcms.com/contact">Learn more about Craft support options</a></p>
+            <p class="-mt-2"><a href="https://craftcms.com/support-services">Learn more about Craft support options</a></p>
         </div>
 
         <template v-if="loading">
