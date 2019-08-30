@@ -53,8 +53,6 @@
 </template>
 
 <script>
-    import {mapGetters} from 'vuex'
-
     import helpers from '../../mixins/helpers'
 
     export default {
@@ -63,10 +61,6 @@
         mixins: [helpers],
 
         computed: {
-            ...mapGetters({
-                currentPlanHandle: 'developerSupport/currentPlanHandle',
-            }),
-
             subscriptionInfoPlan() {
                 return this.$store.getters['developerSupport/subscriptionInfoPlan'](this.plan.handle)
             },
