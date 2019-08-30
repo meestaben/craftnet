@@ -50,6 +50,10 @@ const state = {
  * Getters
  */
 const getters = {
+    currentPlan(state, getters) {
+        return state.plans.find(p => p.handle === getters.currentPlanHandle)
+    },
+
     currentPlanHandle(state) {
         if (!state.subscriptionInfo) {
             return null

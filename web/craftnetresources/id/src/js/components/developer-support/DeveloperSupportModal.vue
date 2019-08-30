@@ -99,18 +99,12 @@
                 selectedPlanHandle: state => state.developerSupport.selectedPlanHandle,
                 card: state => state.stripe.card,
                 showModal: state => state.developerSupport.showModal,
-                plans: state => state.developerSupport.plans,
-                subscriptionInfo: state => state.developerSupport.subscriptionInfo,
             }),
 
             ...mapGetters({
                 selectedPlan: 'developerSupport/selectedPlan',
-                currentPlanHandle: 'developerSupport/currentPlanHandle',
+                currentPlan: 'developerSupport/currentPlan',
             }),
-
-            currentPlan() {
-                return this.plans.find(p => p.handle === this.currentPlanHandle)
-            },
 
             subscriptionInfoPlan() {
                 return this.$store.getters['developerSupport/subscriptionInfoPlan'](this.selectedPlanHandle)
