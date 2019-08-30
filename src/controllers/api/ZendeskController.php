@@ -3,6 +3,9 @@
 namespace craftnet\controllers\api;
 
 use Craft;
+use craft\commerce\elements\Subscription;
+use craft\elements\User;
+use craftnet\controllers\id\DeveloperSupportController;
 use yii\web\BadRequestHttpException;
 use Zendesk\API\HttpClient;
 use Zendesk\API\Utilities\Auth;
@@ -17,15 +20,22 @@ class ZendeskController extends BaseApiController
         $this->_validateSecret();
         $payload = $this->getPayload('zendesk-create-ticket');
 
-        // See if the the email is on a paid plan
-        // ...
+        $user = User::find()->email($payload->email)->one();
+        $tags = [];
 
-        if (true) {
-            $tag = 'pro';
+        // See if the the user is on a paid plan
+        if ($user) {
+            if (Subscription::find()->plan(DeveloperSupportController::PLAN_PREMIUM)->userId($user->id)->isExpired(false)->one()) {
+                $tag[] = 'premium';
+            } else  if (Subscription::find()->plan(DeveloperSupportController::PLAN_PRO)->userId($user->id)->isExpired(false)->one()) {
+                $tag[] = 'pro';
+            }
+        }
 
+        if (!empty($tags)) {
             $this->_client()->tickets()->update($payload->id, [
                 'priority' => 'normal',
-                'tags' => [$tag],
+                'tags' => $tags,
             ]);
         }
 
