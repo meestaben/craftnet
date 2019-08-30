@@ -40,6 +40,15 @@
                                 <btn kind="primary" @click="$emit('reactivateSubscription', subscriptionInfoSubscriptionData.uid)">Reactivate</btn>
                                 <p class="mt-4">Expires on {{subscriptionInfoSubscriptionData.expiringDate}}.</p>
                             </template>
+                            <template v-else-if="subscriptionInfoSubscriptionData.status === 'upcoming'">
+                                <p class="mt-4">
+                                    Starts on [date].
+                                </p>
+
+                                <div class="mt-2">
+                                    <a @click.prevent="$emit('cancelSubscription')">Cancel subscription</a>
+                                </div>
+                            </template>
                         </template>
                     </div>
 
