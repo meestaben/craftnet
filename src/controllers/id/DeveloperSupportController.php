@@ -210,7 +210,7 @@ class DeveloperSupportController extends Controller
                 $trialEndTime = $premiumSubscription->getSubscriptionData()['current_period_end'];
                 $subscriptionForm->trialEnd = $trialEndTime;
 
-                $subscriptionService->createSubscription($this->_user, $commerce->getPlans()->getPlanByHandle(self::PLAN_PRO), $gateway->getSubscriptionFormModel());
+                $subscriptionService->createSubscription($this->_user, $commerce->getPlans()->getPlanByHandle(self::PLAN_PRO), $subscriptionForm);
                 break;
 
             case self::PLAN_PREMIUM:
