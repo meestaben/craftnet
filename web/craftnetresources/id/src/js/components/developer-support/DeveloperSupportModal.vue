@@ -147,12 +147,12 @@
                 this.$store.dispatch('developerSupport/subscribe', this.selectedPlanHandle)
                     .then(() => {
                         this.loading = false
-                        this.$store.dispatch('app/displayNotice', 'Support plan switched to ' + this.selectedPlanHandle + '.')
+                        this.$store.dispatch('app/displayNotice', 'Subscribed to ' + this.selectedPlanHandle + ' plan.')
                         this.closeModal()
                     })
                     .catch((error) => {
                         this.loading = false
-                        const errorMessage = error.response && error.response.data.error ? error.response.data.error : (error ? error : 'Couldn’t switch support plan.')
+                        const errorMessage = error.response && error.response.data.error ? error.response.data.error : (error ? error : 'Couldn’t subscribe to support plan.')
                         this.$store.dispatch('app/displayError', errorMessage)
                         this.closeModal()
                     })
