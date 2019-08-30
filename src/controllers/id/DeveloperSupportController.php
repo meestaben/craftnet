@@ -85,6 +85,18 @@ class DeveloperSupportController extends Controller
         $subscriptionUid = Craft::$app->getRequest()->getRequiredBodyParam('subscription');
         $subscription = Subscription::find()->userId($this->_user->id)->uid($subscriptionUid)->one();
 
+        // If re-activating Premium, cancel any pro subscriptions.
+        if ($subscription->getPlan()->handle === self::PLAN_PREMIUM) {
+            $proSubscription = Subscription::find()->plan(self::PLAN_PRO)->userId($this->_user->id)->isExpired(false)->one();
+
+            if ($proSubscription) {
+                /** @var CancelSubscription $cancelForm */
+                $cancelForm = $subscription->getGateway()->getCancelSubscriptionFormModel();
+                $cancelForm->cancelImmediately = true;
+                Commerce::getInstance()->getSubscriptions()->cancelSubscription($proSubscription, $cancelForm);
+            }
+        }
+
         if ($subscription) {
             Commerce::getInstance()->getSubscriptions()->reactivateSubscription($subscription);
         }
