@@ -1,5 +1,5 @@
 <template>
-    <modal :show.sync="showModal" modal-type="wide">
+    <modal :show.sync="showModal" modal-type="wide" @background-click="cancel">
         <template v-if="selectedPlan" slot="body">
             <template v-if="subscriptionMode === 'subscribe'">
                 <h2>Subscribe to this support plan</h2>
@@ -43,7 +43,7 @@
             </table>
 
             <div>
-                <btn ref="cancelBtn" @click="cancel()">Cancel</btn>
+                <btn ref="cancelBtn" @click="cancel">Cancel</btn>
 
                 <template v-if="subscriptionMode === 'subscribe'">
                     <btn  ref="submitBtn" kind="primary" :disabled="!card" @click="subscribePlan()">
