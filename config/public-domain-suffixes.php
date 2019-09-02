@@ -21,7 +21,6 @@ return [
     'ru.com',
     'sa.com',
     'se.net',
-    'ue.no',
     'uk.com',
     'uk.net',
     'us.com',
