@@ -313,7 +313,7 @@ class DeveloperSupportController extends Controller
             self::PLAN_PREMIUM => $premiumData,
         ];
 
-        if ($subscriptionData[self::PLAN_PRO]['status'] === 'active' && $subscriptionData[self::PLAN_PREMIUM]['status'] === 'inactive') {
+        if (in_array($subscriptionData[self::PLAN_PRO]['status'], ['active', 'expiring'], true) && $subscriptionData[self::PLAN_PREMIUM]['status'] === 'inactive') {
             $planData[self::PLAN_PREMIUM]['cost']['switch'] = $proSubscription->getGateway()->previewSwitchCost($proSubscription, $premiumPlan);
         }
 
