@@ -55,7 +55,7 @@
                         <template v-if="selectedPlan.price > currentPlan.price">
                             Upgrade plan
                         </template>
-                        <template>
+                        <template v-else>
                             Switch plan
                         </template>
                     </btn>
