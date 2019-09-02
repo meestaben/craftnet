@@ -219,15 +219,20 @@ class DeveloperSupportController extends Controller
                     break;
                 }
 
-                // Pro must exist and be active.
-                if (!$proSubscription && $proSubscription->getSubscriptionData()['status'] === 'active') {
+                // Pro must exist and be active or expiring
+                if (!($proSubscription && in_array($proSubscription->getSubscriptionData()['status'], ['active', 'expiring'], true))) {
                     break;
                 }
 
                 $switchPlansForm = $gateway->getSwitchPlansFormModel();
                 $switchPlansForm->prorate = true;
                 $switchPlansForm->billingCycleAnchor = 'now';
-                $subscriptionService->switchSubscriptionPlan($proSubscription, $commerce->getPlans()->getPlanByHandle(self::PLAN_PREMIUM), $switchPlansForm);
+                $switchResult = $subscriptionService->switchSubscriptionPlan($proSubscription, $commerce->getPlans()->getPlanByHandle(self::PLAN_PREMIUM), $switchPlansForm);
+
+                // If this was an expiring pro subscription, reactivate it.
+                if ($switchResult && $proSubscription->getSubscriptionData()['cancel_at_period_end'] == true) {
+                    Commerce::getInstance()->getSubscriptions()->reactivateSubscription($proSubscription);
+                }
 
                 break;
         }
