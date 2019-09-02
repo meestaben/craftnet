@@ -67,7 +67,7 @@ class DeveloperSupportController extends Controller
         if ($subscription) {
             /** @var CancelSubscription $cancelForm */
             $cancelForm = $subscription->getGateway()->getCancelSubscriptionFormModel();
-            $cancelForm->cancelImmediately = false;
+            $cancelForm->cancelImmediately = $subscription->getSubscriptionData()['status'] === 'trialing';
 
             Commerce::getInstance()->getSubscriptions()->cancelSubscription($subscription, $cancelForm);
         }
