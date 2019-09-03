@@ -158,7 +158,7 @@ class PaymentsController extends CartsController
 
         // If the request is anonymous, we still have to create a customer so that
         // we can pass the source as a payment method. Even if it's sort of temporary
-        if (($user = Craft::$app->getUser()->getIdentity(false)) === null) {
+        if ((($user = Craft::$app->getUser()->getIdentity(false)) === null) || !$payload->makePrimary) {
 
             $cart = $this->getCart($payload->orderNumber);
             $address = $cart->getBillingAddress();
@@ -195,11 +195,6 @@ class PaymentsController extends CartsController
             }
         }
 
-        // if they don't want to make this their new primary card, then just checkout as a guest
-        if (empty($payload->makePrimary)) {
-            return;
-        }
-
         // delete any existing payment sources
         // todo: remove this if we ever add support for multiple cards
         foreach ($existingPaymentSources as $paymentSource) {
@@ -215,7 +210,7 @@ class PaymentsController extends CartsController
         $paymentMethod = PaymentMethod::retrieve($paymentForm->paymentMethodId);
         $stripeResponse = $paymentMethod->attach(['customer' => $stripeCustomer->id]);
 
-        // set it as the customer default for ubscriptions
+        // set it as the customer default for subscriptions
         $stripeCustomer->invoice_settings = [
             'default_payment_method' => $paymentForm->paymentMethodId
         ];
