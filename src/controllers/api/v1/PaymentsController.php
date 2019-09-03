@@ -8,13 +8,13 @@ use craft\commerce\errors\PaymentSourceException;
 use craft\commerce\models\PaymentSource;
 use craft\commerce\models\Transaction;
 use craft\commerce\Plugin as Commerce;
-use craft\commerce\stripe\gateways\Gateway;
-use craft\commerce\stripe\gateways\Gateway as StripeGateway;
-use craft\commerce\stripe\models\forms\Payment;
+use craft\commerce\stripe\gateways\PaymentIntents as StripeGateway;
+use craft\commerce\stripe\models\forms\payment\PaymentIntent as PaymentForm;
 use craft\commerce\stripe\Plugin as Stripe;
 use craftnet\errors\ValidationException;
 use Stripe\Customer as StripeCustomer;
 use Stripe\Error\Base as StripeError;
+use Stripe\PaymentMethod;
 use yii\base\Exception;
 use yii\base\UserException;
 use yii\web\BadRequestHttpException;
@@ -114,7 +114,7 @@ class PaymentsController extends CartsController
             $gateway = $commerce->getGateways()->getGatewayById(getenv('STRIPE_GATEWAY_ID'));
 
             // pay
-            /** @var Payment $paymentForm */
+            /** @var PaymentForm $paymentForm */
             $paymentForm = $gateway->getPaymentFormModel();
 
             try {
@@ -142,27 +142,51 @@ class PaymentsController extends CartsController
      * Populates a Stripe payment form from the payload.
      *
      * @param \stdClass $payload
-     * @param Gateway $gateway
-     * @param Payment $paymentForm
+     * @param StripeGateway $gateway
+     * @param PaymentForm $paymentForm
      * @throws PaymentSourceException
      */
-    private function _populatePaymentForm(\stdClass $payload, Gateway $gateway, Payment $paymentForm)
+    private function _populatePaymentForm(\stdClass $payload, StripeGateway $gateway, PaymentForm $paymentForm)
     {
         // use the payload's token by default
-        $paymentForm->token = $payload->token;
-
-        // if the request is anonymous, we're done
-        if (($user = Craft::$app->getUser()->getIdentity(false)) === null) {
-            return;
-        }
+        $paymentForm->paymentMethodId = $payload->token;
 
         $commerce = Commerce::getInstance();
         $stripe = Stripe::getInstance();
         $paymentSourcesService = $commerce->getPaymentSources();
         $customersService = $stripe->getCustomers();
 
-        // see if the token is for an existing Stripe source
+        // If the request is anonymous, we still have to create a customer so that
+        // we can pass the source as a payment method. Even if it's sort of temporary
+        if (($user = Craft::$app->getUser()->getIdentity(false)) === null) {
+
+            $cart = $this->getCart($payload->orderNumber);
+            $address = $cart->getBillingAddress();
+
+            $customerData = [
+                'address' => [
+                    'line1' => $address->address1,
+                    'line2' => $address->address2,
+                    'country' => $address->getCountry()->iso,
+                    'city' => $address->city,
+                    'postal_code' => $address->zipCode,
+                    'state' => $address->getState(),
+                ],
+                'name' => $address->getFullName(),
+                'description' => 'Guest customer created for order #' . $payload->orderNumber,
+                'email' => $cart->getEmail(),
+                'source' => $payload->token,
+            ];
+
+            $customer = StripeCustomer::create($customerData);
+            $paymentForm->customer = $customer->id;
+
+            return;
+        }
+
+        // Otherwise, see if the token is for an existing Stripe source
         $existingPaymentSources = $paymentSourcesService->getAllGatewayPaymentSourcesByUserId($gateway->id, $user->id);
+
         foreach ($existingPaymentSources as $paymentSource) {
             if ($paymentSource->token === $payload->token) {
                 $customer = $customersService->getCustomer($gateway->id, $user);
@@ -187,13 +211,14 @@ class PaymentsController extends CartsController
         /** @var StripeCustomer $stripeCustomer */
         $stripeCustomer = StripeCustomer::retrieve($customer->reference);
 
-        // create a new source
-        $stripeResponse = $stripeCustomer->sources->create([
-            'source' => $payload->token
-        ]);
+        // Attach the payment method
+        $paymentMethod = PaymentMethod::retrieve($paymentForm->paymentMethodId);
+        $stripeResponse = $paymentMethod->attach(['customer' => $stripeCustomer->id]);
 
-        // set it as the customer default
-        $stripeCustomer->default_source = $stripeResponse->id;
+        // set it as the customer default for ubscriptions
+        $stripeCustomer->invoice_settings = [
+            'default_payment_method' => $paymentForm->paymentMethodId
+        ];
         $stripeCustomer->save();
 
         // save it for Commerce
@@ -206,7 +231,7 @@ class PaymentsController extends CartsController
         ]);
 
         if (!$paymentSourcesService->savePaymentSource($paymentSource)) {
-            throw new PaymentSourceException('Could not create the payment source: ' . implode(', ', $paymentSource->getErrorSummary(true)));
+            throw new PaymentSourceException('Could not create the payment method: ' . implode(', ', $paymentSource->getErrorSummary(true)));
         }
 
         // update the payment token and customer
