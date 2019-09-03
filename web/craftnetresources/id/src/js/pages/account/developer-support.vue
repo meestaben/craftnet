@@ -2,7 +2,7 @@
     <div>
         <div class="text-center">
             <h1>Choose Your Developer Support Plan</h1>
-            <p class="-mt-2"><a href="https://craftcms.com/contact">Learn more about Craft support options</a></p>
+            <p class="-mt-2"><a href="https://craftcms.com/support-services">Learn more about Craft support options</a></p>
         </div>
 
         <template v-if="loading">
@@ -21,7 +21,13 @@
             <div class="mx-auto max-w-2xl">
                 <div class="lg:flex mt-8 -mx-4">
                     <template v-for="(plan, planKey) in plans">
-                        <plan :plan="plan" :key="'plan-'+planKey" @selectPlan="onSelectPlan" @cancelSubscription="onCancelSubscription" @reactivateSubscription="onReactivateSubscription"></plan>
+                        <plan
+                                :plan="plan"
+                                :key="'plan-'+planKey"
+                                @selectPlan="showSubscribeModal"
+                                @cancelSubscription="showCancelSubscriptionModal"
+                                @reactivateSubscription="showReactivateSubscriptionModal"
+                        ></plan>
                     </template>
                 </div>
             </div>
@@ -33,22 +39,53 @@
                 </p>
             </div>
         </template>
+
+        <!-- Modals -->
+        <subscribe-modal
+                :show="showingModal === 'subscribe'"
+                :selectedPlanHandle="selectedPlanHandle"
+                @cancel="hideSubscribeModal"
+                @close="hideSubscribeModal"
+        ></subscribe-modal>
+
+        <cancel-subscription-modal
+                :show="showingModal === 'cancelSubscription'"
+                :subscriptionUid="subscriptionUid"
+                @cancel="hideCancelSubscriptionModal"
+                @close="hideCancelSubscriptionModal"
+        ></cancel-subscription-modal>
+
+        <reactivate-subscription-modal
+                :show="showingModal === 'reactivateSubscription'"
+                :subscriptionUid="subscriptionUid"
+                @cancel="hideReactivateSubscriptionModal"
+                @close="hideReactivateSubscriptionModal"
+        ></reactivate-subscription-modal>
     </div>
 </template>
 
 <script>
     import {mapState, mapGetters} from 'vuex'
     import Plan from '../../components/developer-support/Plan'
+    import SubscribeModal from '../../components/developer-support/modals/SubscribeModal'
+    import CancelSubscriptionModal from '../../components/developer-support/modals/CancelSubscriptionModal'
+    import ReactivateSubscriptionModal from '../../components/developer-support/modals/ReactivateSubscriptionModal'
 
     export default {
         components: {
             Plan,
+            SubscribeModal,
+            CancelSubscriptionModal,
+            ReactivateSubscriptionModal,
         },
 
         data() {
             return {
                 error: null,
                 loading: false,
+                showingModal: null,
+                subscriptionUid: null,
+                selectedPlanHandle: null,
             }
         },
 
@@ -66,52 +103,43 @@
         },
 
         methods: {
-            onSelectPlan(plan) {
-                this.$store.commit('developerSupport/updateSelectedPlan', plan.handle)
-                this.$store.commit('developerSupport/updateShowModal', true)
+            showSubscribeModal(plan) {
+                this.selectedPlanHandle = plan.handle
+                this.showModal('subscribe')
             },
 
-            onCancelSubscription() {
-                if (!window.confirm("Are you sure you want to cancel your subscription?")) {
-                    return false
-                }
-
-                const currentSubscription = this.subscriptionInfoSubscriptionData(this.currentPlanHandle)
-
-                this.loading = true
-
-                const defaultPlanHandle = 'basic'
-
-                this.$store.dispatch('developerSupport/cancelSubscription', currentSubscription.uid)
-                    .then(() => {
-                        this.loading = false
-                        this.$emit('close')
-                        this.$store.dispatch('app/displayNotice', 'Support plan switched to ' + defaultPlanHandle + '.')
-                    })
-                    .catch((error) => {
-                        this.loading = false
-                        this.$emit('close')
-                        const errorMessage = error ? error : 'Couldn’t switch support plan.'
-                        this.$store.dispatch('app/displayError', errorMessage)
-                    })
+            hideSubscribeModal() {
+                this.selectedPlanHandle = null
+                this.hideModal()
             },
 
-            onReactivateSubscription(subscriptionUid) {
-                this.loading = true
-                
-                this.$store.dispatch('developerSupport/reactivateSubscription', subscriptionUid)
-                    .then(() => {
-                        this.loading = false
-                        this.$emit('close')
-                        this.$store.dispatch('app/displayNotice', 'Subscription reactivated.')
-                    })
-                    .catch((error) => {
-                        this.loading = false
-                        this.$emit('close')
-                        const errorMessage = error ? error : 'Couldn’t reactivate subscription.'
-                        this.$store.dispatch('app/displayError', errorMessage)
-                    })
-            }
+            showCancelSubscriptionModal(subscriptionUid) {
+                this.subscriptionUid = subscriptionUid
+                this.showModal('cancelSubscription')
+            },
+
+            hideCancelSubscriptionModal() {
+                this.subscriptionUid = null
+                this.hideModal()
+            },
+
+            showReactivateSubscriptionModal(subscriptionUid) {
+                this.subscriptionUid = subscriptionUid
+                this.showModal('reactivateSubscription')
+            },
+
+            hideReactivateSubscriptionModal() {
+                this.subscriptionUid = null
+                this.hideModal()
+            },
+
+            showModal(modalHandle) {
+                this.showingModal = modalHandle
+            },
+
+            hideModal() {
+                this.showingModal = null
+            },
         },
 
         mounted() {
@@ -122,7 +150,7 @@
                     this.loading = false
                 })
                 .catch((error) => {
-                    const errorMessage = error.response.data && error.response.data.error ? error.response.data.error : 'Couldn’t get subscription info.'
+                    const errorMessage = error ? error : 'Couldn’t get subscription info.'
                     this.error = errorMessage
                     this.loading = false
                 })

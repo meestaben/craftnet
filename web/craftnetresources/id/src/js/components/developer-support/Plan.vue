@@ -33,12 +33,21 @@
                                     Next billing date: {{subscriptionInfoSubscriptionData.nextBillingDate}}
                                 </p>
                                 <div class="mt-2">
-                                    <a @click.prevent="$emit('cancelSubscription')">Cancel subscription</a>
+                                    <a @click.prevent="$emit('cancelSubscription', subscriptionInfoSubscriptionData.uid)">Cancel subscription</a>
                                 </div>
                             </template>
                             <template v-else-if="subscriptionInfoSubscriptionData.status === 'expiring'">
                                 <btn kind="primary" @click="$emit('reactivateSubscription', subscriptionInfoSubscriptionData.uid)">Reactivate</btn>
                                 <p class="mt-4">Expires on {{subscriptionInfoSubscriptionData.expiringDate}}.</p>
+                            </template>
+                            <template v-else-if="subscriptionInfoSubscriptionData.status === 'upcoming'">
+                                <p class="mt-4">
+                                    Starts on {{subscriptionInfoSubscriptionData.startingDate}}.
+                                </p>
+
+                                <div class="mt-2">
+                                    <a @click.prevent="$emit('cancelSubscription', subscriptionInfoSubscriptionData.uid)">Cancel subscription</a>
+                                </div>
                             </template>
                         </template>
                     </div>
@@ -53,8 +62,6 @@
 </template>
 
 <script>
-    import {mapGetters} from 'vuex'
-
     import helpers from '../../mixins/helpers'
 
     export default {
@@ -63,10 +70,6 @@
         mixins: [helpers],
 
         computed: {
-            ...mapGetters({
-                currentPlanHandle: 'developerSupport/currentPlanHandle',
-            }),
-
             subscriptionInfoPlan() {
                 return this.$store.getters['developerSupport/subscriptionInfoPlan'](this.plan.handle)
             },

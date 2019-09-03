@@ -1,5 +1,5 @@
 <template>
-    <modal :show="showGlobalModal" @background-click="close()">
+    <modal :show="showGlobalModal" @close="close()">
         <template slot="body">
             <component v-if="globalModalComponent" :is="globalModalComponent" @close="close()"></component>
         </template>

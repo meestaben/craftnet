@@ -1,6 +1,6 @@
 <template>
     <transition :name="transition" @enter="$emit('enter')" @after-enter="$emit('after-enter')" @leave="$emit('leave')">
-        <div v-if="show" class="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" @click="onBackgroundClick">
+        <div v-if="show" class="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" @click="onBackgroundClick" @keydown.esc="$emit('close')">
             <div class="modal-dialog" :class="modalTypeClass" role="document">
                 <div class="modal-content">
                     <div v-if="$slots.header" class="modal-header">
@@ -37,7 +37,7 @@
         methods: {
             onBackgroundClick($ev) {
                 if ($ev.target.classList.contains('modal')) {
-                    this.$emit('background-click')
+                    this.$emit('close')
                 }
             }
         }

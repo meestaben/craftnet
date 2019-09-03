@@ -8,9 +8,7 @@ Vue.use(Vuex)
  * State
  */
 const state = {
-    showModal: false,
     subscriptionInfo: null,
-    selectedPlanHandle: null,
     plans: [
         {
             icon: 'support-plan-basic',
@@ -50,6 +48,10 @@ const state = {
  * Getters
  */
 const getters = {
+    currentPlan(state, getters) {
+        return state.plans.find(p => p.handle === getters.currentPlanHandle)
+    },
+
     currentPlanHandle(state) {
         if (!state.subscriptionInfo) {
             return null
@@ -57,21 +59,22 @@ const getters = {
 
         const subscriptionData = state.subscriptionInfo.subscriptionData
 
+        // Check if we have an active plan
         for(let planHandle in subscriptionData) {
             if (subscriptionData[planHandle].status === 'active') {
                 return planHandle
             }
         }
 
-        return 'basic'
-    },
-
-    selectedPlan(state) {
-        if (!state.selectedPlanHandle) {
-            return null
+        // Check if we have an expiring plan
+        for(let planHandle in subscriptionData) {
+            if (subscriptionData[planHandle].status === 'expiring') {
+                return planHandle
+            }
         }
 
-        return state.plans.find(plan => plan.handle === state.selectedPlanHandle)
+        // Otherwise assume we're on basic
+        return 'basic'
     },
 
     subscriptionInfoPlan(state) {
@@ -113,6 +116,10 @@ const actions = {
     getSubscriptionInfo({commit}) {
         return developerSupportApi.getSubscriptionInfo()
             .then((response) => {
+                if (response.data.error) {
+                    throw response.data.error
+                }
+
                 commit('updateSubscriptionInfo', response.data)
             })
     },
@@ -155,16 +162,8 @@ const actions = {
  * Mutations
  */
 const mutations = {
-    updateSelectedPlan(state, planHandle){
-        state.selectedPlanHandle = planHandle
-    },
-
     updateSubscriptionInfo(state, subscriptionInfo){
         state.subscriptionInfo = subscriptionInfo
-    },
-
-    updateShowModal(state, showModal){
-        state.showModal = showModal
     },
 }
 

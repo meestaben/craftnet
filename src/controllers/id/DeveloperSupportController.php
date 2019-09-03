@@ -67,7 +67,7 @@ class DeveloperSupportController extends Controller
         if ($subscription) {
             /** @var CancelSubscription $cancelForm */
             $cancelForm = $subscription->getGateway()->getCancelSubscriptionFormModel();
-            $cancelForm->cancelImmediately = false;
+            $cancelForm->cancelImmediately = $subscription->getSubscriptionData()['status'] === 'trialing';
 
             Commerce::getInstance()->getSubscriptions()->cancelSubscription($subscription, $cancelForm);
         }
@@ -84,6 +84,18 @@ class DeveloperSupportController extends Controller
     {
         $subscriptionUid = Craft::$app->getRequest()->getRequiredBodyParam('subscription');
         $subscription = Subscription::find()->userId($this->_user->id)->uid($subscriptionUid)->one();
+
+        // If re-activating Premium, cancel any pro subscriptions.
+        if ($subscription->getPlan()->handle === self::PLAN_PREMIUM) {
+            $proSubscription = Subscription::find()->plan(self::PLAN_PRO)->userId($this->_user->id)->isExpired(false)->one();
+
+            if ($proSubscription) {
+                /** @var CancelSubscription $cancelForm */
+                $cancelForm = $subscription->getGateway()->getCancelSubscriptionFormModel();
+                $cancelForm->cancelImmediately = true;
+                Commerce::getInstance()->getSubscriptions()->cancelSubscription($proSubscription, $cancelForm);
+            }
+        }
 
         if ($subscription) {
             Commerce::getInstance()->getSubscriptions()->reactivateSubscription($subscription);
@@ -198,7 +210,7 @@ class DeveloperSupportController extends Controller
                 $trialEndTime = $premiumSubscription->getSubscriptionData()['current_period_end'];
                 $subscriptionForm->trialEnd = $trialEndTime;
 
-                $subscriptionService->createSubscription($this->_user, $commerce->getPlans()->getPlanByHandle(self::PLAN_PRO), $gateway->getSubscriptionFormModel());
+                $subscriptionService->createSubscription($this->_user, $commerce->getPlans()->getPlanByHandle(self::PLAN_PRO), $subscriptionForm);
                 break;
 
             case self::PLAN_PREMIUM:
@@ -207,15 +219,20 @@ class DeveloperSupportController extends Controller
                     break;
                 }
 
-                // Pro must exist and be active.
-                if (!$proSubscription && $proSubscription->getSubscriptionData()['status'] === 'active') {
+                // Pro must exist and be active or expiring
+                if (!($proSubscription && in_array($proSubscription->getSubscriptionData()['status'], ['active', 'expiring'], true))) {
                     break;
                 }
 
                 $switchPlansForm = $gateway->getSwitchPlansFormModel();
                 $switchPlansForm->prorate = true;
                 $switchPlansForm->billingCycleAnchor = 'now';
-                $subscriptionService->switchSubscriptionPlan($proSubscription, $commerce->getPlans()->getPlanByHandle(self::PLAN_PREMIUM), $switchPlansForm);
+                $switchResult = $subscriptionService->switchSubscriptionPlan($proSubscription, $commerce->getPlans()->getPlanByHandle(self::PLAN_PREMIUM), $switchPlansForm);
+
+                // If this was an expiring pro subscription, reactivate it.
+                if ($switchResult && $proSubscription->getSubscriptionData()['cancel_at_period_end'] == true) {
+                    Commerce::getInstance()->getSubscriptions()->reactivateSubscription($proSubscription);
+                }
 
                 break;
         }
@@ -301,7 +318,7 @@ class DeveloperSupportController extends Controller
             self::PLAN_PREMIUM => $premiumData,
         ];
 
-        if ($subscriptionData[self::PLAN_PRO]['status'] === 'active' && $subscriptionData[self::PLAN_PREMIUM]['status'] === 'inactive') {
+        if (in_array($subscriptionData[self::PLAN_PRO]['status'], ['active', 'expiring'], true) && $subscriptionData[self::PLAN_PREMIUM]['status'] === 'inactive') {
             $planData[self::PLAN_PREMIUM]['cost']['switch'] = $proSubscription->getGateway()->previewSwitchCost($proSubscription, $premiumPlan);
         }
 

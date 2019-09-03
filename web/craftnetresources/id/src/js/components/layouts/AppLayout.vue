@@ -1,7 +1,6 @@
 <template>
     <div class="app">
         <renew-licenses-modal />
-        <developer-support-modal />
 
         <global-header :showingSidebar="showingSidebar" @toggleSidebar="toggleSidebar()"></global-header>
 
@@ -39,7 +38,6 @@
     import AppSidebar from '../AppSidebar'
     import StripeAccountAlert from '../StripeAccountAlert'
     import LicenseRenewAlert from '../LicenseRenewAlert'
-    import DeveloperSupportModal from '../developer-support/DeveloperSupportModal'
     import RenewLicensesModal from '../licenses/renew-licenses/RenewLicensesModal'
 
     export default {
@@ -48,7 +46,6 @@
             AppSidebar,
             StripeAccountAlert,
             LicenseRenewAlert,
-            DeveloperSupportModal,
             RenewLicensesModal,
         },
 
