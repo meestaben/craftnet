@@ -1,5 +1,5 @@
 <template>
-    <modal :show.sync="show" modal-type="wide" @background-click="$emit('close')">
+    <modal :show.sync="show" modal-type="wide" @close="$emit('close')">
         <template v-if="selectedPlan" slot="body">
             <template v-if="subscriptionMode === 'subscribe'">
                 <h2>Subscribe to this support plan</h2>
@@ -90,7 +90,9 @@
             show(show) {
                 if (show) {
                     this.$nextTick(() => {
-                        this.$refs.submitBtn.$el.focus()
+                        if (this.$refs.submitBtn) {
+                            this.$refs.submitBtn.$el.focus()
+                        }
                     })
                 }
             }

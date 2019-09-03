@@ -1,5 +1,5 @@
 <template>
-    <modal :show.sync="show" @background-click="$emit('cancel')">
+    <modal :show.sync="show" @close="$emit('cancel')">
         <template slot="body">
             <h2>Reactivate your subscription</h2>
             <p>Are you sure you want to reactivate your subscription?</p>
