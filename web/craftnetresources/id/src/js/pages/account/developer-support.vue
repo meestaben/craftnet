@@ -21,7 +21,13 @@
             <div class="mx-auto max-w-2xl">
                 <div class="lg:flex mt-8 -mx-4">
                     <template v-for="(plan, planKey) in plans">
-                        <plan :plan="plan" :key="'plan-'+planKey" @selectPlan="onSelectPlan" @cancelSubscription="cancelSubscriptionModalShow" @reactivateSubscription="onReactivateSubscription"></plan>
+                        <plan
+                                :plan="plan"
+                                :key="'plan-'+planKey"
+                                @selectPlan="onSelectPlan"
+                                @cancelSubscription="cancelSubscriptionModalShow"
+                                @reactivateSubscription="reactivateSubscriptionModalShow"
+                        ></plan>
                     </template>
                 </div>
             </div>
@@ -41,18 +47,27 @@
                 @cancel="cancelSubscriptionModalHide"
                 @close="cancelSubscriptionModalHide"
         ></cancel-subscription-modal>
+
+        <reactivate-subscription-modal
+                :show="showReactivateSubscriptionModal"
+                :subscriptionUid="subscriptionUid"
+                @cancel="reactivateSubscriptionModalHide"
+                @close="reactivateSubscriptionModalHide"
+        ></reactivate-subscription-modal>
     </div>
 </template>
 
 <script>
     import {mapState, mapGetters} from 'vuex'
     import Plan from '../../components/developer-support/Plan'
-    import CancelSubscriptionModal from '../../components/developer-support/modals/CancelSubscriptionModal';
+    import CancelSubscriptionModal from '../../components/developer-support/modals/CancelSubscriptionModal'
+    import ReactivateSubscriptionModal from '../../components/developer-support/modals/ReactivateSubscriptionModal'
 
     export default {
         components: {
-            CancelSubscriptionModal,
             Plan,
+            CancelSubscriptionModal,
+            ReactivateSubscriptionModal,
         },
 
         data() {
@@ -62,6 +77,7 @@
 
                 subscriptionUid: null,
                 showCancelSubscriptionModal: false,
+                showReactivateSubscriptionModal: false,
             }
         },
 
@@ -93,22 +109,14 @@
                 this.showCancelSubscriptionModal = false
             },
 
-            onReactivateSubscription(subscriptionUid) {
-                this.loading = true
-                
-                this.$store.dispatch('developerSupport/reactivateSubscription', subscriptionUid)
-                    .then(() => {
-                        this.loading = false
-                        this.$emit('close')
-                        this.$store.dispatch('app/displayNotice', 'Subscription reactivated.')
-                    })
-                    .catch((error) => {
-                        this.loading = false
-                        this.$emit('close')
-                        const errorMessage = error ? error : 'Couldn’t reactivate subscription.'
-                        this.$store.dispatch('app/displayError', errorMessage)
-                    })
-            }
+            reactivateSubscriptionModalShow(subscriptionUid) {
+                this.subscriptionUid = subscriptionUid
+                this.showReactivateSubscriptionModal = true
+            },
+
+            reactivateSubscriptionModalHide() {
+                this.showReactivateSubscriptionModal = false
+            },
         },
 
         mounted() {
