@@ -189,10 +189,6 @@
                 this.$router.push({path: '/account/billing'})
                 this.$emit('close')
             },
-
-            closeModal() {
-                this.$emit('close')
-            },
         },
     }
 </script>
