@@ -24,7 +24,7 @@
                         <plan
                                 :plan="plan"
                                 :key="'plan-'+planKey"
-                                @selectPlan="onSelectPlan"
+                                @selectPlan="subscribeModalShow"
                                 @cancelSubscription="cancelSubscriptionModalShow"
                                 @reactivateSubscription="reactivateSubscriptionModalShow"
                         ></plan>
@@ -41,6 +41,13 @@
         </template>
 
         <!-- Modals -->
+        <subscribe-modal
+                :show="showSubscribeModal"
+                :selectedPlanHandle="selectedPlanHandle"
+                @cancel="subscribeModalHide"
+                @close="subscribeModalHide"
+        ></subscribe-modal>
+
         <cancel-subscription-modal
                 :show="showCancelSubscriptionModal"
                 :subscriptionUid="subscriptionUid"
@@ -60,12 +67,14 @@
 <script>
     import {mapState, mapGetters} from 'vuex'
     import Plan from '../../components/developer-support/Plan'
+    import SubscribeModal from '../../components/developer-support/modals/SubscribeModal'
     import CancelSubscriptionModal from '../../components/developer-support/modals/CancelSubscriptionModal'
     import ReactivateSubscriptionModal from '../../components/developer-support/modals/ReactivateSubscriptionModal'
 
     export default {
         components: {
             Plan,
+            SubscribeModal,
             CancelSubscriptionModal,
             ReactivateSubscriptionModal,
         },
@@ -78,6 +87,9 @@
                 subscriptionUid: null,
                 showCancelSubscriptionModal: false,
                 showReactivateSubscriptionModal: false,
+
+                selectedPlanHandle: null,
+                showSubscribeModal: false,
             }
         },
 
@@ -95,9 +107,14 @@
         },
 
         methods: {
-            onSelectPlan(plan) {
-                this.$store.commit('developerSupport/updateSelectedPlan', plan.handle)
-                this.$store.commit('developerSupport/updateShowModal', true)
+            subscribeModalShow(plan) {
+                this.selectedPlanHandle = plan.handle
+                this.showSubscribeModal = true
+            },
+
+            subscribeModalHide() {
+                this.selectedPlanHandle = null
+                this.showSubscribeModal = false
             },
 
             cancelSubscriptionModalShow(subscriptionUid) {

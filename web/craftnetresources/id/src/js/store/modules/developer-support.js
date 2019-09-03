@@ -8,9 +8,7 @@ Vue.use(Vuex)
  * State
  */
 const state = {
-    showModal: false,
     subscriptionInfo: null,
-    selectedPlanHandle: null,
     plans: [
         {
             icon: 'support-plan-basic',
@@ -79,14 +77,6 @@ const getters = {
         return 'basic'
     },
 
-    selectedPlan(state) {
-        if (!state.selectedPlanHandle) {
-            return null
-        }
-
-        return state.plans.find(plan => plan.handle === state.selectedPlanHandle)
-    },
-
     subscriptionInfoPlan(state) {
         return (planHandle) => {
             if (!state.subscriptionInfo.plans[planHandle]) {
@@ -106,26 +96,6 @@ const getters = {
             return state.subscriptionInfo.subscriptionData[planHandle]
         }
     },
-
-    subscriptionMode(state, getters) {
-        const proSubscription = getters.subscriptionInfoSubscriptionData('pro')
-        const premiumSubscription = getters.subscriptionInfoSubscriptionData('premium')
-
-        switch (state.selectedPlanHandle) {
-            case 'pro':
-                if ((proSubscription.status === 'inactive' && premiumSubscription.status === 'inactive') || premiumSubscription.status === 'expiring') {
-                    return 'subscribe'
-                }
-                break
-            case 'premium':
-                if ((proSubscription.status === 'inactive' && premiumSubscription.status === 'inactive')) {
-                    return 'subscribe'
-                }
-                break
-        }
-
-        return 'switch'
-    }
 }
 
 /**
@@ -192,16 +162,8 @@ const actions = {
  * Mutations
  */
 const mutations = {
-    updateSelectedPlan(state, planHandle){
-        state.selectedPlanHandle = planHandle
-    },
-
     updateSubscriptionInfo(state, subscriptionInfo){
         state.subscriptionInfo = subscriptionInfo
-    },
-
-    updateShowModal(state, showModal){
-        state.showModal = showModal
     },
 }
 

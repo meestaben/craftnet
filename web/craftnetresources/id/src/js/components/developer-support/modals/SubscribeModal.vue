@@ -1,5 +1,5 @@
 <template>
-    <modal :show.sync="showModal" modal-type="wide" @background-click="cancel">
+    <modal :show.sync="show" modal-type="wide" @background-click="$emit('close')">
         <template v-if="selectedPlan" slot="body">
             <template v-if="subscriptionMode === 'subscribe'">
                 <h2>Subscribe to this support plan</h2>
@@ -43,15 +43,15 @@
             </table>
 
             <div>
-                <btn ref="cancelBtn" @click="cancel">Cancel</btn>
+                <btn ref="cancelBtn" :disabled="loading" @click="$emit('close')">Cancel</btn>
 
                 <template v-if="subscriptionMode === 'subscribe'">
-                    <btn  ref="submitBtn" kind="primary" :disabled="!card" @click="subscribePlan()">
+                    <btn  ref="submitBtn" kind="primary" :disabled="!card || loading" @click="subscribePlan()">
                         Subscribe to this plan
                     </btn>
                 </template>
                 <template v-else>
-                    <btn  ref="submitBtn" kind="primary" :disabled="!card" @click="switchPlan()">
+                    <btn  ref="submitBtn" kind="primary" :disabled="!card || loading" @click="switchPlan()">
                         <template v-if="selectedPlan.price > currentPlan.price">
                             Upgrade plan
                         </template>
@@ -71,9 +71,11 @@
 
 <script>
     import {mapState, mapGetters} from 'vuex'
-    import Modal from '../Modal'
+    import Modal from '../../Modal'
 
     export default {
+        props: ['show', 'selectedPlanHandle'],
+
         components: {
             Modal,
         },
@@ -85,7 +87,7 @@
         },
 
         watch: {
-            showModal(show) {
+            show(show) {
                 if (show) {
                     this.$nextTick(() => {
                         this.$refs.submitBtn.$el.focus()
@@ -96,27 +98,48 @@
 
         computed: {
             ...mapState({
-                selectedPlanHandle: state => state.developerSupport.selectedPlanHandle,
                 card: state => state.stripe.card,
-                showModal: state => state.developerSupport.showModal,
+                plans: state => state.developerSupport.plans,
             }),
 
             ...mapGetters({
-                selectedPlan: 'developerSupport/selectedPlan',
                 currentPlan: 'developerSupport/currentPlan',
-                subscriptionMode: 'developerSupport/subscriptionMode',
             }),
 
             subscriptionInfoPlan() {
                 return this.$store.getters['developerSupport/subscriptionInfoPlan'](this.selectedPlanHandle)
             },
+
+            selectedPlan() {
+                if (!this.selectedPlanHandle) {
+                    return null
+                }
+
+                return this.plans.find(plan => plan.handle === this.selectedPlanHandle)
+            },
+
+            subscriptionMode() {
+                const proSubscription = this.$store.getters['developerSupport/subscriptionInfoSubscriptionData']('pro')
+                const premiumSubscription = this.$store.getters['developerSupport/subscriptionInfoSubscriptionData']('premium')
+
+                switch (this.selectedPlanHandle) {
+                    case 'pro':
+                        if ((proSubscription.status === 'inactive' && premiumSubscription.status === 'inactive') || premiumSubscription.status === 'expiring') {
+                            return 'subscribe'
+                        }
+                        break
+                    case 'premium':
+                        if ((proSubscription.status === 'inactive' && premiumSubscription.status === 'inactive')) {
+                            return 'subscribe'
+                        }
+                        break
+                }
+
+                return 'switch'
+            }
         },
 
         methods: {
-            cancel() {
-                this.closeModal()
-            },
-
             switchPlan() {
                 if (!this.card) {
                     return null
@@ -128,13 +151,13 @@
                     .then(() => {
                         this.loading = false
                         this.$store.dispatch('app/displayNotice', 'Support plan switched to ' + this.selectedPlanHandle + '.')
-                        this.closeModal()
+                        this.$emit('close')
                     })
                     .catch((error) => {
                         this.loading = false
                         const errorMessage = error ? error : 'Couldn’t switch support plan.'
                         this.$store.dispatch('app/displayError', errorMessage)
-                        this.closeModal()
+                        this.$emit('close')
                     })
             },
 
@@ -149,26 +172,25 @@
                     .then(() => {
                         this.loading = false
                         this.$store.dispatch('app/displayNotice', 'Subscribed to ' + this.selectedPlanHandle + ' plan.')
-                        this.closeModal()
+                        this.$emit('close')
                     })
                     .catch((error) => {
                         this.loading = false
                         const errorMessage = error ? error : 'Couldn’t subscribe to support plan.'
                         this.$store.dispatch('app/displayError', errorMessage)
-                        this.closeModal()
+                        this.$emit('close')
                     })
             },
 
             goToBilling(ev) {
                 ev.preventDefault()
                 this.$router.push({path: '/account/billing'})
-                this.closeModal()
+                this.$emit('close')
             },
 
             closeModal() {
-                this.$store.commit('developerSupport/updateShowModal', false)
-                this.$store.commit('developerSupport/updateSelectedPlan', null)
-            }
+                this.$emit('close')
+            },
         },
     }
 </script>
