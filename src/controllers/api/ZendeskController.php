@@ -7,6 +7,7 @@ use craft\commerce\elements\Subscription;
 use craft\elements\User;
 use craft\helpers\Json;
 use craftnet\controllers\id\DeveloperSupportController;
+use yii\db\Expression;
 use yii\web\BadRequestHttpException;
 use Zendesk\API\HttpClient;
 use Zendesk\API\Utilities\Auth;
@@ -21,24 +22,33 @@ class ZendeskController extends BaseApiController
         $this->_validateSecret();
         $payload = $this->getPayload('zendesk-create-ticket');
 
-        $user = User::find()->email($payload->email)->one();
-        $tags = [];
+        $userId = User::find()
+            ->select(['id'])
+            ->andWhere(new Expression('lower([[email]]) = :email', [':email' => strtolower($payload->email)]))
+            ->asArray()
+            ->scalar();
+
+        // No user, no plan
+        if (!$userId) {
+            return '';
+        }
 
         // See if the the user is on a paid plan
-        if ($user) {
-            if (Subscription::find()->plan(DeveloperSupportController::PLAN_PREMIUM)->userId($user->id)->isExpired(false)->one()) {
-                $tag[] = 'premium';
-            } else if (Subscription::find()->plan(DeveloperSupportController::PLAN_PRO)->userId($user->id)->isExpired(false)->one()) {
-                $tag[] = 'pro';
-            }
+        if ($this->_checkPlan($userId, DeveloperSupportController::PLAN_PREMIUM)) {
+            $tag = 'premium';
+        } else if ($this->_checkPlan($userId, DeveloperSupportController::PLAN_PRO)) {
+            $tag = 'pro';
         }
 
-        if (!empty($tags)) {
-            $this->_client()->tickets()->update($payload->id, [
-                'priority' => 'normal',
-                'tags' => $tags,
-            ]);
+        if (!isset($tag)) {
+            return '';
         }
+
+        // Add the tag to the ticket
+        $this->_client()->tickets()->update($payload->id, [
+            'priority' => 'normal',
+            'tags' => array_merge($payload->tags, [$tag]),
+        ]);
 
         return '';
     }
@@ -54,6 +64,20 @@ class ZendeskController extends BaseApiController
             ->send();
 
         return '';
+    }
+
+    /**
+     * @param int $userId
+     * @param string $plan
+     * @return bool
+     */
+    private function _checkPlan(int $userId, string $plan): bool
+    {
+        return Subscription::find()
+            ->plan($plan)
+            ->userId($userId)
+            ->isExpired(false)
+            ->exists();
     }
 
     /**
