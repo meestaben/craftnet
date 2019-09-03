@@ -1,5 +1,5 @@
 <template>
-    <modal :show.sync="show" modal-type="wide" @close="$emit('close')">
+    <modal :show="show" modal-type="wide" @close="$emit('close')">
         <template v-if="selectedPlan" slot="body">
             <template v-if="subscriptionMode === 'subscribe'">
                 <h2>Subscribe to this support plan</h2>
