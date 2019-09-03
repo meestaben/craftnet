@@ -25,7 +25,7 @@
             </table>
 
             <btn @click="$emit('cancel')">Cancel</btn>
-            <btn kind="primary" @click="addToCart()">Add to cart</btn>
+            <btn ref="submitBtn" kind="primary" @click="addToCart()">Add to cart</btn>
         </template>
     </div>
 </template>
@@ -125,6 +125,9 @@
                 .then(() => {
                     this.loading = false
                     this.renew = 0
+                    this.$nextTick(() => {
+                        this.$refs.submitBtn.$el.focus()
+                    })
                 })
                 .catch(() => {
                     this.loading = false
