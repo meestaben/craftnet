@@ -21,7 +21,7 @@
             <div class="mx-auto max-w-2xl">
                 <div class="lg:flex mt-8 -mx-4">
                     <template v-for="(plan, planKey) in plans">
-                        <plan :plan="plan" :key="'plan-'+planKey" @selectPlan="onSelectPlan" @cancelSubscription="onCancelSubscription" @reactivateSubscription="onReactivateSubscription"></plan>
+                        <plan :plan="plan" :key="'plan-'+planKey" @selectPlan="onSelectPlan" @cancelSubscription="cancelSubscriptionModalShow" @reactivateSubscription="onReactivateSubscription"></plan>
                     </template>
                 </div>
             </div>
@@ -33,15 +33,25 @@
                 </p>
             </div>
         </template>
+
+        <!-- Modals -->
+        <cancel-subscription-modal
+                :show="showCancelSubscriptionModal"
+                :subscriptionUid="subscriptionUid"
+                @cancel="cancelSubscriptionModalHide"
+                @close="cancelSubscriptionModalHide"
+        ></cancel-subscription-modal>
     </div>
 </template>
 
 <script>
     import {mapState, mapGetters} from 'vuex'
     import Plan from '../../components/developer-support/Plan'
+    import CancelSubscriptionModal from '../../components/developer-support/modals/CancelSubscriptionModal';
 
     export default {
         components: {
+            CancelSubscriptionModal,
             Plan,
         },
 
@@ -49,6 +59,9 @@
             return {
                 error: null,
                 loading: false,
+
+                subscriptionUid: null,
+                showCancelSubscriptionModal: false,
             }
         },
 
@@ -71,7 +84,18 @@
                 this.$store.commit('developerSupport/updateShowModal', true)
             },
 
-            onCancelSubscription(subscriptionUid) {
+            cancelSubscriptionModalShow(subscriptionUid) {
+                this.subscriptionUid = subscriptionUid
+                // this.$store.commit('developerSupport/updateShowModal2', true)
+
+                this.showCancelSubscriptionModal = true
+            },
+
+            cancelSubscriptionModalHide() {
+                this.showCancelSubscriptionModal = false
+            },
+
+            onCancelSubscriptionOld(subscriptionUid) {
                 if (!window.confirm("Are you sure you want to cancel your subscription?")) {
                     return false
                 }
