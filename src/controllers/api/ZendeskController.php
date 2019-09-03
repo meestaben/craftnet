@@ -3,6 +3,7 @@
 namespace craftnet\controllers\api;
 
 use Craft;
+use craft\helpers\Json;
 use yii\web\BadRequestHttpException;
 use Zendesk\API\HttpClient;
 use Zendesk\API\Utilities\Auth;
@@ -28,6 +29,19 @@ class ZendeskController extends BaseApiController
                 'tags' => [$tag],
             ]);
         }
+
+        return '';
+    }
+
+    public function actionTest()
+    {
+        $this->_validateSecret();
+
+        Craft::$app->getMailer()->compose()
+            ->setSubject('Zendesk Test Webhook')
+            ->setTextBody(Json::encode($this->getPayload(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))
+            ->setTo(explode(',', getenv('TEST_EMAIL')))
+            ->send();
 
         return '';
     }
