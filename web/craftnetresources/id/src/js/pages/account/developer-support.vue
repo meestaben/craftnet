@@ -123,6 +123,7 @@
             },
 
             cancelSubscriptionModalHide() {
+                this.subscriptionUid = null
                 this.showCancelSubscriptionModal = false
             },
 
@@ -132,6 +133,7 @@
             },
 
             reactivateSubscriptionModalHide() {
+                this.subscriptionUid = null
                 this.showReactivateSubscriptionModal = false
             },
         },
