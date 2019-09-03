@@ -86,34 +86,11 @@
 
             cancelSubscriptionModalShow(subscriptionUid) {
                 this.subscriptionUid = subscriptionUid
-                // this.$store.commit('developerSupport/updateShowModal2', true)
-
                 this.showCancelSubscriptionModal = true
             },
 
             cancelSubscriptionModalHide() {
                 this.showCancelSubscriptionModal = false
-            },
-
-            onCancelSubscriptionOld(subscriptionUid) {
-                if (!window.confirm("Are you sure you want to cancel your subscription?")) {
-                    return false
-                }
-
-                this.loading = true
-
-                this.$store.dispatch('developerSupport/cancelSubscription', subscriptionUid)
-                    .then(() => {
-                        this.loading = false
-                        this.$emit('close')
-                        this.$store.dispatch('app/displayNotice', 'Subscription canceled.')
-                    })
-                    .catch((error) => {
-                        this.loading = false
-                        this.$emit('close')
-                        const errorMessage = error ? error : 'Couldn’t switch support plan.'
-                        this.$store.dispatch('app/displayError', errorMessage)
-                    })
             },
 
             onReactivateSubscription(subscriptionUid) {
