@@ -69,7 +69,7 @@ class AccountController extends BaseApiController
                 }
             }
         }
-        
+
         // Billing address
 
         $billingAddressArray = null;
