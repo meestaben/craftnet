@@ -24,9 +24,9 @@
                         <plan
                                 :plan="plan"
                                 :key="'plan-'+planKey"
-                                @selectPlan="subscribeModalShow"
-                                @cancelSubscription="cancelSubscriptionModalShow"
-                                @reactivateSubscription="reactivateSubscriptionModalShow"
+                                @selectPlan="showSubscribeModal"
+                                @cancelSubscription="showCancelSubscriptionModal"
+                                @reactivateSubscription="showReactivateSubscriptionModal"
                         ></plan>
                     </template>
                 </div>
@@ -42,24 +42,24 @@
 
         <!-- Modals -->
         <subscribe-modal
-                :show="showSubscribeModal"
+                :show="showingModal === 'subscribe'"
                 :selectedPlanHandle="selectedPlanHandle"
-                @cancel="subscribeModalHide"
-                @close="subscribeModalHide"
+                @cancel="hideSubscribeModal"
+                @close="hideSubscribeModal"
         ></subscribe-modal>
 
         <cancel-subscription-modal
-                :show="showCancelSubscriptionModal"
+                :show="showingModal === 'cancelSubscription'"
                 :subscriptionUid="subscriptionUid"
-                @cancel="cancelSubscriptionModalHide"
-                @close="cancelSubscriptionModalHide"
+                @cancel="hideCancelSubscriptionModal"
+                @close="hideCancelSubscriptionModal"
         ></cancel-subscription-modal>
 
         <reactivate-subscription-modal
-                :show="showReactivateSubscriptionModal"
+                :show="showingModal === 'reactivateSubscription'"
                 :subscriptionUid="subscriptionUid"
-                @cancel="reactivateSubscriptionModalHide"
-                @close="reactivateSubscriptionModalHide"
+                @cancel="hideReactivateSubscriptionModal"
+                @close="hideReactivateSubscriptionModal"
         ></reactivate-subscription-modal>
     </div>
 </template>
@@ -83,13 +83,9 @@
             return {
                 error: null,
                 loading: false,
-
+                showingModal: null,
                 subscriptionUid: null,
-                showCancelSubscriptionModal: false,
-                showReactivateSubscriptionModal: false,
-
                 selectedPlanHandle: null,
-                showSubscribeModal: false,
             }
         },
 
@@ -107,34 +103,42 @@
         },
 
         methods: {
-            subscribeModalShow(plan) {
+            showSubscribeModal(plan) {
                 this.selectedPlanHandle = plan.handle
-                this.showSubscribeModal = true
+                this.showModal('subscribe')
             },
 
-            subscribeModalHide() {
+            hideSubscribeModal() {
                 this.selectedPlanHandle = null
-                this.showSubscribeModal = false
+                this.hideModal()
             },
 
-            cancelSubscriptionModalShow(subscriptionUid) {
+            showCancelSubscriptionModal(subscriptionUid) {
                 this.subscriptionUid = subscriptionUid
-                this.showCancelSubscriptionModal = true
+                this.showModal('cancelSubscription')
             },
 
-            cancelSubscriptionModalHide() {
+            hideCancelSubscriptionModal() {
                 this.subscriptionUid = null
-                this.showCancelSubscriptionModal = false
+                this.hideModal()
             },
 
-            reactivateSubscriptionModalShow(subscriptionUid) {
+            showReactivateSubscriptionModal(subscriptionUid) {
                 this.subscriptionUid = subscriptionUid
-                this.showReactivateSubscriptionModal = true
+                this.showModal('reactivateSubscription')
             },
 
-            reactivateSubscriptionModalHide() {
+            hideReactivateSubscriptionModal() {
                 this.subscriptionUid = null
-                this.showReactivateSubscriptionModal = false
+                this.hideModal()
+            },
+
+            showModal(modalHandle) {
+                this.showingModal = modalHandle
+            },
+
+            hideModal() {
+                this.showingModal = null
             },
         },
 
