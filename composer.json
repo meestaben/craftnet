@@ -3,7 +3,7 @@
   "prefer-stable": true,
   "require": {
     "php": ">=7.0.0",
-    "craftcms/cms": "dev-develop#26cd225db2fbf46532d983d20f9947581cc69c88 as 3.1.30",
+    "craftcms/cms": "^3.3.0",
     "justinrainbow/json-schema": "^5.2",
     "yiisoft/yii2-redis": "^2.0.6",
     "knplabs/github-api": "^2.5.0",

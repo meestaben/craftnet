@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ec87ffd145365c5d66db8d982e579ab2",
+    "content-hash": "6e8f095677b2ca3c72af05b1ff81203c",
     "packages": [
         {
             "name": "adam-paterson/oauth2-stripe",
@@ -188,9 +188,9 @@
             "authors": [
                 {
                     "name": "Carsten Brandt",
-                    "role": "Creator",
                     "email": "mail@cebe.cc",
-                    "homepage": "http://cebe.cc/"
+                    "homepage": "http://cebe.cc/",
+                    "role": "Creator"
                 }
             ],
             "description": "A super fast, highly extensible markdown parser for PHP",
@@ -563,16 +563,16 @@
         },
         {
             "name": "craftcms/cms",
-            "version": "dev-develop",
+            "version": "3.3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/craftcms/cms.git",
-                "reference": "26cd225db2fbf46532d983d20f9947581cc69c88"
+                "reference": "069f389944401cc8eb9fecddd69e408c5b03a912"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/craftcms/cms/zipball/26cd225db2fbf46532d983d20f9947581cc69c88",
-                "reference": "26cd225db2fbf46532d983d20f9947581cc69c88",
+                "url": "https://api.github.com/repos/craftcms/cms/zipball/069f389944401cc8eb9fecddd69e408c5b03a912",
+                "reference": "069f389944401cc8eb9fecddd69e408c5b03a912",
                 "shasum": ""
             },
             "require": {
@@ -621,7 +621,7 @@
                 "bower-asset/yii2-pjax": "~2.0.1"
             },
             "require-dev": {
-                "codeception/codeception": "^3.1",
+                "codeception/codeception": "^3.0",
                 "codeception/mockery-module": "^0.3",
                 "codeception/phpunit-wrapper": "^7.7",
                 "codeception/specify": "^0.4",
@@ -638,8 +638,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "craft\\": "src/",
-                    "crafttests\\fixtures\\": "tests/fixtures/"
+                    "craft\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -653,7 +652,7 @@
                 "craftcms",
                 "yii2"
             ],
-            "time": "2019-06-13 13:22:50"
+            "time": "2019-08-27T22:54:56+00:00"
         },
         {
             "name": "craftcms/commerce",
@@ -701,7 +700,7 @@
                 "craftcms",
                 "yii2"
             ],
-            "time": "2019-08-08 08:21:28"
+            "time": "2019-08-08T08:21:28+00:00"
         },
         {
             "name": "craftcms/commerce-stripe",
@@ -750,7 +749,7 @@
                 "stripe",
                 "yii2"
             ],
-            "time": "2019-08-13 07:54:12"
+            "time": "2019-08-13T07:54:12+00:00"
         },
         {
             "name": "craftcms/oauth2-craftid",
@@ -1999,8 +1998,8 @@
             "authors": [
                 {
                     "name": "Luís Otávio Cobucci Oblonczyk",
-                    "role": "Developer",
-                    "email": "lcobucci@gmail.com"
+                    "email": "lcobucci@gmail.com",
+                    "role": "Developer"
                 }
             ],
             "description": "A simple library to work with JSON Web Token and JSON Web Signature",
@@ -2210,13 +2209,6 @@
                 "paragonie/random_compat": "^1|^2|^9.99",
                 "php": "^5.6|^7.0"
             },
-            "require-dev": {
-                "eloquent/liberator": "^2.0",
-                "eloquent/phony-phpunit": "^1.0|^3.0",
-                "jakub-onderka/php-parallel-lint": "^0.9.2",
-                "phpunit/phpunit": "^5.7|^6.0",
-                "squizlabs/php_codesniffer": "^2.3|^3.0"
-            },
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -2228,21 +2220,20 @@
                     "League\\OAuth2\\Client\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "authors": [
                 {
                     "name": "Alex Bilbie",
-                    "role": "Developer",
                     "email": "hello@alexbilbie.com",
-                    "homepage": "http://www.alexbilbie.com"
+                    "homepage": "http://www.alexbilbie.com",
+                    "role": "Developer"
                 },
                 {
                     "name": "Woody Gilk",
-                    "role": "Contributor",
-                    "homepage": "https://github.com/shadowhand"
+                    "homepage": "https://github.com/shadowhand",
+                    "role": "Contributor"
                 }
             ],
             "description": "OAuth 2.0 Client Library",
@@ -4097,7 +4088,6 @@
                     "Psr\\Log\\": "Psr/Log/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -5521,8 +5511,8 @@
             "authors": [
                 {
                     "name": "Nicola Asuni",
-                    "role": "lead",
-                    "email": "info@tecnick.com"
+                    "email": "info@tecnick.com",
+                    "role": "lead"
                 }
             ],
             "description": "TCPDF is a PHP class for generating PDF documents and barcodes.",
@@ -6896,17 +6886,9 @@
             "time": "2019-01-29T11:11:52+00:00"
         }
     ],
-    "aliases": [
-        {
-            "alias": "3.1.30",
-            "alias_normalized": "3.1.30.0",
-            "version": "dev-develop",
-            "package": "craftcms/cms"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "craftcms/cms": 20,
         "craftcms/commerce": 20,
         "craftcms/commerce-stripe": 20
     },
