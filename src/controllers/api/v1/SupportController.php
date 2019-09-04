@@ -3,12 +3,12 @@
 namespace craftnet\controllers\api\v1;
 
 use Craft;
-use craft\helpers\StringHelper;
 use craft\i18n\Locale;
 use craft\web\UploadedFile;
 use craftnet\cms\CmsLicense;
 use craftnet\controllers\api\BaseApiController;
-use GuzzleHttp\RequestOptions;
+use craftnet\helpers\Zendesk;
+use yii\helpers\Markdown;
 use yii\web\Response;
 
 /**
@@ -24,15 +24,6 @@ class SupportController extends BaseApiController
      */
     public function actionCreate(): Response
     {
-        $client = Craft::createGuzzleClient([
-            'base_uri' => 'https://api2.frontapp.com',
-        ]);
-
-        $headers = [
-            'Authorization' => 'Bearer ' . getenv('FRONT_TOKEN'),
-            'Accept' => 'application/json',
-        ];
-
         $request = Craft::$app->getRequest();
         $requestHeaders = $request->getHeaders();
         $body = $request->getRequiredBodyParam('message');
@@ -94,64 +85,8 @@ class SupportController extends BaseApiController
             $body .= "\n\n---\n\n" . implode("  \n", $info);
         }
 
-        $parts = [
-            [
-                'name' => 'sender[handle]',
-                'contents' => $request->getRequiredBodyParam('email'),
-            ],
-            [
-                'name' => 'sender[name]',
-                'contents' => $request->getRequiredBodyParam('name'),
-            ],
-            [
-                'name' => 'to[]',
-                'contents' => getenv('FRONT_TO_EMAIL'),
-            ],
-            [
-                'name' => 'subject',
-                'contents' => getenv('FRONT_SUBJECT'),
-            ],
-            [
-                'name' => 'body',
-                'contents' => $body,
-            ],
-            [
-                'name' => 'body_format',
-                'contents' => 'markdown',
-            ],
-            [
-                'name' => 'external_id',
-                'contents' => StringHelper::UUID(),
-            ],
-            [
-                'name' => 'created_at',
-                'contents' => time(),
-            ],
-            [
-                'name' => 'type',
-                'contents' => 'email',
-            ],
-            [
-                'name' => 'tags[]',
-                'contents' => getenv('FRONT_TAG'),
-            ],
-            [
-                'name' => 'metadata[thread_ref]',
-                'contents' => StringHelper::UUID(),
-            ],
-            [
-                'name' => 'metadata[is_inbound]',
-                'contents' => 'true',
-            ],
-            [
-                'name' => 'metadata[is_archived]',
-                'contents' => 'false',
-            ],
-            [
-                'name' => 'metadata[should_skip_rules]',
-                'contents' => getenv('FRONT_SKIP_RULES') ?: 'true',
-            ],
-        ];
+        $client = Zendesk::client();
+        $uploadTokens = [];
 
         $attachments = UploadedFile::getInstancesByName('attachments');
         if (empty($attachments) && $attachment = UploadedFile::getInstanceByName('attachment')) {
@@ -161,18 +96,29 @@ class SupportController extends BaseApiController
         if (!empty($attachments)) {
             foreach ($attachments as $i => $attachment) {
                 if (!empty($attachment->tempName)) {
-                    $parts[] = [
-                        'name' => "attachments[{$i}]",
-                        'contents' => fopen($attachment->tempName, 'rb'),
-                        'filename' => $attachment->name,
-                    ];
+                    $response = $client->attachments()->upload([
+                        'file' => $attachment->tempName,
+                        'type' => $attachment->getMimeType(),
+                        'name' => $attachment->name,
+                    ]);
+                    $uploadTokens[] = $response->upload->token;
                 }
             }
         }
 
-        $client->post('/inboxes/' . getenv('FRONT_INBOX_ID') . '/imported_messages', [
-            RequestOptions::HEADERS => $headers,
-            RequestOptions::MULTIPART => $parts,
+        Zendesk::client()->tickets()->create([
+            'requester' => [
+                'name' => $request->getRequiredBodyParam('name'),
+                'email' => $request->getRequiredBodyParam('email'),
+            ],
+            'subject' => getenv('FRONT_SUBJECT'),
+            'comment' => [
+                'body' => $body,
+                'html_body' => Markdown::process($body, 'gfm'),
+                'uploads' => $uploadTokens,
+            ],
+            'type' => 'question',
+            'tags' => [getenv('FRONT_TAG')],
         ]);
 
         return $this->asJson([
