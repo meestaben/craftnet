@@ -22,7 +22,7 @@ class ZendeskController extends BaseApiController
         $payload = $this->getPayload('zendesk-create-ticket');
 
         $userId = User::find()
-            ->select(['id'])
+            ->select(['elements.id'])
             ->andWhere(new Expression('lower([[email]]) = :email', [':email' => strtolower($payload->email)]))
             ->asArray()
             ->scalar();
