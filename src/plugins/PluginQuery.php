@@ -77,7 +77,7 @@ class PluginQuery extends ElementQuery
     {
         // Default orderBy
         if (!isset($config['orderBy'])) {
-            $config['orderBy'] = 'name';
+            $config['orderBy'] = 'craftnet_plugins.name';
         }
 
         parent::__construct($elementType, $config);
