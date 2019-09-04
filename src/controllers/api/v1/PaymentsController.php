@@ -11,10 +11,11 @@ use craft\commerce\Plugin as Commerce;
 use craft\commerce\stripe\gateways\PaymentIntents as StripeGateway;
 use craft\commerce\stripe\models\forms\payment\PaymentIntent as PaymentForm;
 use craft\commerce\stripe\Plugin as Stripe;
+use craft\helpers\StringHelper;
 use craftnet\errors\ValidationException;
 use Stripe\Customer as StripeCustomer;
 use Stripe\Error\Base as StripeError;
-use Stripe\PaymentMethod;
+use Stripe\PaymentMethod as StripePaymentMethod;
 use yii\base\Exception;
 use yii\base\UserException;
 use yii\web\BadRequestHttpException;
@@ -206,9 +207,15 @@ class PaymentsController extends CartsController
         /** @var StripeCustomer $stripeCustomer */
         $stripeCustomer = StripeCustomer::retrieve($customer->reference);
 
-        // Attach the payment method
-        $paymentMethod = PaymentMethod::retrieve($paymentForm->paymentMethodId);
-        $stripeResponse = $paymentMethod->attach(['customer' => $stripeCustomer->id]);
+        // Figure out if we're dealing with a source or a payment method
+        if (StringHelper::startsWith($paymentForm->paymentMethodId, 'pm_')) {
+            // Attach the payment method
+            $paymentMethod = StripePaymentMethod::retrieve($paymentForm->paymentMethodId);
+            $stripeResponse = $paymentMethod->attach(['customer' => $stripeCustomer->id]);
+        } else {
+            // Attach the payment source
+            $stripeResponse = StripeCustomer::createSource($stripeCustomer->id, ['source' => $paymentForm->paymentMethodId]);
+        }
 
         // set it as the customer default for subscriptions
         $stripeCustomer->invoice_settings = [
