@@ -33,7 +33,7 @@
             </div>
 
             <div class="mt-8 text-center text-grey">
-                <p>Support plans cover emails to <a href="mailto:support@craftcms.com">support@craftcms.com</a> from <a href="mailto:{{user.email}}">{{user.email}}</a>.</p>
+                <p>Support plans cover emails to <a href="mailto:support@craftcms.com">support@craftcms.com</a> from <a :href="'mailto:'+user.email">{{user.email}}</a>.</p>
                 <p>Go to your <router-link to="/account/settings">account settings</router-link> to change your email address.</p>
             </div>
         </template>
