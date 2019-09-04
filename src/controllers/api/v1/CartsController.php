@@ -321,9 +321,7 @@ class CartsController extends BaseApiController
         // if we don't know the user yet, see if we can find one with the given email
         if ($user === null && $email !== null) {
             $user = User::find()
-                ->select(['elements.id'])
                 ->where(['email' => $email])
-                ->asArray()
                 ->one();
         }
 
