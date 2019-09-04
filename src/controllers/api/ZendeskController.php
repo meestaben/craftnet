@@ -7,10 +7,9 @@ use craft\commerce\elements\Subscription;
 use craft\elements\User;
 use craft\helpers\Json;
 use craftnet\controllers\id\DeveloperSupportController;
+use craftnet\helpers\Zendesk;
 use yii\db\Expression;
 use yii\web\BadRequestHttpException;
-use Zendesk\API\HttpClient;
-use Zendesk\API\Utilities\Auth;
 
 /**
  * @author Pixel & Tonic, Inc. <support@pixelandtonic.com>
@@ -45,7 +44,7 @@ class ZendeskController extends BaseApiController
         }
 
         // Add the tag to the ticket
-        $this->_client()->tickets()->update($payload->id, [
+        Zendesk::client()->tickets()->update($payload->id, [
             'priority' => 'normal',
             'tags' => array_merge($payload->tags, [$tag]),
         ]);
@@ -90,18 +89,5 @@ class ZendeskController extends BaseApiController
         if ($secret !== getenv('ZENDESK_SECRET')) {
             throw new BadRequestHttpException('Invalid request body.');
         }
-    }
-
-    /**
-     * @return HttpClient
-     */
-    private function _client(): HttpClient
-    {
-        $client = new HttpClient('craftcms');
-        $client->setAuth(Auth::BASIC, [
-            'username' => getenv('ZENDESK_USERNAME'),
-            'token' => getenv('ZENDESK_TOKEN'),
-        ]);
-        return $client;
     }
 }
