@@ -13,7 +13,7 @@
             </template>
 
             <template v-if="!card">
-                <p>You must add a credit card to your account at <a @click="goToBilling">Account → Billing</a> before signing up for a support plan.</p>
+                <p>Your billing info is missing. Go to <a @click="goToBilling">Account → Billing</a> to add a credit card and update billing infos.</p>
             </template>
 
             <table class="table border-b mt-6 mb-8">
