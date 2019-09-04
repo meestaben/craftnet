@@ -16,8 +16,7 @@ const state = {
             name: "Basic",
             price: 0,
             features: [
-                'Utilize Discord and Stack Exchange',
-                'While you can contact the team at CMS directly, there is no guaranteed response time',
+                'Basic developer-to-developer support via email (no guaranteed response time)',
             ]
         },
         {
@@ -26,8 +25,8 @@ const state = {
             name: "Pro",
             price: 75,
             features: [
-                'Contact the team at Craft CMS directly via email',
-                'Guaranteed 12 hour or less time to first response (M-F)',
+                'Developer-to-developer support via email',
+                'Guaranteed 12 hour or less time to first response on weekdays',
             ]
         },
         {
@@ -36,9 +35,9 @@ const state = {
             name: "Premium",
             price: 750,
             features: [
-                'Contact the team at Craft CMS directly via email',
-                'Tickets go to top of queue',
-                'Guaranteed 2 hour or less time to first response (M-F), 12 hours on weekends',
+                'Prioritized developer-to-developer support via email',
+                'Guaranteed 2 hour or less time to first response on weekdays',
+                'Guaranteed 12 hour or less time to first response on weekends',
             ]
         },
     ]
