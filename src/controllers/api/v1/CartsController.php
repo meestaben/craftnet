@@ -323,6 +323,7 @@ class CartsController extends BaseApiController
             $user = User::find()
                 ->select(['elements.id'])
                 ->where(['email' => $email])
+                ->asArray()
                 ->one();
         }
 
@@ -578,6 +579,7 @@ class CartsController extends BaseApiController
         $renewalId = CmsRenewal::find()
             ->select(['elements.id'])
             ->editionId($license->editionId)
+            ->asArray()
             ->scalar();
 
         $options = [
@@ -710,6 +712,7 @@ class CartsController extends BaseApiController
         $renewalId = PluginRenewal::find()
             ->select(['elements.id'])
             ->editionId($license->editionId)
+            ->asArray()
             ->scalar();
 
         $options = [

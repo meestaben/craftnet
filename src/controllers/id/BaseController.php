@@ -66,6 +66,7 @@ abstract class BaseController extends Controller
             ->id($plugin->id)
             ->withLatestReleaseInfo()
             ->select(['latestVersion'])
+            ->asArray()
             ->scalar();
 
         return [

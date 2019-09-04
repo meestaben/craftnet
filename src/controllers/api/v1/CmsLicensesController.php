@@ -84,6 +84,7 @@ class CmsLicensesController extends BaseApiController
                             ->id($pluginLicense->pluginId)
                             ->withLatestReleaseInfo(true, $this->cmsVersion)
                             ->select(['latestVersion'])
+                            ->asArray()
                             ->scalar();
                     }
                     $pluginLicenses[] = $pluginLicenseInfo;
