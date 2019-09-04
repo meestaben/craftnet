@@ -164,10 +164,10 @@ class PaymentsController extends CartsController
         // Fetch a potentially existing customer
         if ($this->_isPaymentMethod($paymentForm)) {
             $paymentMethod = StripePaymentMethod::retrieve($paymentForm->paymentMethodId);
-            $stripeCustomerId = $paymentMethod->customer;
+            $stripeCustomerId = $paymentMethod->customer ?? null;
         } else {
             $paymentSource = StripeSource::retrieve($paymentForm->paymentMethodId);
-            $stripeCustomerId = $paymentSource->customer;
+            $stripeCustomerId = $paymentSource->customer ?? null;
         }
 
         $cart = $this->getCart($payload->orderNumber);
