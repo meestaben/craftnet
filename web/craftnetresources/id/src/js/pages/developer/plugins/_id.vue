@@ -147,8 +147,8 @@
                                     <p class="text-grey"><code>{{edition.handle}}</code></p>
                                 </div>
                                 <div class="w-3/4">
-                                    <textbox :id="edition.handle+'-price'" label="License Price" v-model="edition.price" :errors="errors['editions['+editionKey+'].price']" />
-                                    <textbox :id="edition.handle+'-renewalPrice'" label="Renewal Price" v-model="edition.renewalPrice" :errors="errors['editions['+editionKey+'].renewalPrice']" />
+                                    <textbox :id="edition.handle+'-price'" label="License Price" v-model="edition.price" :errors="errors['editions['+editionKey+'].price']" :disabled="plugin && plugin.enabled && !parseFloat(edition.price)" />
+                                    <textbox :id="edition.handle+'-renewalPrice'" label="Renewal Price" v-model="edition.renewalPrice" :errors="errors['editions['+editionKey+'].renewalPrice']" :disabled="plugin && plugin.enabled && !parseFloat(edition.price)" />
 
                                     <field v-if="pluginDraft.editions.length > 1" id="features" label="Features">
                                         <table v-if="edition.features.length > 0" id="features" class="table border mb-4">
@@ -414,7 +414,7 @@
                 let body = {
                     repository: encodeURIComponent(url)
                 }
-                
+
                 let params = qs.stringify(body)
                 let url = repositoryUrl
 
