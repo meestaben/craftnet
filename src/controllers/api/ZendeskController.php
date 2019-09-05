@@ -7,6 +7,8 @@ use craft\commerce\elements\Subscription;
 use craft\elements\User;
 use craft\helpers\Json;
 use craftnet\controllers\id\DeveloperSupportController;
+use craftnet\errors\ValidationException;
+use craftnet\events\ZendeskEvent;
 use craftnet\helpers\Zendesk;
 use yii\db\Expression;
 use yii\web\BadRequestHttpException;
@@ -16,14 +18,25 @@ use yii\web\BadRequestHttpException;
  */
 class ZendeskController extends BaseApiController
 {
+    /**
+     * @event ZendeskEvent
+     */
+    const EVENT_UPDATE_TICKET = 'updateTicket';
+
+    /**
+     * @return string
+     * @throws BadRequestHttpException
+     * @throws ValidationException
+     */
     public function actionCreateTicket()
     {
         $this->_validateSecret();
         $payload = $this->getPayload('zendesk-create-ticket');
+        $email = strtolower($payload->email);
 
         $userId = User::find()
             ->select(['elements.id'])
-            ->andWhere(new Expression('lower([[email]]) = :email', [':email' => strtolower($payload->email)]))
+            ->andWhere(new Expression('lower([[email]]) = :email', [':email' => $email]))
             ->asArray()
             ->scalar();
 
@@ -34,19 +47,28 @@ class ZendeskController extends BaseApiController
 
         // See if the the user is on a paid plan
         if ($this->_checkPlan($userId, DeveloperSupportController::PLAN_PREMIUM)) {
-            $tag = 'premium';
+            $plan = DeveloperSupportController::PLAN_PREMIUM;
         } else if ($this->_checkPlan($userId, DeveloperSupportController::PLAN_PRO)) {
-            $tag = 'pro';
+            $plan = DeveloperSupportController::PLAN_PRO;
         }
 
-        if (!isset($tag)) {
+        if (!isset($plan)) {
             return '';
         }
+
+        $tags = array_merge($payload->tags, [$plan]);
+
+        $this->trigger(self::EVENT_UPDATE_TICKET, new ZendeskEvent([
+            'ticketId' => $payload->id,
+            'email' => $email,
+            'tags' => $tags,
+            'plan' => $plan,
+        ]));
 
         // Add the tag to the ticket
         Zendesk::client()->tickets()->update($payload->id, [
             'priority' => 'normal',
-            'tags' => array_merge($payload->tags, [$tag]),
+            'tags' => $tags,
         ]);
 
         return '';
