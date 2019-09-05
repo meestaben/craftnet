@@ -110,14 +110,14 @@ class SupportController extends BaseApiController
                 'name' => $request->getRequiredBodyParam('name'),
                 'email' => $request->getRequiredBodyParam('email'),
             ],
-            'subject' => getenv('FRONT_SUBJECT'),
+            'subject' => getenv('ZENDESK_SUBJECT'),
             'comment' => [
                 'body' => $body,
                 'html_body' => Markdown::process($body, 'gfm'),
                 'uploads' => $uploadTokens,
             ],
             'type' => 'question',
-            'tags' => [getenv('FRONT_TAG')],
+            'tags' => [getenv('ZENDESK_TAG')],
             'custom_fields' => $customFields,
         ]);
 
