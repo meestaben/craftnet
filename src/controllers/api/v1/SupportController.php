@@ -116,7 +116,6 @@ class SupportController extends BaseApiController
                 'html_body' => Markdown::process($body, 'gfm'),
                 'uploads' => $uploadTokens,
             ],
-            'type' => 'question',
             'tags' => [getenv('ZENDESK_TAG')],
             'custom_fields' => $customFields,
         ]);
