@@ -225,7 +225,7 @@ class FundsController extends Controller
 
         $maxCellSizes = [];
         foreach ($cellSizes as $i => $sizes) {
-            $maxCellSizes[$i] = max($sizes);
+            $maxCellSizes[$i] = min(max($sizes), 50);
         }
 
         $this->tableRow($headers, $maxCellSizes);
@@ -244,7 +244,12 @@ class FundsController extends Controller
 
             $cell = $row[$i] ?? '';
             $value = is_array($cell) ? $cell[0] : $cell;
-            $value = str_pad($value, $sizes[$i], $pad, $cell['pad'] ?? STR_PAD_RIGHT);
+            $len = strlen($value);
+            if ($len < $sizes[$i]) {
+                $value = str_pad($value, $sizes[$i], $pad, $cell['pad'] ?? STR_PAD_RIGHT);
+            } else if ($len > $sizes[$i]) {
+                $value = substr($value, 0, $sizes[$i] - 1) . '…';
+            }
             if (isset($cell['format']) && $this->isColorEnabled()) {
                 $value = Console::ansiFormat($value, $cell['format']);
             }
