@@ -26,6 +26,10 @@ class UserQueryBehavior extends Behavior
      */
     public function afterPrepare()
     {
+        if (!isset($this->owner->select['**'])) {
+            return;
+        }
+
         $this->owner->query->addSelect([
             'developers.country',
             'developers.stripeAccessToken',
