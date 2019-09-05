@@ -225,7 +225,7 @@ class FundsController extends Controller
 
         $maxCellSizes = [];
         foreach ($cellSizes as $i => $sizes) {
-            $maxCellSizes[$i] = min(max($sizes), 50);
+            $maxCellSizes[$i] = min(max($sizes), 80);
         }
 
         $this->tableRow($headers, $maxCellSizes);
