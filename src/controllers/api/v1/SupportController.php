@@ -6,6 +6,7 @@ use Craft;
 use craft\i18n\Locale;
 use craft\web\UploadedFile;
 use craftnet\cms\CmsLicense;
+use craftnet\cms\CmsLicenseManager;
 use craftnet\controllers\api\BaseApiController;
 use craftnet\helpers\Zendesk;
 use yii\helpers\Markdown;
@@ -27,44 +28,40 @@ class SupportController extends BaseApiController
         $request = Craft::$app->getRequest();
         $requestHeaders = $request->getHeaders();
         $body = $request->getRequiredBodyParam('message');
-
-        $info = [];
         /** @var CmsLicense $cmsLicense */
         $cmsLicense = reset($this->cmsLicenses) ?: null;
-        $formatter = Craft::$app->getFormatter();
+        $customFields = [];
 
-        if ($this->cmsEdition !== null || $this->cmsVersion !== null) {
-            $craftInfo = 'Craft' .
-                ($this->cmsEdition !== null ? ' ' . ucfirst($this->cmsEdition) : '') .
-                ($this->cmsVersion !== null ? ' ' . $this->cmsVersion : '');
+        if ($this->cmsVersion) {
+            $customFields[] = [
+                'id' => getenv('ZENDESK_FIELD_CRAFT_VERSION'),
+                'value' => $this->cmsVersion
+            ];
+        }
 
-            if ($cmsLicense && $cmsLicense->editionHandle !== $this->cmsEdition) {
-                $craftInfo .= ' (trial)';
-            }
-
-            $info[] = $craftInfo;
+        if (
+            $this->cmsEdition &&
+            in_array($this->cmsEdition, [CmsLicenseManager::EDITION_SOLO, CmsLicenseManager::EDITION_PRO], true)
+        ) {
+            $trial = $cmsLicense && $cmsLicense->editionHandle !== $this->cmsEdition;
+            $customFields[] = [
+                'id' => getenv('ZENDESK_FIELD_CRAFT_EDITION'),
+                'value' => $this->cmsEdition . ($trial ? '_trial' : '')
+            ];
         }
 
         if ($cmsLicense) {
-            $licenseInfo = [
-                '`' . $cmsLicense->getShortKey() . '` (' . ucfirst($cmsLicense->editionHandle) . ')',
-                'from ' . $formatter->asDate($cmsLicense->dateCreated, Locale::LENGTH_SHORT),
+            $customFields[] = [
+                'id' => getenv('ZENDESK_FIELD_CRAFT_LICENSE'),
+                'value' => $cmsLicense->key
             ];
-            if ($cmsLicense->expirable && $cmsLicense->expiresOn) {
-                $licenseInfo[] .= ($cmsLicense->expired ? 'expired on' : 'expires on') .
-                    ' ' . $formatter->asDate($cmsLicense->expiresOn, Locale::LENGTH_SHORT);
-            }
-            if ($cmsLicense->domain) {
-                $licenseInfo[] = 'for ' . $cmsLicense->domain;
-            }
-            $info[] = 'License: ' . implode(', ', $licenseInfo);
         }
 
         if (!empty($this->pluginVersions)) {
             $pluginInfos = [];
             foreach ($this->pluginVersions as $pluginHandle => $pluginVersion) {
                 if ($plugin = $this->plugins[$pluginHandle] ?? null) {
-                    $pluginInfo = "[{$plugin->name}](https://plugins.craftcms.com/{$plugin->handle})";
+                    $pluginInfo = $plugin->name;
                 } else {
                     $pluginInfo = $pluginHandle;
                 }
@@ -74,15 +71,17 @@ class SupportController extends BaseApiController
                 $pluginInfo .= ' ' . $pluginVersion;
                 $pluginInfos[] = $pluginInfo;
             }
-            $info[] = 'Plugins: ' . implode(', ', $pluginInfos);
+            $customFields[] = [
+                'id' => getenv('ZENDESK_FIELD_PLUGINS'),
+                'value' => implode("\n", $pluginInfos)
+            ];
         }
 
         if (($host = $requestHeaders->get('X-Craft-Host')) !== null) {
-            $info[] = 'Host: ' . $host;
-        }
-
-        if (!empty($info)) {
-            $body .= "\n\n---\n\n" . implode("  \n", $info);
+            $customFields[] = [
+                'id' => getenv('ZENDESK_FIELD_HOST'),
+                'value' => $host
+            ];
         }
 
         $client = Zendesk::client();
@@ -119,6 +118,7 @@ class SupportController extends BaseApiController
             ],
             'type' => 'question',
             'tags' => [getenv('FRONT_TAG')],
+            'custom_fields' => $customFields,
         ]);
 
         return $this->asJson([
