@@ -56,7 +56,8 @@ class ZendeskController extends BaseApiController
             return '';
         }
 
-        $tags = array_merge($payload->tags, [$plan]);
+        $tags = array_filter(explode(' ', $payload->tags));
+        $tags[] = $plan;
 
         $this->trigger(self::EVENT_UPDATE_TICKET, new ZendeskEvent([
             'ticketId' => $payload->id,
