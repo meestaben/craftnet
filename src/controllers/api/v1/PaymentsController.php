@@ -177,7 +177,7 @@ class PaymentsController extends CartsController
             'address' => [
                 'line1' => $address->address1,
                 'line2' => $address->address2,
-                'country' => $address->getCountry()->iso,
+                'country' => $address->getCountry()->iso ?? null,
                 'city' => $address->city,
                 'postal_code' => $address->zipCode,
                 'state' => $address->getState(),
