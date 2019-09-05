@@ -46,7 +46,7 @@ class SupportController extends BaseApiController
             $trial = $cmsLicense && $cmsLicense->editionHandle !== $this->cmsEdition;
             $customFields[] = [
                 'id' => getenv('ZENDESK_FIELD_CRAFT_EDITION'),
-                'value' => $this->cmsEdition . ($trial ? '_trial' : '')
+                'value' => "edition_{$this->cmsEdition}" . ($trial ? '_trial' : '')
             ];
         }
 
