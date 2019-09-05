@@ -52,6 +52,8 @@ return [
         'POST    v1/updates' => 'craftnet/api/v1/updates/old',
         'POST    v1/utils/releases-2-changelog' => 'craftnet/api/v1/utils/releases-2-changelog',
         'POST    webhook/github' => 'craftnet/api/webhook/github',
+        'POST    zendesk/create-ticket' => 'craftnet/api/zendesk/create-ticket',
+        'POST    zendesk/test' => 'craftnet/api/zendesk/test',
     ],
     'craftId' => [
         'POST    queue/handle-message' => 'queue/handle-message',

@@ -149,6 +149,7 @@ class UpdatesController extends BaseApiController
                 ->id($plugin->id)
                 ->withLatestReleaseInfo(true, $this->cmsVersion)
                 ->select(['latestVersion'])
+                ->asArray()
                 ->scalar();
 
             $info = [

@@ -3,12 +3,13 @@
 namespace craftnet\controllers\api\v1;
 
 use Craft;
-use craft\helpers\StringHelper;
 use craft\i18n\Locale;
 use craft\web\UploadedFile;
 use craftnet\cms\CmsLicense;
+use craftnet\cms\CmsLicenseManager;
 use craftnet\controllers\api\BaseApiController;
-use GuzzleHttp\RequestOptions;
+use craftnet\helpers\Zendesk;
+use yii\helpers\Markdown;
 use yii\web\Response;
 
 /**
@@ -24,56 +25,43 @@ class SupportController extends BaseApiController
      */
     public function actionCreate(): Response
     {
-        $client = Craft::createGuzzleClient([
-            'base_uri' => 'https://api2.frontapp.com',
-        ]);
-
-        $headers = [
-            'Authorization' => 'Bearer ' . getenv('FRONT_TOKEN'),
-            'Accept' => 'application/json',
-        ];
-
         $request = Craft::$app->getRequest();
         $requestHeaders = $request->getHeaders();
         $body = $request->getRequiredBodyParam('message');
-
-        $info = [];
         /** @var CmsLicense $cmsLicense */
         $cmsLicense = reset($this->cmsLicenses) ?: null;
-        $formatter = Craft::$app->getFormatter();
+        $customFields = [];
 
-        if ($this->cmsEdition !== null || $this->cmsVersion !== null) {
-            $craftInfo = 'Craft' .
-                ($this->cmsEdition !== null ? ' ' . ucfirst($this->cmsEdition) : '') .
-                ($this->cmsVersion !== null ? ' ' . $this->cmsVersion : '');
+        if ($this->cmsVersion) {
+            $customFields[] = [
+                'id' => getenv('ZENDESK_FIELD_CRAFT_VERSION'),
+                'value' => $this->cmsVersion
+            ];
+        }
 
-            if ($cmsLicense && $cmsLicense->editionHandle !== $this->cmsEdition) {
-                $craftInfo .= ' (trial)';
-            }
-
-            $info[] = $craftInfo;
+        if (
+            $this->cmsEdition &&
+            in_array($this->cmsEdition, [CmsLicenseManager::EDITION_SOLO, CmsLicenseManager::EDITION_PRO], true)
+        ) {
+            $trial = $cmsLicense && $cmsLicense->editionHandle !== $this->cmsEdition;
+            $customFields[] = [
+                'id' => getenv('ZENDESK_FIELD_CRAFT_EDITION'),
+                'value' => "edition_{$this->cmsEdition}" . ($trial ? '_trial' : '')
+            ];
         }
 
         if ($cmsLicense) {
-            $licenseInfo = [
-                '`' . $cmsLicense->getShortKey() . '` (' . ucfirst($cmsLicense->editionHandle) . ')',
-                'from ' . $formatter->asDate($cmsLicense->dateCreated, Locale::LENGTH_SHORT),
+            $customFields[] = [
+                'id' => getenv('ZENDESK_FIELD_CRAFT_LICENSE'),
+                'value' => $cmsLicense->key
             ];
-            if ($cmsLicense->expirable && $cmsLicense->expiresOn) {
-                $licenseInfo[] .= ($cmsLicense->expired ? 'expired on' : 'expires on') .
-                    ' ' . $formatter->asDate($cmsLicense->expiresOn, Locale::LENGTH_SHORT);
-            }
-            if ($cmsLicense->domain) {
-                $licenseInfo[] = 'for ' . $cmsLicense->domain;
-            }
-            $info[] = 'License: ' . implode(', ', $licenseInfo);
         }
 
         if (!empty($this->pluginVersions)) {
             $pluginInfos = [];
             foreach ($this->pluginVersions as $pluginHandle => $pluginVersion) {
                 if ($plugin = $this->plugins[$pluginHandle] ?? null) {
-                    $pluginInfo = "[{$plugin->name}](https://plugins.craftcms.com/{$plugin->handle})";
+                    $pluginInfo = $plugin->name;
                 } else {
                     $pluginInfo = $pluginHandle;
                 }
@@ -83,75 +71,21 @@ class SupportController extends BaseApiController
                 $pluginInfo .= ' ' . $pluginVersion;
                 $pluginInfos[] = $pluginInfo;
             }
-            $info[] = 'Plugins: ' . implode(', ', $pluginInfos);
+            $customFields[] = [
+                'id' => getenv('ZENDESK_FIELD_PLUGINS'),
+                'value' => implode("\n", $pluginInfos)
+            ];
         }
 
         if (($host = $requestHeaders->get('X-Craft-Host')) !== null) {
-            $info[] = 'Host: ' . $host;
+            $customFields[] = [
+                'id' => getenv('ZENDESK_FIELD_HOST'),
+                'value' => $host
+            ];
         }
 
-        if (!empty($info)) {
-            $body .= "\n\n---\n\n" . implode("  \n", $info);
-        }
-
-        $parts = [
-            [
-                'name' => 'sender[handle]',
-                'contents' => $request->getRequiredBodyParam('email'),
-            ],
-            [
-                'name' => 'sender[name]',
-                'contents' => $request->getRequiredBodyParam('name'),
-            ],
-            [
-                'name' => 'to[]',
-                'contents' => getenv('FRONT_TO_EMAIL'),
-            ],
-            [
-                'name' => 'subject',
-                'contents' => getenv('FRONT_SUBJECT'),
-            ],
-            [
-                'name' => 'body',
-                'contents' => $body,
-            ],
-            [
-                'name' => 'body_format',
-                'contents' => 'markdown',
-            ],
-            [
-                'name' => 'external_id',
-                'contents' => StringHelper::UUID(),
-            ],
-            [
-                'name' => 'created_at',
-                'contents' => time(),
-            ],
-            [
-                'name' => 'type',
-                'contents' => 'email',
-            ],
-            [
-                'name' => 'tags[]',
-                'contents' => getenv('FRONT_TAG'),
-            ],
-            [
-                'name' => 'metadata[thread_ref]',
-                'contents' => StringHelper::UUID(),
-            ],
-            [
-                'name' => 'metadata[is_inbound]',
-                'contents' => 'true',
-            ],
-            [
-                'name' => 'metadata[is_archived]',
-                'contents' => 'false',
-            ],
-            [
-                'name' => 'metadata[should_skip_rules]',
-                'contents' => getenv('FRONT_SKIP_RULES') ?: 'true',
-            ],
-        ];
+        $client = Zendesk::client();
+        $uploadTokens = [];
 
         $attachments = UploadedFile::getInstancesByName('attachments');
         if (empty($attachments) && $attachment = UploadedFile::getInstanceByName('attachment')) {
@@ -161,18 +95,29 @@ class SupportController extends BaseApiController
         if (!empty($attachments)) {
             foreach ($attachments as $i => $attachment) {
                 if (!empty($attachment->tempName)) {
-                    $parts[] = [
-                        'name' => "attachments[{$i}]",
-                        'contents' => fopen($attachment->tempName, 'rb'),
-                        'filename' => $attachment->name,
-                    ];
+                    $response = $client->attachments()->upload([
+                        'file' => $attachment->tempName,
+                        'type' => $attachment->getMimeType(),
+                        'name' => $attachment->name,
+                    ]);
+                    $uploadTokens[] = $response->upload->token;
                 }
             }
         }
 
-        $client->post('/inboxes/' . getenv('FRONT_INBOX_ID') . '/imported_messages', [
-            RequestOptions::HEADERS => $headers,
-            RequestOptions::MULTIPART => $parts,
+        Zendesk::client()->tickets()->create([
+            'requester' => [
+                'name' => $request->getRequiredBodyParam('name'),
+                'email' => $request->getRequiredBodyParam('email'),
+            ],
+            'subject' => getenv('ZENDESK_SUBJECT'),
+            'comment' => [
+                'body' => $body,
+                'html_body' => Markdown::process($body, 'gfm'),
+                'uploads' => $uploadTokens,
+            ],
+            'tags' => [getenv('ZENDESK_TAG')],
+            'custom_fields' => $customFields,
         ]);
 
         return $this->asJson([

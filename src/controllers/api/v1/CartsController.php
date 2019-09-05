@@ -321,7 +321,6 @@ class CartsController extends BaseApiController
         // if we don't know the user yet, see if we can find one with the given email
         if ($user === null && $email !== null) {
             $user = User::find()
-                ->select(['elements.id'])
                 ->where(['email' => $email])
                 ->one();
         }
@@ -578,6 +577,7 @@ class CartsController extends BaseApiController
         $renewalId = CmsRenewal::find()
             ->select(['elements.id'])
             ->editionId($license->editionId)
+            ->asArray()
             ->scalar();
 
         $options = [
@@ -710,6 +710,7 @@ class CartsController extends BaseApiController
         $renewalId = PluginRenewal::find()
             ->select(['elements.id'])
             ->editionId($license->editionId)
+            ->asArray()
             ->scalar();
 
         $options = [

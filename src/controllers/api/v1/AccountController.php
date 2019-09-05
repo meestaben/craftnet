@@ -53,13 +53,22 @@ class AccountController extends BaseApiController
             $cardToken = $paymentSource->token;
             $response = Json::decode($paymentSource->response);
 
-            if (isset($response['object']) && $response['object'] === 'card') {
-                $card = $response;
-            } elseif (isset($response['object']) && $response['object'] === 'source') {
-                $card = $response['card'];
+            if (isset($response['object'])) {
+                switch ($response['object']) {
+                    case 'card':
+                        $card = $response;
+                        break;
+
+                    case 'source':
+                        $card = $response['card'];
+                        break;
+
+                    case 'payment_method':
+                        $card = $response['card'];
+                        break;
+                }
             }
         }
-
 
         // Billing address
 

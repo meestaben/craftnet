@@ -63,6 +63,7 @@
             </router-link>
         </h5>
         <ul>
+            <li><router-link @click.native="$emit('closeSidebar')" to="/account/developer-support">Developer Support</router-link></li>
             <li><router-link @click.native="$emit('closeSidebar')" to="/account/billing">Billing</router-link></li>
             <li><router-link @click.native="$emit('closeSidebar')" to="/account/settings">Settings</router-link></li>
         </ul>

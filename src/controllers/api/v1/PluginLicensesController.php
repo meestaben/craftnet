@@ -141,6 +141,7 @@ class PluginLicensesController extends BaseApiController
         $ownerId = User::find()
             ->select(['elements.id'])
             ->email($payload->email)
+            ->asArray()
             ->scalar();
 
         $license = new PluginLicense([

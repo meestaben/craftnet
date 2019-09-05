@@ -8,13 +8,15 @@ use craft\commerce\errors\PaymentSourceException;
 use craft\commerce\models\PaymentSource;
 use craft\commerce\models\Transaction;
 use craft\commerce\Plugin as Commerce;
-use craft\commerce\stripe\gateways\Gateway;
-use craft\commerce\stripe\gateways\Gateway as StripeGateway;
-use craft\commerce\stripe\models\forms\Payment;
+use craft\commerce\stripe\gateways\PaymentIntents as StripeGateway;
+use craft\commerce\stripe\models\forms\payment\PaymentIntent as PaymentForm;
 use craft\commerce\stripe\Plugin as Stripe;
+use craft\helpers\StringHelper;
 use craftnet\errors\ValidationException;
 use Stripe\Customer as StripeCustomer;
 use Stripe\Error\Base as StripeError;
+use Stripe\PaymentMethod as StripePaymentMethod;
+use Stripe\Source as StripeSource;
 use yii\base\Exception;
 use yii\base\UserException;
 use yii\web\BadRequestHttpException;
@@ -114,7 +116,7 @@ class PaymentsController extends CartsController
             $gateway = $commerce->getGateways()->getGatewayById(getenv('STRIPE_GATEWAY_ID'));
 
             // pay
-            /** @var Payment $paymentForm */
+            /** @var PaymentForm $paymentForm */
             $paymentForm = $gateway->getPaymentFormModel();
 
             try {
@@ -142,39 +144,80 @@ class PaymentsController extends CartsController
      * Populates a Stripe payment form from the payload.
      *
      * @param \stdClass $payload
-     * @param Gateway $gateway
-     * @param Payment $paymentForm
+     * @param StripeGateway $gateway
+     * @param PaymentForm $paymentForm
      * @throws PaymentSourceException
      */
-    private function _populatePaymentForm(\stdClass $payload, Gateway $gateway, Payment $paymentForm)
+    private function _populatePaymentForm(\stdClass $payload, StripeGateway $gateway, PaymentForm $paymentForm)
     {
         // use the payload's token by default
-        $paymentForm->token = $payload->token;
-
-        // if the request is anonymous, we're done
-        if (($user = Craft::$app->getUser()->getIdentity(false)) === null) {
-            return;
-        }
+        $paymentForm->paymentMethodId = $payload->token;
 
         $commerce = Commerce::getInstance();
         $stripe = Stripe::getInstance();
         $paymentSourcesService = $commerce->getPaymentSources();
         $customersService = $stripe->getCustomers();
+        $user = Craft::$app->getUser()->getIdentity(false);
 
-        // see if the token is for an existing Stripe source
-        $existingPaymentSources = $paymentSourcesService->getAllGatewayPaymentSourcesByUserId($gateway->id, $user->id);
-        foreach ($existingPaymentSources as $paymentSource) {
-            if ($paymentSource->token === $payload->token) {
-                $customer = $customersService->getCustomer($gateway->id, $user);
-                $paymentForm->customer = $customer->reference;
-                return;
-            }
+        $stripeCustomerId = null;
+
+        // Fetch a potentially existing customer
+        if ($this->_isPaymentMethod($paymentForm)) {
+            $paymentMethod = StripePaymentMethod::retrieve($paymentForm->paymentMethodId);
+            $stripeCustomerId = $paymentMethod->customer ?? null;
+        } else {
+            $paymentSource = StripeSource::retrieve($paymentForm->paymentMethodId);
+            $stripeCustomerId = $paymentSource->customer ?? null;
         }
 
-        // if they don't want to make this their new primary card, then just checkout as a guest
-        if (empty($payload->makePrimary)) {
+        $cart = $this->getCart($payload->orderNumber);
+        $address = $cart->getBillingAddress();
+
+        $customerData = [
+            'address' => [
+                'line1' => $address->address1,
+                'line2' => $address->address2,
+                'country' => $address->getCountry()->iso,
+                'city' => $address->city,
+                'postal_code' => $address->zipCode,
+                'state' => $address->getState(),
+            ],
+            'name' => $address->getFullName(),
+            'email' => $cart->getEmail(),
+        ];
+
+        // If there was no customer stored on payment method
+        if (!$stripeCustomerId) {
+            $customerData['source'] = $payload->token;
+            $customerData['description'] = 'Guest customer created for order #' . $payload->orderNumber;
+
+            // If a user is logged in and they wish to store this card
+            if ($user && $payload->makePrimary) {
+                // Fetch a customer
+                $customer = $customersService->getCustomer($gateway->id, $user);
+
+                // Update the customer data
+                $stripeCustomer = StripeCustomer::update($customer->reference, $customerData);
+                $customer->response = $stripeCustomer->jsonSerialize();
+                $customersService->saveCustomer($customer);
+            } else {
+                // Otherwise create an anonymous customer
+                $stripeCustomer = StripeCustomer::create($customerData);
+            }
+        } else {
+            // If we had a customer stored on the payment method, no need to tell it to use the payment method
+            $stripeCustomer = StripeCustomer::update($stripeCustomerId, $customerData);
+        }
+
+        $paymentForm->customer = $stripeCustomer->id;
+
+        // If there's no need to make anything primary - bye!
+        if (!$user || !$payload->makePrimary) {
             return;
         }
+
+        // We get this far if this is an existing source OR user wants to make it primary
+        $existingPaymentSources = $paymentSourcesService->getAllGatewayPaymentSourcesByUserId($gateway->id, $user->id);
 
         // delete any existing payment sources
         // todo: remove this if we ever add support for multiple cards
@@ -182,18 +225,17 @@ class PaymentsController extends CartsController
             $paymentSourcesService->deletePaymentSourceById($paymentSource->id);
         }
 
-        // get the Stripe customer
-        $customer = $customersService->getCustomer($gateway->id, $user);
-        /** @var StripeCustomer $stripeCustomer */
-        $stripeCustomer = StripeCustomer::retrieve($customer->reference);
+        // Retrieve the freshest of data
+        if ($this->_isPaymentMethod($paymentForm)) {
+            $stripeResponse = StripePaymentMethod::retrieve($paymentForm->paymentMethodId);
+        } else {
+            $stripeResponse = $paymentSource = StripeSource::retrieve($paymentForm->paymentMethodId);
+        }
 
-        // create a new source
-        $stripeResponse = $stripeCustomer->sources->create([
-            'source' => $payload->token
-        ]);
-
-        // set it as the customer default
-        $stripeCustomer->default_source = $stripeResponse->id;
+        // Set it as the customer default for subscriptions
+        $stripeCustomer->invoice_settings = [
+            'default_payment_method' => $paymentForm->paymentMethodId
+        ];
         $stripeCustomer->save();
 
         // save it for Commerce
@@ -206,11 +248,16 @@ class PaymentsController extends CartsController
         ]);
 
         if (!$paymentSourcesService->savePaymentSource($paymentSource)) {
-            throw new PaymentSourceException('Could not create the payment source: ' . implode(', ', $paymentSource->getErrorSummary(true)));
+            throw new PaymentSourceException('Could not create the payment method: ' . implode(', ', $paymentSource->getErrorSummary(true)));
         }
+    }
 
-        // update the payment token and customer
-        $paymentForm->token = $stripeResponse->id;
-        $paymentForm->customer = $customer->reference;
+    /**
+     * @param PaymentForm $paymentForm
+     * @return bool
+     */
+    private function _isPaymentMethod(PaymentForm $paymentForm): bool
+    {
+        return StringHelper::startsWith($paymentForm->paymentMethodId, 'pm_');
     }
 }

@@ -1,10 +1,10 @@
 <template>
     <transition :name="transition" @enter="$emit('enter')" @after-enter="$emit('after-enter')" @leave="$emit('leave')">
-        <div v-if="show" class="modal" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" @click="test">
-            <div :class="modalTypeClass" role="document">
+        <div v-if="show" class="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" @click="onBackgroundClick" @keydown.esc="$emit('close')">
+            <div class="modal-dialog" :class="modalTypeClass" role="document">
                 <div class="modal-content">
                     <div v-if="$slots.header" class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel"><slot name="header"></slot></h5>
+                        <h5 class="modal-title" id="modalLabel"><slot name="header"></slot></h5>
                     </div>
                     <div class="modal-body">
                         <slot name="body"></slot>
@@ -35,9 +35,9 @@
         },
 
         methods: {
-            test($ev) {
+            onBackgroundClick($ev) {
                 if ($ev.target.classList.contains('modal')) {
-                    this.$emit('background-click')
+                    this.$emit('close')
                 }
             }
         }
@@ -48,6 +48,10 @@
     .modal {
         @apply .fixed .pin .block .z-10 .flex .items-center .content-center .justify-center;
         background: rgba(0,0,0,0.7);
+
+        .modal-wide {
+            @apply .w-full .max-w-lg;
+        }
 
         .modal-content {
             @apply .flex .flex-col .bg-white .rounded .p-8;

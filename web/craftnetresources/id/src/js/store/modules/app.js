@@ -20,7 +20,9 @@ const state = {
         {label: "20", value: 20},
         {label: "50", value: 50},
         {label: "100", value: 100},
-    ]
+    ],
+    globalModalComponent: null,
+    showGlobalModal: false,
 }
 
 /**
@@ -119,6 +121,14 @@ const mutations = {
 
     updatePluginLicensesPerPage(state, pluginLicensesPerPage) {
         state.pluginLicensesPerPage = pluginLicensesPerPage
+    },
+
+    updateGlobalModalComponent(state, globalModalComponent) {
+        state.globalModalComponent = globalModalComponent
+    },
+
+    updateShowGlobalModal(state, showGlobalModal) {
+        state.showGlobalModal = showGlobalModal
     },
 }
 

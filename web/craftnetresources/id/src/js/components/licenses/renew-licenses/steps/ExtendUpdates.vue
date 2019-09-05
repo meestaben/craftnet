@@ -2,7 +2,7 @@
     <div>
         <dropdown :value="renew" @input="$emit('update:renew', $event)" :options="renewOptions" />
         <btn @click="$emit('cancel')">Cancel</btn>
-        <btn kind="primary" @click="$emit('continue')">Continue</btn>
+        <btn ref="submitBtn" kind="primary" @click="$emit('continue')">Continue</btn>
     </div>
 </template>
 
@@ -33,5 +33,9 @@
                 return options
             },
         },
+
+        mounted() {
+            this.$refs.submitBtn.$el.focus()
+        }
     }
 </script>

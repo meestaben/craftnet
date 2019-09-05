@@ -34,7 +34,7 @@
             </table>
 
             <btn @click="$emit('back')">Back</btn>
-            <btn @click="addToCart()" kind="primary">Add to cart</btn>
+            <btn ref="submitBtn" @click="addToCart()" kind="primary">Add to cart</btn>
         </template>
     </div>
 </template>
@@ -123,6 +123,7 @@
 
         mounted() {
             this.$refs.checkAll.click()
+            this.$refs.submitBtn.$el.focus()
         }
     }
 </script>
