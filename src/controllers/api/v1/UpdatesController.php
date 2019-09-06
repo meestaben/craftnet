@@ -120,7 +120,7 @@ class UpdatesController extends BaseApiController
             if ($cmsLicense->expired) {
                 $info['status'] = Update::STATUS_EXPIRED;
                 $info['renewalUrl'] = $cmsLicense->getEditUrl();
-                $info['renewalPrice'] = $cmsLicense->getRenewalPrice();
+                $info['renewalPrice'] = $cmsLicense->getEdition()->renewalPrice;
                 $info['renewalCurrency'] = 'USD';
             }
         }
@@ -162,7 +162,7 @@ class UpdatesController extends BaseApiController
                 if ($pluginLicense->expired) {
                     $info['status'] = Update::STATUS_EXPIRED;
                     $info['renewalUrl'] = $pluginLicense->getEditUrl();
-                    $info['renewalPrice'] = $pluginLicense->getRenewalPrice();
+                    $info['renewalPrice'] = $pluginLicense->getEdition()->renewalPrice;
                     $info['renewalCurrency'] = 'USD';
                 }
             }

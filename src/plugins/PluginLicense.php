@@ -187,6 +187,7 @@ class PluginLicense extends License
 
     /**
      * @inheritdoc
+     * @return PluginEdition
      */
     public function getEdition(): EditionInterface
     {
