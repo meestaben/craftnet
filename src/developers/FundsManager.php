@@ -8,14 +8,12 @@ use craft\db\Query;
 use craft\elements\User;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Db;
-use craft\helpers\StringHelper;
 use craftnet\errors\InaccessibleFundsException;
 use craftnet\errors\InsufficientFundsException;
 use craftnet\errors\MissingStripeAccountException;
 use Moccalotto\Eu\CountryInfo;
 use Stripe\Charge;
 use Stripe\Error\Base as StripeError;
-use Stripe\PaymentIntent;
 use Stripe\Stripe;
 use Stripe\Transfer;
 use yii\base\BaseObject;
@@ -153,11 +151,6 @@ class FundsManager extends BaseObject
                     $itemDescriptions[] = $lineItem->getDescription();
                 }
                 try {
-                    if (StringHelper::startsWith($chargeId, 'pi_')) {
-                        $stripePaymentIntent = PaymentIntent::retrieve($chargeId);
-                        $chargeId = $stripePaymentIntent->charges->data[0]->id;
-                    }
-
                     $transfer = $this->_transferFunds("Funds transferred for order {$orderNumber}", $transferAmount, [
                         'source_transaction' => $chargeId,
                         'metadata' => [

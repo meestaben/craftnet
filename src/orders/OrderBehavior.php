@@ -6,11 +6,13 @@ use Craft;
 use craft\commerce\elements\Order;
 use craft\commerce\records\Transaction as TransactionRecord;
 use craft\elements\User;
+use craft\helpers\StringHelper;
 use craftnet\cms\CmsLicense;
 use craftnet\developers\UserBehavior;
 use craftnet\Module;
 use craftnet\plugins\PluginLicense;
 use craftnet\plugins\PluginPurchasable;
+use Stripe\PaymentIntent;
 use yii\base\Behavior;
 
 /**
@@ -106,6 +108,15 @@ class OrderBehavior extends Behavior
             return;
         }
 
+        // Grab the charge id from the transaction
+        $chargeId = $transaction->reference;
+
+        // In case we're dealing with a payment intent here, grab the latest charge
+        if (StringHelper::startsWith($chargeId, 'pi_')) {
+            $stripePaymentIntent = PaymentIntent::retrieve($chargeId);
+            $chargeId = $stripePaymentIntent->charges->data[0]->id;
+        }
+
         // Try transferring funds to them
         foreach ($developers as $developerId => $developer) {
             // ignore if this is us
@@ -117,7 +128,7 @@ class OrderBehavior extends Behavior
             $lineItems = $developerLineItems[$developerId];
             $total = $developerTotals[$developerId];
             $fee = floor($total * 20) / 100;
-            $developer->getFundsManager()->processOrder($this->owner->number, $lineItems, $transaction->reference, $total, $fee);
+            $developer->getFundsManager()->processOrder($this->owner->number, $lineItems, $chargeId, $total, $fee);
         }
 
         // Now send developer notification emails
