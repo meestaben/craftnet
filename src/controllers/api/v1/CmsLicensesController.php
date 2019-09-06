@@ -75,7 +75,7 @@ class CmsLicensesController extends BaseApiController
                     $pluginLicenseInfo = $pluginLicense->toArray([], ['plugin.icon']);
                     if ($pluginLicense->expired) {
                         $pluginLicenseInfo['renewalUrl'] = $pluginLicense->getEditUrl();
-                        $pluginLicenseInfo['renewalPrice'] = $pluginLicense->getRenewalPrice();
+                        $pluginLicenseInfo['renewalPrice'] = $pluginLicense->getEdition()->renewalPrice;
                         $pluginLicenseInfo['renewalCurrency'] = 'USD';
                     }
                     if ($this->cmsVersion) {

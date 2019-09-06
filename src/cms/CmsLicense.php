@@ -199,6 +199,7 @@ class CmsLicense extends License
 
     /**
      * @inheritdoc
+     * @return CmsEdition
      */
     public function getEdition(): EditionInterface
     {
