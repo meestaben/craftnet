@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "6e8f095677b2ca3c72af05b1ff81203c",
+    "content-hash": "c15c54dce07ca7591c7aeaa98e36ce58",
     "packages": [
         {
             "name": "adam-paterson/oauth2-stripe",
@@ -188,9 +188,9 @@
             "authors": [
                 {
                     "name": "Carsten Brandt",
+                    "role": "Creator",
                     "email": "mail@cebe.cc",
-                    "homepage": "http://cebe.cc/",
-                    "role": "Creator"
+                    "homepage": "http://cebe.cc/"
                 }
             ],
             "description": "A super fast, highly extensible markdown parser for PHP",
@@ -700,7 +700,7 @@
                 "craftcms",
                 "yii2"
             ],
-            "time": "2019-08-08T08:21:28+00:00"
+            "time": "2019-08-08 08:21:28"
         },
         {
             "name": "craftcms/commerce-stripe",
@@ -708,12 +708,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/craftcms/commerce-stripe.git",
-                "reference": "a51457a46a65e91eb3d2c84089afbe1d8acdd7c0"
+                "reference": "8429564985a85c7b339ba4bfe0dc543c8abab443"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/craftcms/commerce-stripe/zipball/a51457a46a65e91eb3d2c84089afbe1d8acdd7c0",
-                "reference": "a51457a46a65e91eb3d2c84089afbe1d8acdd7c0",
+                "url": "https://api.github.com/repos/craftcms/commerce-stripe/zipball/8429564985a85c7b339ba4bfe0dc543c8abab443",
+                "reference": "8429564985a85c7b339ba4bfe0dc543c8abab443",
                 "shasum": ""
             },
             "require": {
@@ -749,7 +749,7 @@
                 "stripe",
                 "yii2"
             ],
-            "time": "2019-08-13T07:54:12+00:00"
+            "time": "2019-09-20 19:26:02"
         },
         {
             "name": "craftcms/oauth2-craftid",
@@ -1998,8 +1998,8 @@
             "authors": [
                 {
                     "name": "Luís Otávio Cobucci Oblonczyk",
-                    "email": "lcobucci@gmail.com",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "email": "lcobucci@gmail.com"
                 }
             ],
             "description": "A simple library to work with JSON Web Token and JSON Web Signature",
@@ -2209,6 +2209,13 @@
                 "paragonie/random_compat": "^1|^2|^9.99",
                 "php": "^5.6|^7.0"
             },
+            "require-dev": {
+                "eloquent/liberator": "^2.0",
+                "eloquent/phony-phpunit": "^1.0|^3.0",
+                "jakub-onderka/php-parallel-lint": "^0.9.2",
+                "phpunit/phpunit": "^5.7|^6.0",
+                "squizlabs/php_codesniffer": "^2.3|^3.0"
+            },
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -2220,20 +2227,21 @@
                     "League\\OAuth2\\Client\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "authors": [
                 {
                     "name": "Alex Bilbie",
+                    "role": "Developer",
                     "email": "hello@alexbilbie.com",
-                    "homepage": "http://www.alexbilbie.com",
-                    "role": "Developer"
+                    "homepage": "http://www.alexbilbie.com"
                 },
                 {
                     "name": "Woody Gilk",
-                    "homepage": "https://github.com/shadowhand",
-                    "role": "Contributor"
+                    "role": "Contributor",
+                    "homepage": "https://github.com/shadowhand"
                 }
             ],
             "description": "OAuth 2.0 Client Library",
@@ -4088,6 +4096,7 @@
                     "Psr\\Log\\": "Psr/Log/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -5511,8 +5520,8 @@
             "authors": [
                 {
                     "name": "Nicola Asuni",
-                    "email": "info@tecnick.com",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "info@tecnick.com"
                 }
             ],
             "description": "TCPDF is a PHP class for generating PDF documents and barcodes.",

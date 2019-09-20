@@ -4,6 +4,8 @@ namespace craftnet\controllers\id;
 
 use Craft;
 use craft\commerce\Plugin as Commerce;
+use craft\commerce\stripe\Plugin as StripePlugin;
+use craft\helpers\DateTimeHelper;
 use craft\web\Controller;
 use craftnet\Module;
 use Throwable;
@@ -85,5 +87,39 @@ class InvoicesController extends Controller
         } catch (Throwable $e) {
             return $this->asErrorJson($e->getMessage());
         }
+    }
+
+    /**
+     * Get invoices.
+     *
+     * @return Response
+     */
+    public function actionGetSubscriptionInvoices(): Response
+    {
+        $user = Craft::$app->getUser()->getIdentity();
+        $invoices = StripePlugin::getInstance()->getInvoices()->getUserInvoices($user->id);
+
+        $data = [
+            'invoices' => []
+        ];
+
+        foreach ($invoices as $invoice) {
+            $invoiceData = $invoice->invoiceData;
+
+            $latestStart = 0;
+
+            // Find the latest subscription start time and make it the invoice date.
+            foreach ($invoiceData['lines']['data'] as $lineItem) {
+                $latestStart = max($latestStart, $lineItem['period']['start']);
+            }
+
+            $data['invoices'][] = [
+                'date' => DateTimeHelper::toDateTime($latestStart)->format('Y-m-d'),
+                'amount' => $invoiceData['total'] / 100,
+                'url' => $invoiceData['invoice_pdf'],
+            ];
+        }
+
+        return $this->asJson($data);
     }
 }
