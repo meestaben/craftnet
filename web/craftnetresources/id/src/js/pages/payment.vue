@@ -30,7 +30,7 @@
                         <coupon-code></coupon-code>
                     </div>
                     <div class="md:w-1/2 px-8 border-l">
-                        <h2>Billing Informations</h2>
+                        <h2>Billing Info</h2>
                         <billing-infos
                                 :billingInfo.sync="billingInfo"
                                 :errors="errors"></billing-infos>
