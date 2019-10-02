@@ -27,6 +27,14 @@
                 <invoices-table></invoices-table>
             </div>
         </div>
+
+        <div class="card mb-6">
+            <div class="card-body">
+                <h4>Subscription Invoices</h4>
+
+                <subscription-invoices-table></subscription-invoices-table>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -35,6 +43,7 @@
     import BillingInvoiceDetails from '../../../components/billing/BillingInvoiceDetails'
     import BillingAddressForm from '../../../components/billing/BillingAddressForm'
     import InvoicesTable from '../../../components/billing/InvoicesTable'
+    import SubscriptionInvoicesTable from '../../../components/billing/SubscriptionInvoicesTable'
 
     export default {
         components: {
@@ -42,6 +51,7 @@
             BillingInvoiceDetails,
             BillingAddressForm,
             InvoicesTable,
+            SubscriptionInvoicesTable,
         },
     }
 </script>
