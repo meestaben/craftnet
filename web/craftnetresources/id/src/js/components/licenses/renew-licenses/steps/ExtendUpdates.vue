@@ -12,14 +12,16 @@
 
         computed: {
             renewOptions() {
-                if (!this.license.expiryDateOptions) {
+                const renewalOptions = this.license.renewalOptions
+
+                if (!renewalOptions) {
                     return []
                 }
 
                 let options = [];
 
-                for (let i = 0; i < this.license.expiryDateOptions.length; i++) {
-                    const expiryDateOption = this.license.expiryDateOptions[i]
+                for (let i = 0; i < renewalOptions.length; i++) {
+                    const expiryDateOption = renewalOptions[i]
                     const renewalOption = this.license.renewalOptions[i]
 
                     const date = expiryDateOption[1]

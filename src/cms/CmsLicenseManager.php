@@ -540,24 +540,11 @@ class CmsLicenseManager extends Component
         $license['editionDetails'] = CmsEdition::findOne($result->editionId);
 
         if (!empty($license['expiresOn'])) {
-            // Expiry Date Options
-            $license['expiryDateOptions'] = LicenseHelper::getExpiryDateOptions($license['expiresOn']);
+            $cmsLicenseExpiryDate = $license['expiresOn'];
 
-            // RenewalPriceOptions
-            $license['renewalOptions'] = [];
-
-            $expiryDate = $license['expiresOn'];
-
-            foreach ($license['expiryDateOptions'] as $key => $expiryDateOption) {
-                $renewalPrice = $license['editionDetails']->renewalPrice;
-                $nextYear = OrderHelper::expiryStr2Obj($expiryDateOption[1]);
-                $paidRenewalYears = OrderHelper::dateDiffInYears($nextYear, $expiryDate);
-
-                $license['renewalOptions'][$key] = [
-                    'expiryDate' => $expiryDateOption[1],
-                    'amount' => round($renewalPrice * $paidRenewalYears, 2)
-                ];
-            }
+            // CMS renewal options
+            $renewalPrice = $license['editionDetails']->renewalPrice;
+            $license['renewalOptions'] = $this->getRenewalOptions($cmsLicenseExpiryDate, $renewalPrice);
         }
 
         // Plugin Licenses
@@ -589,24 +576,13 @@ class CmsLicenseManager extends Component
 
                 $pluginLicenses[] = $pluginLicense;
 
-                // Plugin renewals
-                $pluginRenewalOptions = [];
-                $pluginExpiryDateOptions = LicenseHelper::getExpiryDateOptions($license['expiresOn']);
-
-                $expiryDate = $pluginLicense['expiresOn'];
-
-                foreach ($pluginExpiryDateOptions as $expiryDateOption) {
-                    $renewalPrice = $pluginLicense['edition']->renewalPrice;
-                    $nextYear = OrderHelper::expiryStr2Obj($expiryDateOption[1]);
-                    $paidRenewalYears = OrderHelper::dateDiffInYears($nextYear, $expiryDate);
-
-                    $pluginRenewalOptions[] = [
-                        'expiryDate' => $expiryDateOption[1],
-                        'amount' => round($renewalPrice * $paidRenewalYears, 2)
-                    ];
+                // Plugin renewal options
+                if (isset($cmsLicenseExpiryDate)) {
+                    $pluginHandle = $pluginLicense['edition']->getPlugin()->handle;
+                    $pluginRenewalPrice = $pluginLicense['edition']->renewalPrice;
+                    $pluginExpiryDate = $pluginLicense['expiresOn'];
+                    $license['pluginRenewalOptions'][$pluginHandle] = $this->getRenewalOptions($pluginExpiryDate, $pluginRenewalPrice, $cmsLicenseExpiryDate);
                 }
-
-                $license['pluginRenewalOptions'][$pluginLicense['edition']->getPlugin()->handle] = $pluginRenewalOptions;
             }
 
             $license['pluginLicenses'] = $pluginLicenses;
@@ -722,5 +698,34 @@ class CmsLicenseManager extends Component
         }
 
         return $query;
+    }
+
+    /**
+     * @param \DateTime $licenseExpiryDate
+     * @param float $renewalPrice
+     * @param \DateTime|null $optionsExpiryDate
+     * @return array
+     * @throws \Exception
+     */
+    private function getRenewalOptions(\DateTime $licenseExpiryDate, float $renewalPrice, \DateTime $optionsExpiryDate = null): array
+    {
+        if (!$optionsExpiryDate) {
+            $optionsExpiryDate = $licenseExpiryDate;
+        }
+
+        $expiryDateOptions = LicenseHelper::getExpiryDateOptions($optionsExpiryDate);
+        $renewalOptions = [];
+
+        foreach ($expiryDateOptions as $key => $expiryDateOption) {
+            $nextYear = OrderHelper::expiryStr2Obj($expiryDateOption[1]);
+            $paidRenewalYears = OrderHelper::dateDiffInYears($nextYear, $licenseExpiryDate);
+
+            $renewalOptions[$key] = [
+                'expiryDate' => $expiryDateOption[1],
+                'amount' => round($renewalPrice * $paidRenewalYears, 2)
+            ];
+        }
+
+        return $renewalOptions;
     }
 }

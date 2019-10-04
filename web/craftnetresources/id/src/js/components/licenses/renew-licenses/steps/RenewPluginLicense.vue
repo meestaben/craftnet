@@ -58,22 +58,21 @@
                 cartItems: 'cart/cartItems',
             }),
 
-            expiryDateOptions() {
-                return this.license.expiryDateOptions
+            renewalOptions() {
+                return this.license.renewalOptions
             },
 
             extendUpdateOptions() {
-                if (!this.expiryDateOptions) {
+                if (!this.renewalOptions) {
                     return []
                 }
 
                 let options = [];
 
-                for (let i = 0; i < this.expiryDateOptions.length; i++) {
-                    const expiryDateOption = this.expiryDateOptions[i]
-                    const date = expiryDateOption[1]
+                for (let i = 0; i < this.renewalOptions.length; i++) {
+                    const renewalOption = this.renewalOptions[i]
+                    const date = renewalOption.expiryDate
                     const formattedDate = this.$moment(date).format('YYYY-MM-DD')
-                    const renewalOption = this.license.renewalOptions[i]
                     const label = "Extend updates until " + formattedDate  + ' (' + this.$options.filters.currency(renewalOption.amount) +')'
 
                     options.push({
@@ -95,15 +94,15 @@
             },
 
             expiryDate() {
-                if (!this.expiryDateOptions) {
+                if (!this.renewalOptions) {
                     return null
                 }
 
-                if (!this.expiryDateOptions[this.renew]) {
+                if (!this.renewalOptions[this.renew]) {
                     return null
                 }
 
-                const date = this.expiryDateOptions[this.renew][1]
+                const date = this.renewalOptions[this.renew].expiryDate
 
                 return this.$moment(date).format('YYYY-MM-DD')
             },
@@ -115,7 +114,7 @@
             }),
 
             addToCart() {
-                const expiryDate = this.expiryDateOptions[this.renew][0]
+                const expiryDate = this.renewalOptions[this.renew].expiryDate
                 const item = {
                     type: 'plugin-renewal',
                     licenseKey: this.license.key,

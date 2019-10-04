@@ -112,9 +112,9 @@ export default {
             let renewableLicenses = []
 
             // CMS license
-            const expiryDateOptions = license.expiryDateOptions
-            let expiryDate = expiryDateOptions[renew][1]
-            const renewalOption = license.renewalOptions.find(r => r.expiryDate === expiryDate)
+            const renewalOptions = license.renewalOptions
+            const renewalOption = renewalOptions[renew]
+            const expiryDate = renewalOption.expiryDate
 
             renewableLicenses.push({
                 type: 'cms-renewal',
