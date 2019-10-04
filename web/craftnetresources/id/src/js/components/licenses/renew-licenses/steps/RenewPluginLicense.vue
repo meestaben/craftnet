@@ -140,7 +140,10 @@
         },
 
         mounted() {
+            // Make a copy of `alreadyInCart` value to prevent “Already in cart” text to show up when item gets added to the cart.
             this.alreadyInCart = this.isAlreadyInCart()
+
+            // Get meta
             this.loading = true
 
             this.getMeta()
