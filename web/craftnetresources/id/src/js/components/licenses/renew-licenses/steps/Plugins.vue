@@ -18,7 +18,6 @@
                     :key="key"
                     :itemKey="key"
                     :isChecked="checkedLicenses[key]"
-                    :loading="loading"
                     @checkLicense="checkLicense($event, key)"
             ></renewable-license-table-row>
             </tbody>
