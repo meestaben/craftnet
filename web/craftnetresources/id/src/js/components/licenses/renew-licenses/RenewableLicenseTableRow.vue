@@ -22,6 +22,17 @@
 
 <script>
     export default {
-        props: ['itemKey', 'renewableLicense', 'isChecked', 'alreadyInCart'],
+        props: ['itemKey', 'renewableLicense', 'isChecked'],
+
+        data() {
+            return {
+                alreadyInCart: false,
+            }
+        },
+
+        mounted() {
+            // Make a copy of `alreadyInCart` value to prevent “Already in cart” text to show up when item gets added to the cart.
+            this.alreadyInCart = this.renewableLicense.alreadyInCart
+        }
     }
 </script>

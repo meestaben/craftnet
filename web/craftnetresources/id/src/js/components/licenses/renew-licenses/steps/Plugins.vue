@@ -13,13 +13,12 @@
             </thead>
             <tbody>
             <renewable-license-table-row
-                    v-for="(renewableLicense, key) in renewableLicenses(license, renew)"
+                    v-for="(renewableLicense, key) in renewableLicenses"
                     :renewableLicense="renewableLicense"
                     :key="key"
                     :itemKey="key"
                     :isChecked="checkedLicenses[key]"
                     :loading="loading"
-                    :alreadyInCart="alreadyInCart[key]"
                     @checkLicense="checkLicense($event, key)"
             ></renewable-license-table-row>
             </tbody>
@@ -49,7 +48,6 @@
             return {
                 loading: false,
                 checkAllChecked: false,
-                alreadyInCart: [],
             }
         },
 
@@ -59,23 +57,13 @@
                 cartItems: 'cart/cartItems',
             }),
 
-            renewableLicensesAlreadyInCart() {
-                const renewableLicenses = this.renewableLicenses(this.license, this.renew)
-                const alreadyInCart = []
-                const cartItems = this.cartItems
-
-                renewableLicenses.forEach(function(renewableLicense) {
-                    const licenseKey = renewableLicense.key
-                    const isAlreadyInCart = !!cartItems.find(item => item.lineItem.options.licenseKey === licenseKey)
-                    alreadyInCart.push(isAlreadyInCart)
-                }.bind(this))
-
-                return alreadyInCart
+            renewableLicenses() {
+                return this.getRenewableLicenses(this.license, this.renew, this.cartItems)
             },
 
             hasCheckedLicenses() {
                 return !!this.checkedLicenses.find(checked => checked === 1)
-            }
+            },
         },
 
         methods: {
@@ -98,8 +86,8 @@
                 let checkedLicenses = []
 
                 if ($event.target.checked) {
-                    this.renewableLicenses(this.license, this.renew).forEach(function(renewableLicense, key) {
-                        if (this.alreadyInCart[key]) {
+                    this.renewableLicenses.forEach(function(renewableLicense, key) {
+                        if (renewableLicense.alreadyInCart) {
                             return false
                         }
 
@@ -113,7 +101,7 @@
             },
 
             addToCart() {
-                const renewableLicenses = this.renewableLicenses(this.license, this.renew)
+                const renewableLicenses = this.renewableLicenses
                 const items = []
 
                 renewableLicenses.forEach(function(renewableLicense, key) {
@@ -154,9 +142,6 @@
         },
 
         mounted() {
-            // Make a copy of `alreadyInCart` array to prevent “Already in cart” text to show up when items have just been added to the cart.
-            this.alreadyInCart = this.renewableLicensesAlreadyInCart
-
             this.$refs.checkAll.click()
             this.$refs.submitBtn.$el.focus()
         }

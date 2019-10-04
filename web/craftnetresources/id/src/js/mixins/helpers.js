@@ -108,7 +108,7 @@ export default {
             return diffDays;
         },
 
-        renewableLicenses(license, renew) {
+        getRenewableLicenses(license, renew, cartItems) {
             let renewableLicenses = []
 
             // CMS license
@@ -123,6 +123,7 @@ export default {
                 expiryDate: expiryDate,
                 expiresOn: license.expiresOn,
                 edition: license.editionDetails,
+                alreadyInCart: this.licenseKeyAlreadyInCart(license.key, cartItems),
             })
 
             // Plugin licenses
@@ -156,11 +157,16 @@ export default {
                         expiryDate: expiryDate,
                         expiresOn: renewablePluginLicense.expiresOn,
                         edition: renewablePluginLicense.edition,
+                        alreadyInCart: this.licenseKeyAlreadyInCart(renewablePluginLicense.key, cartItems),
                     })
-                })
+                }.bind(this))
             }
 
             return renewableLicenses
+        },
+
+        licenseKeyAlreadyInCart(licenseKey, cartItems) {
+            return !!cartItems.find(item => item.lineItem.options.licenseKey === licenseKey)
         },
     }
 }
