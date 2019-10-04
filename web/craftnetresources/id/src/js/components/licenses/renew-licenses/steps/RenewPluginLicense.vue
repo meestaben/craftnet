@@ -28,7 +28,8 @@
             </table>
 
             <btn @click="$emit('cancel')">Cancel</btn>
-            <btn ref="submitBtn" kind="primary" @click="addToCart()" :disabled="alreadyInCart">Add to cart</btn>
+            <btn ref="submitBtn" kind="primary" @click="addToCart()" :disabled="alreadyInCart || addToCartLoading">Add to cart</btn>
+            <spinner v-if="addToCartLoading"></spinner>
         </template>
     </div>
 </template>
@@ -42,7 +43,9 @@
         data() {
             return {
                 loading: false,
+                addToCartLoading: false,
                 renew: null,
+                alreadyInCart: false,
             }
         },
 
@@ -99,13 +102,6 @@
 
                 return this.$moment(date).format('YYYY-MM-DD')
             },
-
-            alreadyInCart() {
-                const licenseKey = this.license.key
-                const cartItems = this.cartItems
-                
-                return cartItems.find(item => item.lineItem.options.licenseKey === licenseKey)
-            }
         },
 
         methods: {
@@ -121,18 +117,30 @@
                     expiryDate: expiryDate,
                 }
 
+                this.addToCartLoading = true
+
                 this.$store.dispatch('cart/addToCart', [item])
                     .then(() => {
+                        this.addToCartLoading = false
                         this.$router.push({path: '/cart'})
                         this.$emit('addToCart')
                     })
                     .catch(errorMessage => {
+                        this.addToCartLoading = false
                         this.$store.dispatch('app/displayError', errorMessage);
                     })
             },
+
+            isAlreadyInCart() {
+                const licenseKey = this.license.key
+                const cartItems = this.cartItems
+
+                return !!cartItems.find(item => item.lineItem.options.licenseKey === licenseKey)
+            }
         },
 
         mounted() {
+            this.alreadyInCart = this.isAlreadyInCart()
             this.loading = true
 
             this.getMeta()
