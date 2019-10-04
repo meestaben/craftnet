@@ -1,69 +1,79 @@
 <template>
     <div>
+        <p>Do you want to renew plugin licenses as well?</p>
+
+        <table class="table mb-2">
+            <thead>
+            <tr>
+                <td><input type="checkbox" v-model="checkAllChecked" ref="checkAll" @change="checkAll"></td>
+                <th>Item</th>
+                <th>Renewal Date</th>
+                <th>New Renewal Date</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <renewable-license-table-row
+                    v-for="(renewableLicense, key) in renewableLicenses"
+                    :renewableLicense="renewableLicense"
+                    :key="key"
+                    :itemKey="key"
+                    :isChecked="checkedLicenses[key]"
+                    @checkLicense="checkLicense($event, key)"
+            ></renewable-license-table-row>
+
+<tr>
+<th colspan="4" class="text-right">Total</th>
+<td><strong>{{total|currency}}</strong></td>
+</tr>
+            </tbody>
+        </table>
+
+        <btn @click="$emit('back')">Back</btn>
+        <btn ref="submitBtn" @click="addToCart()" kind="primary" :disabled="!hasCheckedLicenses">Add to cart</btn>
         <spinner v-if="loading"></spinner>
-
-        <template v-else>
-            <p>Do you want to renew plugin licenses as well?</p>
-            <table class="table mb-2">
-                <thead>
-                <tr>
-                    <td><input type="checkbox" v-model="checkAllChecked" ref="checkAll" @change="checkAll"></td>
-                    <th>Item</th>
-                    <th>Renewal Date</th>
-                    <th>New Renewal Date</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="(renewableLicense, key) in renewableLicenses(license, renew)" :key="key">
-                    <td>
-                        <input
-                                type="checkbox"
-                                :value="1"
-                                :disabled="(key === 0 || !renewableLicense.key) ? true : false"
-                                :checked="renewableLicense.key ? checkedLicenses[key] : false"
-                                @input="checkLicense($event, key)" />
-                    </td>
-                    <td :class="{'text-grey': !renewableLicense.key}">{{ renewableLicense.description }}</td>
-                    <td :class="{'text-grey': !renewableLicense.key}">{{ renewableLicense.expiresOn.date|moment('YYYY-MM-DD') }}</td>
-                    <td :class="{'text-grey': !renewableLicense.key}">
-                        {{ renewableLicense.expiryDate|moment('YYYY-MM-DD') }}
-                    </td>
-                    <td>{{renewableLicense.amount|currency}}</td>
-                </tr>
-                <tr>
-                    <th colspan="4" class="text-right">Total</th>
-                    <td><strong>{{total|currency}}</strong></td>
-                </tr>
-                </tbody>
-            </table>
-
-            <btn @click="$emit('back')">Back</btn>
-            <btn ref="submitBtn" @click="addToCart()" kind="primary">Add to cart</btn>
-        </template>
     </div>
 </template>
 
 <script>
+    import {mapGetters} from 'vuex'
     import helpers from '../../../../mixins/helpers'
+    import RenewableLicenseTableRow from '../RenewableLicenseTableRow'
 
     export default {
         mixins: [helpers],
 
         props: ['license', 'renew', 'checkedLicenses'],
 
+        components: {
+            RenewableLicenseTableRow,
+        },
+
         data() {
             return {
                 loading: false,
-                checkAllChecked: false
+                checkAllChecked: false,
             }
         },
 
+
         computed: {
+            ...mapGetters({
+                cartItems: 'cart/cartItems',
+            }),
+
+            renewableLicenses() {
+                return this.getRenewableLicenses(this.license, this.renew, this.cartItems)
+            },
+
+            hasCheckedLicenses() {
+                return !!this.checkedLicenses.find(checked => checked === 1)
+            },
+
             total() {
                 let total = 0
 
-                this.renewableLicenses(this.license, this.renew).forEach(function(renewableLicense , key) {
+                this.renewableLicenses.forEach(function(renewableLicense , key) {
                     if (!this.checkedLicenses[key]) {
                         return
                     }
@@ -95,18 +105,24 @@
                 let checkedLicenses = []
 
                 if ($event.target.checked) {
-                    this.renewableLicenses(this.license, this.renew).forEach(function(renewableLicense, key) {
+                    this.renewableLicenses.forEach(function(renewableLicense, key) {
+                        if (renewableLicense.alreadyInCart) {
+                            return false
+                        }
+
                         checkedLicenses[key] = 1
-                    })
+                    }.bind(this))
                 } else {
-                    checkedLicenses[0] = 1
+                    if (!$event.target.disabled) {
+                        checkedLicenses[0] = this.checkedLicenses[0]
+                    }
                 }
 
                 this.$emit('update:checkedLicenses', checkedLicenses)
             },
 
             addToCart() {
-                const renewableLicenses = this.renewableLicenses(this.license, this.renew)
+                const renewableLicenses = this.renewableLicenses
                 const items = []
 
                 renewableLicenses.forEach(function(renewableLicense, key) {
@@ -131,12 +147,16 @@
                     items.push(item)
                 }.bind(this))
 
+                this.loading = true
+
                 this.$store.dispatch('cart/addToCart', items)
                     .then(() => {
+                        this.loading = false
                         this.$router.push({path: '/cart'})
                         this.$emit('addToCart')
                     })
                     .catch((errorMessage) => {
+                        this.loading = false
                         this.$store.dispatch('app/displayError', errorMessage)
                     })
             },

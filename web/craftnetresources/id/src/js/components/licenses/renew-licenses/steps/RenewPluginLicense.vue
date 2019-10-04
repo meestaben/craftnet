@@ -16,7 +16,10 @@
                 </thead>
                 <tbody>
                 <tr>
-                    <td>{{ license.plugin.name }}</td>
+                    <td>
+                        {{ license.plugin.name }}
+                        <div v-if="alreadyInCart" class="text-grey-dark">Already in cart.</div>
+                    </td>
                     <td>{{ license.expiresOn.date|moment('YYYY-MM-DD') }}</td>
                     <td>{{ expiryDate }}</td>
                     <td>{{ price|currency }}</td>
@@ -29,13 +32,14 @@
             </table>
 
             <btn @click="$emit('cancel')">Cancel</btn>
-            <btn ref="submitBtn" kind="primary" @click="addToCart()">Add to cart</btn>
+            <btn ref="submitBtn" kind="primary" @click="addToCart()" :disabled="alreadyInCart || addToCartLoading">Add to cart</btn>
+            <spinner v-if="addToCartLoading"></spinner>
         </template>
     </div>
 </template>
 
 <script>
-    import {mapActions} from 'vuex'
+    import {mapGetters, mapActions} from 'vuex'
 
     export default {
         props: ['license'],
@@ -43,11 +47,17 @@
         data() {
             return {
                 loading: false,
+                addToCartLoading: false,
                 renew: null,
+                alreadyInCart: false,
             }
         },
 
         computed: {
+            ...mapGetters({
+                cartItems: 'cart/cartItems',
+            }),
+
             expiryDateOptions() {
                 return this.license.expiryDateOptions
             },
@@ -96,7 +106,7 @@
                 const date = this.expiryDateOptions[this.renew][1]
 
                 return this.$moment(date).format('YYYY-MM-DD')
-            }
+            },
         },
 
         methods: {
@@ -112,18 +122,33 @@
                     expiryDate: expiryDate,
                 }
 
+                this.addToCartLoading = true
+
                 this.$store.dispatch('cart/addToCart', [item])
                     .then(() => {
+                        this.addToCartLoading = false
                         this.$router.push({path: '/cart'})
                         this.$emit('addToCart')
                     })
                     .catch(errorMessage => {
+                        this.addToCartLoading = false
                         this.$store.dispatch('app/displayError', errorMessage);
                     })
             },
+
+            isAlreadyInCart() {
+                const licenseKey = this.license.key
+                const cartItems = this.cartItems
+
+                return !!cartItems.find(item => item.lineItem.options.licenseKey === licenseKey)
+            }
         },
 
         mounted() {
+            // Make a copy of `alreadyInCart` value to prevent “Already in cart” text to show up when item gets added to the cart.
+            this.alreadyInCart = this.isAlreadyInCart()
+
+            // Get meta
             this.loading = true
 
             this.getMeta()
