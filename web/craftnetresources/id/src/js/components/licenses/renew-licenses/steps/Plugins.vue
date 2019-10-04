@@ -1,6 +1,7 @@
 <template>
     <div>
         <p>Do you want to renew plugin licenses as well?</p>
+
         <table class="table mb-2">
             <thead>
             <tr>
@@ -11,47 +12,44 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="(renewableLicense, key) in renewableLicenses(license, renew)" :key="key">
-                <td>
-                    <input
-                            type="checkbox"
-                            :value="1"
-                            :disabled="(key === 0 || !renewableLicense.key || alreadyInCart(renewableLicense)) ? true : false"
-                            :checked="renewableLicense.key && !alreadyInCart(renewableLicense) ? checkedLicenses[key] : false"
-                            @input="checkLicense($event, key)" />
-                </td>
-                <td :class="{'text-grey': !renewableLicense.key}">
-                    {{ renewableLicense.description }}
-                    <div v-if="alreadyInCart(renewableLicense) && !loading" class="text-grey-dark">Already in cart.</div>
-                </td>
-                <td :class="{'text-grey': !renewableLicense.key}">{{ renewableLicense.expiresOn.date|moment('YYYY-MM-DD') }}</td>
-                <td :class="{'text-grey': !renewableLicense.key}">
-                    {{ renewableLicense.expiryDate|moment('YYYY-MM-DD') }}
-                </td>
-                <td></td>
-            </tr>
+            <renewable-license-table-row
+                    v-for="(renewableLicense, key) in renewableLicenses(license, renew)"
+                    :renewableLicense="renewableLicense"
+                    :key="key"
+                    :itemKey="key"
+                    :isChecked="checkedLicenses[key]"
+                    :loading="loading"
+                    :alreadyInCart="alreadyInCart[key]"
+                    @checkLicense="checkLicense($event, key)"
+            ></renewable-license-table-row>
             </tbody>
         </table>
 
         <btn @click="$emit('back')">Back</btn>
-        <btn ref="submitBtn" @click="addToCart()" kind="primary">Add to cart</btn>
+        <btn ref="submitBtn" @click="addToCart()" kind="primary" :disabled="!hasCheckedLicenses">Add to cart</btn>
+        <spinner v-if="loading"></spinner>
     </div>
 </template>
 
 <script>
     import {mapGetters} from 'vuex'
-
     import helpers from '../../../../mixins/helpers'
+    import RenewableLicenseTableRow from '../RenewableLicenseTableRow'
 
     export default {
         mixins: [helpers],
 
         props: ['license', 'renew', 'checkedLicenses'],
 
+        components: {
+            RenewableLicenseTableRow,
+        },
+
         data() {
             return {
                 loading: false,
-                checkAllChecked: false
+                checkAllChecked: false,
+                alreadyInCart: [],
             }
         },
 
@@ -61,6 +59,23 @@
                 cartItems: 'cart/cartItems',
             }),
 
+            renewableLicensesAlreadyInCart() {
+                const renewableLicenses = this.renewableLicenses(this.license, this.renew)
+                const alreadyInCart = []
+                const cartItems = this.cartItems
+
+                renewableLicenses.forEach(function(renewableLicense) {
+                    const licenseKey = renewableLicense.key
+                    const isAlreadyInCart = !!cartItems.find(item => item.lineItem.options.licenseKey === licenseKey)
+                    alreadyInCart.push(isAlreadyInCart)
+                }.bind(this))
+
+                return alreadyInCart
+            },
+
+            hasCheckedLicenses() {
+                return !!this.checkedLicenses.find(checked => checked === 1)
+            }
         },
 
         methods: {
@@ -84,7 +99,7 @@
 
                 if ($event.target.checked) {
                     this.renewableLicenses(this.license, this.renew).forEach(function(renewableLicense, key) {
-                        if (this.alreadyInCart(renewableLicense)) {
+                        if (this.alreadyInCart[key]) {
                             return false
                         }
 
@@ -124,6 +139,7 @@
                 }.bind(this))
 
                 this.loading = true
+
                 this.$store.dispatch('cart/addToCart', items)
                     .then(() => {
                         this.loading = false
@@ -135,16 +151,12 @@
                         this.$store.dispatch('app/displayError', errorMessage)
                     })
             },
-
-            alreadyInCart(renewableLicense) {
-                const licenseKey = renewableLicense.key
-                const cartItems = this.cartItems
-
-                return cartItems.find(item => item.lineItem.options.licenseKey === licenseKey)
-            }
         },
 
         mounted() {
+            // Make a copy of `alreadyInCart` array to prevent “Already in cart” text to show up when items have just been added to the cart.
+            this.alreadyInCart = this.renewableLicensesAlreadyInCart
+
             this.$refs.checkAll.click()
             this.$refs.submitBtn.$el.focus()
         }
