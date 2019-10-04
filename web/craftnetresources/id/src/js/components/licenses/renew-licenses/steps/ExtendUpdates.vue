@@ -20,9 +20,11 @@
 
                 for (let i = 0; i < this.license.expiryDateOptions.length; i++) {
                     const expiryDateOption = this.license.expiryDateOptions[i]
+                    const renewalOption = this.license.renewalOptions[i]
+
                     const date = expiryDateOption[1]
                     const formattedDate = this.$moment(date).format('YYYY-MM-DD')
-                    const label = "Extend updates until " + formattedDate
+                    const label = "Extend updates until " + formattedDate + ' (' + this.$options.filters.currency(renewalOption.amount) +')'
 
                     options.push({
                         label: label,

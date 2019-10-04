@@ -9,6 +9,7 @@ use craft\errors\InvalidPluginException;
 use craft\helpers\Db;
 use craftnet\errors\LicenseNotFoundException;
 use craftnet\helpers\LicenseHelper;
+use craftnet\helpers\OrderHelper;
 use craftnet\Module;
 use yii\base\Component;
 use yii\base\Exception;
@@ -566,9 +567,21 @@ class PluginLicenseManager extends Component
         // Edition deteails
         $license['edition'] = PluginEdition::findOne($result->editionId);
 
-        // Expiry date options
         if (!empty($license['expiresOn'])) {
+            // Expiry date options
             $license['expiryDateOptions'] = LicenseHelper::getExpiryDateOptions($license['expiresOn']);
+
+            // RenewalPriceOptions
+            $license['renewalOptions'] = [];
+
+            foreach ($license['expiryDateOptions'] as $key => $expiryDateOption) {
+                $renewalPrice = $license['edition']->renewalPrice;
+
+                $license['renewalOptions'][$key] = [
+                    'expiryDate' => $expiryDateOption[1],
+                    'amount' => round($renewalPrice * ($key + 1), 2)
+                ];
+            }
         }
 
         // Plugin

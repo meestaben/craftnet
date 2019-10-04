@@ -114,6 +114,7 @@ export default {
             // CMS license
             const expiryDateOptions = license.expiryDateOptions
             let expiryDate = expiryDateOptions[renew][1]
+            const renewalOption = license.renewalOptions.find(r => r.expiryDate === expiryDate)
 
             renewableLicenses.push({
                 type: 'cms-renewal',
@@ -123,6 +124,7 @@ export default {
                 expiryDate: expiryDate,
                 expiresOn: license.expiresOn,
                 edition: license.editionDetails,
+                amount: renewalOption.amount
             })
 
             // Plugin licenses
@@ -149,6 +151,11 @@ export default {
 
                 // Add renewable plugin licenses to the `renewableLicenses` array
                 renewablePluginLicenses.forEach(function(renewablePluginLicense) {
+                    const pluginHandle = renewablePluginLicense.plugin.handle
+                    const pluginRenewalOptions = license.pluginRenewalOptions[pluginHandle]
+                    const pluginRenewalOption = pluginRenewalOptions.find(r => r.expiryDate === expiryDate)
+                    const amount = pluginRenewalOption.amount
+
                     renewableLicenses.push({
                         type: 'plugin-renewal',
                         key: renewablePluginLicense.key,
@@ -156,6 +163,7 @@ export default {
                         expiryDate: expiryDate,
                         expiresOn: renewablePluginLicense.expiresOn,
                         edition: renewablePluginLicense.edition,
+                        amount: amount,
                     })
                 })
             }

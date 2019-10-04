@@ -11,6 +11,7 @@
                     <th>Item</th>
                     <th>Renewal Date</th>
                     <th>New Renewal Date</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -28,7 +29,11 @@
                     <td :class="{'text-grey': !renewableLicense.key}">
                         {{ renewableLicense.expiryDate|moment('YYYY-MM-DD') }}
                     </td>
-                    <td></td>
+                    <td>{{renewableLicense.amount|currency}}</td>
+                </tr>
+                <tr>
+                    <th colspan="4" class="text-right">Total</th>
+                    <td><strong>{{total|currency}}</strong></td>
                 </tr>
                 </tbody>
             </table>
@@ -51,6 +56,22 @@
             return {
                 loading: false,
                 checkAllChecked: false
+            }
+        },
+
+        computed: {
+            total() {
+                let total = 0
+
+                this.renewableLicenses(this.license, this.renew).forEach(function(renewableLicense , key) {
+                    if (!this.checkedLicenses[key]) {
+                        return
+                    }
+
+                    total += renewableLicense.amount
+                }.bind(this))
+
+                return total
             }
         },
 
@@ -109,7 +130,7 @@
 
                     items.push(item)
                 }.bind(this))
-                
+
                 this.$store.dispatch('cart/addToCart', items)
                     .then(() => {
                         this.$router.push({path: '/cart'})

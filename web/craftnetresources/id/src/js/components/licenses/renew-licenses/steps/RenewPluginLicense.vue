@@ -11,7 +11,7 @@
                     <th>Item</th>
                     <th>Renewal Date</th>
                     <th>New Renewal Date</th>
-                    <th>Subtotal</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -20,6 +20,10 @@
                     <td>{{ license.expiresOn.date|moment('YYYY-MM-DD') }}</td>
                     <td>{{ expiryDate }}</td>
                     <td>{{ price|currency }}</td>
+                </tr>
+                <tr>
+                    <th colspan="3" class="text-right">Total</th>
+                    <td><strong>{{ price|currency }}</strong></td>
                 </tr>
                 </tbody>
             </table>
@@ -59,7 +63,8 @@
                     const expiryDateOption = this.expiryDateOptions[i]
                     const date = expiryDateOption[1]
                     const formattedDate = this.$moment(date).format('YYYY-MM-DD')
-                    const label = "Extend updates until " + formattedDate
+                    const renewalOption = this.license.renewalOptions[i]
+                    const label = "Extend updates until " + formattedDate  + ' (' + this.$options.filters.currency(renewalOption.amount) +')'
 
                     options.push({
                         label: label,
