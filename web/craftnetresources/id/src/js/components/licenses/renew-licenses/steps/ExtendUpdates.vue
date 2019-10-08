@@ -24,7 +24,7 @@
                     const expiryDateOption = renewalOptions[i]
                     const renewalOption = this.license.renewalOptions[i]
 
-                    const date = expiryDateOption[1]
+                    const date = expiryDateOption.expiryDate
                     const formattedDate = this.$moment(date).format('YYYY-MM-DD')
                     const label = "Extend updates until " + formattedDate + ' (' + this.$options.filters.currency(renewalOption.amount) +')'
 
