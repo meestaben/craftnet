@@ -73,7 +73,19 @@
                     const renewalOption = this.renewalOptions[i]
                     const date = renewalOption.expiryDate
                     const formattedDate = this.$moment(date).format('YYYY-MM-DD')
-                    const label = "Extend updates until " + formattedDate  + ' (' + this.$options.filters.currency(renewalOption.amount) +')'
+                    let label = "Extend updates until " + formattedDate
+
+                    const baseAmount = this.renewalOptions[this.renew].amount
+                    const amountDiff = renewalOption.amount - baseAmount
+
+                    if (amountDiff !== 0) {
+                        let prefix = ''
+
+                        if (amountDiff > 0) {
+                            prefix = '+'
+                        }
+                        label += ' (' + prefix + this.$options.filters.currency(amountDiff) +')'
+                    }
 
                     options.push({
                         label: label,
