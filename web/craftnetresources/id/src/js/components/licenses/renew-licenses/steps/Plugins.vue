@@ -106,10 +106,6 @@
 
                 if ($event.target.checked) {
                     this.renewableLicenses.forEach(function(renewableLicense, key) {
-                        if (renewableLicense.alreadyInCart) {
-                            return false
-                        }
-
                         checkedLicenses[key] = 1
                     }.bind(this))
                 } else {
