@@ -115,8 +115,15 @@
                 }
 
                 this.$store.dispatch('account/saveBillingInfo', data)
-                    .then(() => {
+                    .then((response) => {
                         this.saveLoading = false
+
+                        if (response.data && response.data.error) {
+                            const errorMessage = response.data.error
+                            this.$store.dispatch('app/displayError', errorMessage);
+                            return null;
+                        }
+
                         this.$store.dispatch('app/displayNotice', 'Billing address saved.');
                         this.showForm = false;
                         this.errors = {};
