@@ -107,7 +107,7 @@
                 <h4>Updates</h4>
                 <license-update-message :license="license"></license-update-message>
                 <template v-if="license.expirable">
-                    <btn @click="showRenewLicensesModal('renew-plugin-license')">Renew your license…</btn>
+                    <btn @click="showRenewLicensesModal('plugin')">Renew your license…</btn>
                 </template>
             </div>
         </div>

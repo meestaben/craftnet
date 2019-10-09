@@ -3,24 +3,25 @@
         <h2 class="mb-3">Renew Licenses</h2>
 
         <renew-cms-license
-                v-if="renewLicensesStep === 'renew-cms-license'"
+                v-if="renewLicensesType === 'cms'"
                 :license="license"
                 @cancel="$emit('cancel')"
                 @addToCart="$emit('cancel')"
         />
 
         <renew-plugin-license
-                v-if="renewLicensesStep === 'renew-plugin-license'"
+                v-if="renewLicensesType === 'plugin'"
                 :license="license"
                 @cancel="$emit('cancel')"
-                @addToCart="$emit('cancel')" />
+                @addToCart="$emit('cancel')"
+        />
     </div>
 </template>
 
 <script>
     import {mapState} from 'vuex'
-    import RenewCmsLicense from './steps/RenewCmsLicense'
-    import RenewPluginLicense from './steps/RenewPluginLicense'
+    import RenewCmsLicense from './types/Cms'
+    import RenewPluginLicense from './types/Plugin'
 
     export default {
         props: ['license'],
@@ -32,7 +33,7 @@
 
         computed: {
             ...mapState({
-                renewLicensesStep: state => state.app.renewLicensesStep,
+                renewLicensesType: state => state.app.renewLicensesType,
             }),
         },
     }
