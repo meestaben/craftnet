@@ -1,5 +1,7 @@
 <template>
     <div>
+        <dropdown :value="renew" @input="onRenewChange" :options="renewOptions" />
+
         <p>Do you want to renew plugin licenses as well?</p>
 
         <table class="table mb-2">
@@ -21,15 +23,14 @@
                     :isChecked="checkedLicenses[key]"
                     @checkLicense="checkLicense($event, key)"
             ></renewable-license-table-row>
-
-<tr>
-<th colspan="4" class="text-right">Total</th>
-<td><strong>{{total|currency}}</strong></td>
-</tr>
+            <tr>
+                <th colspan="4" class="text-right">Total</th>
+                <td><strong>{{total|currency}}</strong></td>
+            </tr>
             </tbody>
         </table>
 
-        <btn @click="$emit('back')">Back</btn>
+        <btn @click="$emit('cancel')">Cancel</btn>
         <btn ref="submitBtn" @click="addToCart()" kind="primary" :disabled="!hasCheckedLicenses">Add to cart</btn>
         <spinner v-if="loading"></spinner>
     </div>
@@ -43,7 +44,7 @@
     export default {
         mixins: [helpers],
 
-        props: ['license', 'renew', 'checkedLicenses'],
+        props: ['license'],
 
         components: {
             RenewableLicenseTableRow,
@@ -53,14 +54,77 @@
             return {
                 loading: false,
                 checkAllChecked: false,
+                renew: 0,
+                checkedLicenses: [],
             }
         },
-
 
         computed: {
             ...mapGetters({
                 cartItems: 'cart/cartItems',
             }),
+
+            renewOptions() {
+                const renewalOptions = this.license.renewalOptions
+
+                if (!renewalOptions) {
+                    return []
+                }
+
+                const pluginRenewalOptions = this.license.pluginRenewalOptions
+                let options = [];
+
+                for (let i = 0; i < renewalOptions.length; i++) {
+                    const renewalOption = renewalOptions[i]
+                    const date = renewalOption.expiryDate
+                    const formattedDate = this.$moment(date).format('YYYY-MM-DD')
+                    let label = "Extend updates until " + formattedDate
+
+                    // cms amount
+                    let currentAmount = renewalOption.amount
+
+                    // plugin amounts
+                    this.renewableLicenses.forEach((renewableLicense, j) => {
+                        // only keep checked licenses
+                        if (this.checkedLicenses[j]) {
+                            let pluginHandle = null
+
+                            // extract plugin handle from the plugin licenses
+                            this.license.pluginLicenses.forEach(pluginLicense => {
+                                if (pluginLicense.key === renewableLicense.key) {
+                                    pluginHandle = pluginLicense.plugin.handle
+
+                                    // find plugin renewal options matching this plugin handle
+                                    const option = pluginRenewalOptions[pluginHandle][i]
+
+                                    // add plugin option amount
+                                    currentAmount += option.amount
+                                }
+                            })
+                        }
+                    })
+
+                    // amount difference
+                    const amountDiff = currentAmount - this.total
+
+                    if (amountDiff !== 0) {
+                        let prefix = ''
+
+                        if (amountDiff > 0) {
+                            prefix = '+'
+                        }
+
+                        label += ' (' + prefix + this.$options.filters.currency(amountDiff) +')'
+                    }
+
+                    options.push({
+                        label: label,
+                        value: i,
+                    })
+                }
+
+                return options
+            },
 
             renewableLicenses() {
                 return this.getRenewableLicenses(this.license, this.renew, this.cartItems)
@@ -86,6 +150,20 @@
         },
 
         methods: {
+            onRenewChange($event) {
+                this.renew = $event
+
+                let checkedLicenses = JSON.parse(JSON.stringify(this.checkedLicenses))
+                checkedLicenses.splice(this.renewableLicenses.length)
+                this.checkedLicenses = checkedLicenses
+
+                this.$nextTick(() => {
+                    if (checkedLicenses.length < this.renewableLicenses.length) {
+                        this.checkAllChecked = false
+                    }
+                })
+            },
+
             checkLicense($event, key) {
                 let checkedLicenses = JSON.parse(JSON.stringify(this.checkedLicenses))
                 checkedLicenses[key] = $event.target.checked ? 1 : 0
@@ -98,7 +176,7 @@
                     this.checkAllChecked = false
                 }
 
-                this.$emit('update:checkedLicenses', checkedLicenses)
+                this.checkedLicenses = checkedLicenses
             },
 
             checkAll($event) {
@@ -114,7 +192,7 @@
                     }
                 }
 
-                this.$emit('update:checkedLicenses', checkedLicenses)
+                this.checkedLicenses = checkedLicenses
             },
 
             addToCart() {

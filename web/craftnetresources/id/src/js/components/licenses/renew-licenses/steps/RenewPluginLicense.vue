@@ -47,7 +47,7 @@
             return {
                 loading: false,
                 addToCartLoading: false,
-                renew: null,
+                renew: 0,
             }
         },
 
