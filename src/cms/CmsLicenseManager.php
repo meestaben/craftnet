@@ -719,10 +719,15 @@ class CmsLicenseManager extends Component
         foreach ($expiryDateOptions as $key => $expiryDateOption) {
             $nextYear = OrderHelper::expiryStr2Obj($expiryDateOption[1]);
             $paidRenewalYears = OrderHelper::dateDiffInYears($nextYear, $licenseExpiryDate);
+            $amount = 0;
+
+            if ($nextYear > $licenseExpiryDate) {
+                $amount = round($renewalPrice * $paidRenewalYears, 2);
+            }
 
             $renewalOptions[$key] = [
                 'expiryDate' => $expiryDateOption[1],
-                'amount' => round($renewalPrice * $paidRenewalYears, 2)
+                'amount' => $amount
             ];
         }
 
