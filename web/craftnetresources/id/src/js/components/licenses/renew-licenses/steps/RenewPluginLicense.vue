@@ -18,7 +18,6 @@
                 <tr>
                     <td>
                         {{ license.plugin.name }}
-                        <div v-if="alreadyInCart" class="text-grey-dark">Already in cart.</div>
                     </td>
                     <td>{{ license.expiresOn.date|moment('YYYY-MM-DD') }}</td>
                     <td>{{ expiryDate }}</td>
@@ -32,7 +31,7 @@
             </table>
 
             <btn @click="$emit('cancel')">Cancel</btn>
-            <btn ref="submitBtn" kind="primary" @click="addToCart()" :disabled="alreadyInCart || addToCartLoading">Add to cart</btn>
+            <btn ref="submitBtn" kind="primary" @click="addToCart()" :disabled="addToCartLoading">Add to cart</btn>
             <spinner v-if="addToCartLoading"></spinner>
         </template>
     </div>
@@ -49,7 +48,6 @@
                 loading: false,
                 addToCartLoading: false,
                 renew: null,
-                alreadyInCart: false,
             }
         },
 
@@ -146,20 +144,9 @@
                         this.$store.dispatch('app/displayError', errorMessage);
                     })
             },
-
-            isAlreadyInCart() {
-                const licenseKey = this.license.key
-                const cartItems = this.cartItems
-
-                return !!cartItems.find(item => item.lineItem.options.licenseKey === licenseKey)
-            }
         },
 
         mounted() {
-            // Make a copy of `alreadyInCart` value to prevent “Already in cart” text to show up when item gets added to the cart.
-            this.alreadyInCart = this.isAlreadyInCart()
-
-            // Get meta
             this.loading = true
 
             this.getMeta()
