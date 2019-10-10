@@ -40,20 +40,15 @@ class ZendeskController extends BaseApiController
             ->asArray()
             ->scalar();
 
-        // No user, no plan
-        if (!$userId) {
-            return '';
-        }
+        $plan = DeveloperSupportController::PLAN_BASIC;
 
-        // See if the the user is on a paid plan
-        if ($this->_checkPlan($userId, DeveloperSupportController::PLAN_PREMIUM)) {
-            $plan = DeveloperSupportController::PLAN_PREMIUM;
-        } else if ($this->_checkPlan($userId, DeveloperSupportController::PLAN_PRO)) {
-            $plan = DeveloperSupportController::PLAN_PRO;
-        }
-
-        if (!isset($plan)) {
-            return '';
+        if ($userId) {
+            // See if the the user is on a paid plan
+            if ($this->_checkPlan($userId, DeveloperSupportController::PLAN_PREMIUM)) {
+                $plan = DeveloperSupportController::PLAN_PREMIUM;
+            } else if ($this->_checkPlan($userId, DeveloperSupportController::PLAN_PRO)) {
+                $plan = DeveloperSupportController::PLAN_PRO;
+            }
         }
 
         $tags = array_filter(explode(' ', $payload->tags));
