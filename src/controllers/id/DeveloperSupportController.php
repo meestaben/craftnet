@@ -23,8 +23,8 @@ class DeveloperSupportController extends Controller
     // Constants
     // =========================================================================
 
-    const PLAN_STANDARD = 'basic';
-    const PLAN_STANDARD_NAME = 'Basic';
+    const PLAN_BASIC = 'basic';
+    const PLAN_BASIC_NAME = 'Basic';
     const PLAN_PRO = 'pro';
     const PLAN_PREMIUM = 'premium';
 
@@ -254,8 +254,8 @@ class DeveloperSupportController extends Controller
         $premiumPlan = $planService->getPlanByHandle(self::PLAN_PREMIUM);
 
         $planData = [
-            self::PLAN_STANDARD => [
-                'name' => self::PLAN_STANDARD_NAME,
+            self::PLAN_BASIC => [
+                'name' => self::PLAN_BASIC_NAME,
                 'cost' => [
                     'switch' => 0,
                     'recurring' => 0
