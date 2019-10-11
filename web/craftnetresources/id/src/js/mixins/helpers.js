@@ -141,8 +141,8 @@ export default {
                     if (!pluginLicense.expired) {
                         const pluginExpiresOn = VueApp.$moment(pluginLicense.expiresOn.date)
                         const expiryDateObject = VueApp.$moment(expiryDate)
-
-                        if(expiryDateObject.diff(pluginExpiresOn) < 0) {
+                        
+                        if(expiryDateObject.diff(pluginExpiresOn) <= 0) {
                             return false
                         }
                     }
