@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import invoicesApi from '../../api/invoices'
-import pluginLicensesApi from '../../api/plugin-licenses';
 
 Vue.use(Vuex)
 
