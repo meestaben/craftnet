@@ -709,6 +709,8 @@ class CmsLicenseManager extends Component
      */
     private function getRenewalOptions(\DateTime $licenseExpiryDate, float $renewalPrice, \DateTime $optionsExpiryDate = null): array
     {
+        $licenseExpiryDate = new \DateTime($licenseExpiryDate->format('Y-m-d'), new \DateTimeZone('UTC'));
+
         if (!$optionsExpiryDate) {
             $optionsExpiryDate = $licenseExpiryDate;
         }
