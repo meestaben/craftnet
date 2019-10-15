@@ -3,14 +3,10 @@
 namespace craftnet\controllers\api;
 
 use Craft;
-use craft\commerce\elements\Subscription;
-use craft\elements\User;
 use craft\helpers\Json;
-use craftnet\controllers\id\DeveloperSupportController;
 use craftnet\errors\ValidationException;
 use craftnet\events\ZendeskEvent;
 use craftnet\helpers\Zendesk;
-use yii\db\Expression;
 use yii\web\BadRequestHttpException;
 
 /**
@@ -32,24 +28,8 @@ class ZendeskController extends BaseApiController
     {
         $this->_validateSecret();
         $payload = $this->getPayload('zendesk-create-ticket');
-        $email = strtolower($payload->email);
-
-        $userId = User::find()
-            ->select(['elements.id'])
-            ->andWhere(new Expression('lower([[email]]) = :email', [':email' => $email]))
-            ->asArray()
-            ->scalar();
-
-        $plan = DeveloperSupportController::PLAN_BASIC;
-
-        if ($userId) {
-            // See if the the user is on a paid plan
-            if ($this->_checkPlan($userId, DeveloperSupportController::PLAN_PREMIUM)) {
-                $plan = DeveloperSupportController::PLAN_PREMIUM;
-            } else if ($this->_checkPlan($userId, DeveloperSupportController::PLAN_PRO)) {
-                $plan = DeveloperSupportController::PLAN_PRO;
-            }
-        }
+        $email = mb_strtolower($payload->email);
+        $plan = Zendesk::plan($email);
 
         $tags = array_filter(explode(' ', $payload->tags));
         $tags[] = $plan;
@@ -81,20 +61,6 @@ class ZendeskController extends BaseApiController
             ->send();
 
         return '';
-    }
-
-    /**
-     * @param int $userId
-     * @param string $plan
-     * @return bool
-     */
-    private function _checkPlan(int $userId, string $plan): bool
-    {
-        return Subscription::find()
-            ->plan($plan)
-            ->userId($userId)
-            ->isExpired(false)
-            ->exists();
     }
 
     /**
