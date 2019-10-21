@@ -803,23 +803,6 @@ EOL;
     }
 
     /**
-     * @param array $plugins
-     * @return array
-     * @throws \craftnet\errors\MissingTokenException
-     * @throws \yii\base\InvalidConfigException
-     */
-    protected function _transformPlugins(array $plugins): array
-    {
-        $ret = [];
-
-        foreach ($plugins as $plugin) {
-            $ret[] = $this->transformPlugin($plugin, false);
-        }
-
-        return $ret;
-    }
-
-    /**
      * Returns the authorized user, if any.
      *
      * @return User|UserBehavior|null
