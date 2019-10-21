@@ -9,7 +9,7 @@ Vue.use(Vuex)
 const state = {
     loading: true,
     notification: null,
-    renewLicensesStep: null,
+    renewLicensesType: null,
     showRenewLicensesModal: false,
     renewLicense: null,
     salesPerPage: 20,
@@ -35,12 +35,12 @@ const getters = {}
  */
 const actions = {
     /**
-     *  Show the renew licenses modal at a given step.
+     *  Show the renew licenses modal for a given type of license (`cms` or `plugin`).
      *
-     * @param {string} step
+     * @param {string} type
      */
-    showRenewLicensesModal({commit}, step) {
-        commit('updateRenewLicensesStep', step)
+    showRenewLicensesModal({commit}, type) {
+        commit('updateRenewLicensesType', type)
         commit('updateShowRenewLicensesModal', true)
     },
 
@@ -91,8 +91,8 @@ const actions = {
  * Mutations
  */
 const mutations = {
-    updateRenewLicensesStep(state, step) {
-        state.renewLicensesStep = step
+    updateRenewLicensesType(state, type) {
+        state.renewLicensesType = type
     },
 
     updateShowRenewLicensesModal(state, show) {

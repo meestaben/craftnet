@@ -9,6 +9,7 @@ use craft\helpers\Db;
 use craft\helpers\StringHelper;
 use craftnet\errors\LicenseNotFoundException;
 use craftnet\helpers\LicenseHelper;
+use craftnet\helpers\OrderHelper;
 use craftnet\Module;
 use craftnet\plugins\Plugin;
 use craftnet\plugins\PluginEdition;
@@ -538,15 +539,19 @@ class CmsLicenseManager extends Component
         // Edition details
         $license['editionDetails'] = CmsEdition::findOne($result->editionId);
 
-        // Expiry Date Options
         if (!empty($license['expiresOn'])) {
-            $license['expiryDateOptions'] = LicenseHelper::getExpiryDateOptions($license['expiresOn']);
+            $cmsLicenseExpiryDate = $license['expiresOn'];
+
+            // CMS renewal options
+            $renewalPrice = $license['editionDetails']->renewalPrice;
+            $license['renewalOptions'] = $this->getRenewalOptions($cmsLicenseExpiryDate, $renewalPrice);
         }
 
         // Plugin Licenses
         if (in_array('pluginLicenses', $include, false)) {
             $pluginLicensesResults = Module::getInstance()->getPluginLicenseManager()->getLicensesByCmsLicenseId($result->id);
             $pluginLicenses = [];
+            $license['pluginRenewalOptions'] = [];
 
             foreach ($pluginLicensesResults as $key => $pluginLicensesResult) {
                 if ($pluginLicensesResult->ownerId === $owner->id) {
@@ -570,6 +575,14 @@ class CmsLicenseManager extends Component
                 $pluginLicense['plugin'] = $plugin;
 
                 $pluginLicenses[] = $pluginLicense;
+
+                // Plugin renewal options
+                if (isset($cmsLicenseExpiryDate)) {
+                    $pluginHandle = $pluginLicense['edition']->getPlugin()->handle;
+                    $pluginRenewalPrice = $pluginLicense['edition']->renewalPrice;
+                    $pluginExpiryDate = $pluginLicense['expiresOn'];
+                    $license['pluginRenewalOptions'][$pluginHandle] = $this->getRenewalOptions($pluginExpiryDate, $pluginRenewalPrice, $cmsLicenseExpiryDate);
+                }
             }
 
             $license['pluginLicenses'] = $pluginLicenses;
@@ -685,5 +698,39 @@ class CmsLicenseManager extends Component
         }
 
         return $query;
+    }
+
+    /**
+     * @param \DateTime $licenseExpiryDate
+     * @param float $renewalPrice
+     * @param \DateTime|null $optionsExpiryDate
+     * @return array
+     * @throws \Exception
+     */
+    private function getRenewalOptions(\DateTime $licenseExpiryDate, float $renewalPrice, \DateTime $optionsExpiryDate = null): array
+    {
+        if (!$optionsExpiryDate) {
+            $optionsExpiryDate = $licenseExpiryDate;
+        }
+
+        $expiryDateOptions = LicenseHelper::getExpiryDateOptions($optionsExpiryDate);
+        $renewalOptions = [];
+
+        foreach ($expiryDateOptions as $key => $expiryDateOption) {
+            $nextYear = OrderHelper::expiryStr2Obj($expiryDateOption[1]);
+            $paidRenewalYears = OrderHelper::dateDiffInYears($nextYear, $licenseExpiryDate);
+            $amount = 0;
+
+            if ($nextYear > $licenseExpiryDate) {
+                $amount = round($renewalPrice * $paidRenewalYears, 2);
+            }
+
+            $renewalOptions[$key] = [
+                'expiryDate' => $expiryDateOption[1],
+                'amount' => $amount
+            ];
+        }
+
+        return $renewalOptions;
     }
 }

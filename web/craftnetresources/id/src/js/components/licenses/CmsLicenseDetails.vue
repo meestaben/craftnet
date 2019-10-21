@@ -95,6 +95,14 @@
                         @change="saveAutoRenew"
                         :checked.sync="licenseDraft.autoRenew"
                 />
+
+                <div class="text-grey-dark">
+                    <p>Renewal Price: <strong>{{license.editionDetails.renewalPrice|currency}}/year</strong>.</p>
+
+                    <template v-if="licenseDraft.autoRenew">
+                        <p>Next payment: <strong>{{ license.expiresOn.date|moment('YYYY-MM-DD') }}</strong>.</p>
+                    </template>
+                </div>
             </div>
         </div>
 
@@ -102,8 +110,8 @@
             <div class="card-body">
                 <h4>Updates</h4>
                 <license-update-message :license="license" />
-                <template v-if="license.expirable">
-                    <btn @click="showRenewLicensesModal('extend-updates')">Renew your license…</btn>
+                <template v-if="license.expirable && license.expiresOn">
+                    <btn @click="showRenewLicensesModal('cms')">Renew your license…</btn>
                 </template>
             </div>
         </div>

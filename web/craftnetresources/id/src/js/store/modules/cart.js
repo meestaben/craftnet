@@ -292,6 +292,12 @@ const actions = {
                             item.expiryDate = '1y'
                         }
 
+                        items.forEach((cartItem, cartItemKey) => {
+                            if (cartItem.licenseKey === item.licenseKey) {
+                                items.splice(cartItemKey, 1)
+                            }
+                        })
+
                         items.push(item)
                     })
 

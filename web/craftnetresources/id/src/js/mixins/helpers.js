@@ -108,12 +108,13 @@ export default {
             return diffDays;
         },
 
-        renewableLicenses(license, renew) {
+        getRenewableLicenses(license, renew, cartItems) {
             let renewableLicenses = []
 
             // CMS license
-            const expiryDateOptions = license.expiryDateOptions
-            let expiryDate = expiryDateOptions[renew][1]
+            const renewalOptions = license.renewalOptions
+            const renewalOption = renewalOptions[renew]
+            const expiryDate = renewalOption.expiryDate
 
             renewableLicenses.push({
                 type: 'cms-renewal',
@@ -123,6 +124,8 @@ export default {
                 expiryDate: expiryDate,
                 expiresOn: license.expiresOn,
                 edition: license.editionDetails,
+                alreadyInCart: this.licenseKeyAlreadyInCart(license.key, cartItems),
+                amount: renewalOption.amount
             })
 
             // Plugin licenses
@@ -138,8 +141,8 @@ export default {
                     if (!pluginLicense.expired) {
                         const pluginExpiresOn = VueApp.$moment(pluginLicense.expiresOn.date)
                         const expiryDateObject = VueApp.$moment(expiryDate)
-
-                        if(expiryDateObject.diff(pluginExpiresOn) < 0) {
+                        
+                        if(expiryDateObject.diff(pluginExpiresOn) <= 0) {
                             return false
                         }
                     }
@@ -149,6 +152,11 @@ export default {
 
                 // Add renewable plugin licenses to the `renewableLicenses` array
                 renewablePluginLicenses.forEach(function(renewablePluginLicense) {
+                    const pluginHandle = renewablePluginLicense.plugin.handle
+                    const pluginRenewalOptions = license.pluginRenewalOptions[pluginHandle]
+                    const pluginRenewalOption = pluginRenewalOptions.find(r => r.expiryDate === expiryDate)
+                    const amount = pluginRenewalOption.amount
+
                     renewableLicenses.push({
                         type: 'plugin-renewal',
                         key: renewablePluginLicense.key,
@@ -156,11 +164,17 @@ export default {
                         expiryDate: expiryDate,
                         expiresOn: renewablePluginLicense.expiresOn,
                         edition: renewablePluginLicense.edition,
+                        alreadyInCart: this.licenseKeyAlreadyInCart(renewablePluginLicense.key, cartItems),
+                        amount: amount,
                     })
-                })
+                }.bind(this))
             }
 
             return renewableLicenses
+        },
+
+        licenseKeyAlreadyInCart(licenseKey, cartItems) {
+            return !!cartItems.find(item => item.lineItem.options.licenseKey === licenseKey)
         },
     }
 }

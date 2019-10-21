@@ -2,57 +2,38 @@
     <div v-if="license.expirable && license.expiresOn">
         <h2 class="mb-3">Renew Licenses</h2>
 
-        <extend-updates
-                v-if="renewLicensesStep === 'extend-updates'"
+        <renew-cms-license
+                v-if="renewLicensesType === 'cms'"
                 :license="license"
-                :renew.sync="renew"
                 @cancel="$emit('cancel')"
-                @continue="$store.commit('app/updateRenewLicensesStep', 'plugins')" />
-
-        <plugins
-                v-if="renewLicensesStep === 'plugins'"
-                :checkedLicenses.sync="checkedLicenses"
-                :license="license"
-                :renew="renew"
-                @back="$store.commit('app/updateRenewLicensesStep', 'extend-updates')"
-                @addToCart="$emit('cancel')" />
+                @addToCart="$emit('cancel')"
+        />
 
         <renew-plugin-license
-                v-if="renewLicensesStep === 'renew-plugin-license'"
+                v-if="renewLicensesType === 'plugin'"
                 :license="license"
                 @cancel="$emit('cancel')"
-                @addToCart="$emit('cancel')" />
+                @addToCart="$emit('cancel')"
+        />
     </div>
 </template>
 
 <script>
     import {mapState} from 'vuex'
-    import Plugins from './steps/Plugins'
-    import ExtendUpdates from './steps/ExtendUpdates'
-    import RenewPluginLicense from './steps/RenewPluginLicense'
-    import helpers from '../../../mixins/helpers'
+    import RenewCmsLicense from './types/Cms'
+    import RenewPluginLicense from './types/Plugin'
 
     export default {
-        mixins: [helpers],
-
         props: ['license'],
 
         components: {
-            Plugins,
-            ExtendUpdates,
+            RenewCmsLicense,
             RenewPluginLicense,
-        },
-
-        data() {
-            return {
-                renew: 0,
-                checkedLicenses: [],
-            }
         },
 
         computed: {
             ...mapState({
-                renewLicensesStep: state => state.app.renewLicensesStep,
+                renewLicensesType: state => state.app.renewLicensesType,
             }),
         },
     }
