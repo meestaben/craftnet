@@ -28,6 +28,7 @@ return [
     'dotmeta.com',
     'drivedev.net',
     'epwebsites.co.uk',
+    'eyekillerdev.com',
     'fauna.org',
     'fncdev.in.ua',
     'frb.io',

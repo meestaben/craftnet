@@ -3,11 +3,11 @@
 namespace craftnet\controllers\api\v1;
 
 use Craft;
-use craft\i18n\Locale;
 use craft\web\UploadedFile;
 use craftnet\cms\CmsLicense;
 use craftnet\cms\CmsLicenseManager;
 use craftnet\controllers\api\BaseApiController;
+use craftnet\events\ZendeskEvent;
 use craftnet\helpers\Zendesk;
 use yii\helpers\Markdown;
 use yii\web\Response;
@@ -17,6 +17,11 @@ use yii\web\Response;
  */
 class SupportController extends BaseApiController
 {
+    /**
+     * @event ZendeskEvent
+     */
+    const EVENT_CREATE_TICKET = 'createTicket';
+
     /**
      * Creates a new support request
      *
@@ -105,10 +110,14 @@ class SupportController extends BaseApiController
             }
         }
 
-        Zendesk::client()->tickets()->create([
+        $email = mb_strtolower($request->getRequiredBodyParam('email'));
+        $plan = Zendesk::plan($email);
+        $tags = [getenv('ZENDESK_TAG'), $plan];
+
+        $response = Zendesk::client()->tickets()->create([
             'requester' => [
                 'name' => $request->getRequiredBodyParam('name'),
-                'email' => $request->getRequiredBodyParam('email'),
+                'email' => $email,
             ],
             'subject' => getenv('ZENDESK_SUBJECT'),
             'comment' => [
@@ -116,9 +125,16 @@ class SupportController extends BaseApiController
                 'html_body' => Markdown::process($body, 'gfm'),
                 'uploads' => $uploadTokens,
             ],
-            'tags' => [getenv('ZENDESK_TAG')],
+            'tags' => $tags,
             'custom_fields' => $customFields,
         ]);
+
+        $this->trigger(self::EVENT_CREATE_TICKET, new ZendeskEvent([
+            'ticketId' => $response->ticket->id,
+            'email' => $email,
+            'tags' => $tags,
+            'plan' => $plan,
+        ]));
 
         return $this->asJson([
             'sent' => true,
