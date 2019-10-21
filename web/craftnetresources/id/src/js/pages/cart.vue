@@ -206,7 +206,7 @@
                 let selectedOption = 0
 
                 this.expiryDateOptions.forEach((option, key) => {
-                    if (option === item.lineItem.options.expiryDate) {
+                    if (option[0] === item.lineItem.options.expiryDate) {
                         selectedOption = key
                     }
                 })

@@ -33,4 +33,5 @@ return [
     'us.org',
     'co.com',
     'c.la',
+    'sch.uk'
 ];

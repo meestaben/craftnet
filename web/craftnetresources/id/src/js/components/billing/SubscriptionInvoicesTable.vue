@@ -77,7 +77,7 @@
                 .then(() => {
                     this.loading = false
                 })
-                .catch((response) => {
+                .catch(() => {
                     this.loading = false
                 })
         }

@@ -110,7 +110,7 @@
             <div class="card-body">
                 <h4>Updates</h4>
                 <license-update-message :license="license" />
-                <template v-if="license.expirable">
+                <template v-if="license.expirable && license.expiresOn">
                     <btn @click="showRenewLicensesModal('cms')">Renew your license…</btn>
                 </template>
             </div>
