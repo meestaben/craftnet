@@ -53,21 +53,4 @@ class PluginsController extends BaseApiController
             ->with(['developer', 'categories', 'icon'])
             ->indexBy('id');
     }
-
-    /**
-     * @param array $plugins
-     * @return array
-     * @throws \craftnet\errors\MissingTokenException
-     * @throws \yii\base\InvalidConfigException
-     */
-    private function _transformPlugins(array $plugins): array
-    {
-        $ret = [];
-
-        foreach ($plugins as $plugin) {
-            $ret[] = $this->transformPlugin($plugin, false);
-        }
-
-        return $ret;
-    }
 }
