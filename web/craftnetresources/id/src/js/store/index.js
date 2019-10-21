@@ -7,6 +7,7 @@ import cart from './modules/cart'
 import cmsLicenses from './modules/cms-licenses'
 import craftId from './modules/craft-id'
 import developerSupport from './modules/developer-support'
+import invoices from './modules/invoices'
 import partner from './modules/partner'
 import pluginLicenses from './modules/plugin-licenses'
 import plugins from './modules/plugins'
@@ -25,6 +26,7 @@ export default new Vuex.Store({
         cmsLicenses,
         craftId,
         developerSupport,
+        invoices,
         partner,
         pluginLicenses,
         plugins,

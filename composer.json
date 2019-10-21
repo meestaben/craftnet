@@ -3,7 +3,7 @@
   "prefer-stable": true,
   "require": {
     "php": ">=7.0.0",
-    "craftcms/cms": "dev-develop#1dcf0dc7a118491f2b7e759f7823dd038b2312ab as 3.3.7",
+    "craftcms/cms": "3.3.10",
     "justinrainbow/json-schema": "^5.2",
     "yiisoft/yii2-redis": "^2.0.6",
     "knplabs/github-api": "^2.5.0",
@@ -15,7 +15,7 @@
     "stripe/stripe-php": "^6.1",
     "stevenmaguire/oauth2-bitbucket": "^2.0",
     "craftcms/commerce": "2.2.x-dev#b231bee8bb5e0ee7e8be33a831d2d91a1d12baba",
-    "craftcms/commerce-stripe": "2.2.x-dev#8429564985a85c7b339ba4bfe0dc543c8abab443",
+    "craftcms/commerce-stripe": "2.2.x-dev#3714c1924d039dab54b94a6e00b6780c147ed622",
     "layershifter/tld-extract": "^1.2",
     "ddeboer/vatin": "^2.1",
     "moccalotto/eu": "^0.3.0",

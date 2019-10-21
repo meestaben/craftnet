@@ -91,6 +91,14 @@
                         @change="saveAutoRenew"
                         :checked.sync="licenseDraft.autoRenew"
                 />
+
+                <div class="text-grey-dark">
+                    <p>Renewal Price: <strong>{{license.edition.renewalPrice|currency}}/year</strong>.</p>
+
+                    <template v-if="licenseDraft.autoRenew">
+                        <p>Next payment: <strong>{{ license.expiresOn.date|moment('YYYY-MM-DD') }}</strong>.</p>
+                    </template>
+                </div>
             </div>
         </div>
 
@@ -99,7 +107,7 @@
                 <h4>Updates</h4>
                 <license-update-message :license="license"></license-update-message>
                 <template v-if="license.expirable">
-                    <btn @click="showRenewLicensesModal('renew-plugin-license')">Renew your license…</btn>
+                    <btn @click="showRenewLicensesModal('plugin')">Renew your license…</btn>
                 </template>
             </div>
         </div>
