@@ -581,7 +581,10 @@ class CmsLicenseManager extends Component
                     $pluginHandle = $pluginLicense['edition']->getPlugin()->handle;
                     $pluginRenewalPrice = $pluginLicense['edition']->renewalPrice;
                     $pluginExpiryDate = $pluginLicense['expiresOn'];
-                    $license['pluginRenewalOptions'][$pluginHandle] = $this->getRenewalOptions($pluginExpiryDate, $pluginRenewalPrice, $cmsLicenseExpiryDate);
+
+                    if ($pluginExpiryDate) {
+                        $license['pluginRenewalOptions'][$pluginHandle] = $this->getRenewalOptions($pluginExpiryDate, $pluginRenewalPrice, $cmsLicenseExpiryDate);
+                    }
                 }
             }
 
