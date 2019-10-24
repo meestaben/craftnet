@@ -165,7 +165,8 @@ class PluginStoreController extends BaseApiController
      */
     public function actionPluginsByCategory($categoryId): Response
     {
-        $data = $this->getPluginIndexCache('category-'.$categoryId);
+        $cacheKey = 'category-'.$categoryId;
+        $data = $this->getPluginIndexCache($cacheKey);
 
         if (!$data) {
             $plugins = $this->getPluginIndexQuery()
@@ -174,7 +175,7 @@ class PluginStoreController extends BaseApiController
 
             $data = $this->_plugins($plugins);
 
-            $this->setPluginIndexCache('category-'.$categoryId, $data);
+            $this->setPluginIndexCache($cacheKey, $data);
         }
 
         return $this->asJson($data);
