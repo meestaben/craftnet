@@ -10,9 +10,7 @@ use craft\helpers\Json;
 use craftnet\controllers\api\BaseApiController;
 use craftnet\plugins\Plugin;
 use craftnet\plugins\PluginQuery;
-use yii\base\InvalidArgumentException;
 use yii\caching\FileDependency;
-use yii\web\BadRequestHttpException;
 use yii\web\Response;
 
 /**
@@ -76,6 +74,53 @@ class PluginStoreController extends BaseApiController
 
         return $this->asJson($pluginStoreData);
     }
+    public function actionFeaturedSection($handle): Response
+    {
+        $featuredSectionEntry = $this->featuredSectionQuery()
+            ->slug($handle)
+            ->one();
+
+        $featuredSection = $this->transformFeaturedSection($featuredSectionEntry);
+
+        return $this->asJson($featuredSection);
+    }
+
+    public function actionFeaturedSections(): Response
+    {
+        $featuredSections = null;
+
+        $craftIdConfig = Craft::$app->getConfig()->getConfigFromFile('craftid');
+        $enablePluginStoreCache = $craftIdConfig['enablePluginStoreCache'];
+        $cacheKey = 'pluginStore-featuredSections--' . $this->cmsVersion;
+
+        if ($enablePluginStoreCache) {
+            $featuredSections = Craft::$app->getCache()->get($cacheKey);
+        }
+
+        if(!$featuredSections) {
+            $featuredSections = [];
+
+            foreach ($this->featuredSectionQuery()->all() as $featuredSectionEntry) {
+                $plugins = $this->getFeaturedSectionPlugins($featuredSectionEntry, 8);
+
+                $featuredSections[] = [
+                    'id' => $featuredSectionEntry->id,
+                    'slug' => $featuredSectionEntry->slug,
+                    'title' => $featuredSectionEntry->title,
+                    'limit' => $featuredSectionEntry->limit,
+                    'plugins' => $plugins,
+                ];
+            }
+        }
+
+        if ($enablePluginStoreCache) {
+            Craft::$app->getCache()->set($cacheKey, $featuredSections, null, new FileDependency([
+                'fileName' => $this->module->getJsonDumper()->composerWebroot . '/packages.json',
+            ]));
+        }
+
+        return $this->asJson($featuredSections);
+    }
 
     /**
      * Handles /v1/plugin-store/meta requests.
@@ -109,141 +154,30 @@ class PluginStoreController extends BaseApiController
 
     public function actionPluginsByCategory($categoryId): Response
     {
-        $data = null;
+        $data = $this->getPluginIndexCache('category-'.$categoryId);
 
-        $offset = Craft::$app->getRequest()->getParam('offset', 0);
-        $limit = Craft::$app->getRequest()->getParam('limit', 10);
-        $orderBy = Craft::$app->getRequest()->getParam('orderBy', 'activeInstalls');
-        $direction = Craft::$app->getRequest()->getParam('direction', 'desc');
-        $orderByDirection = $direction === 'asc' ? SORT_ASC : SORT_DESC;
-
-        $craftIdConfig = Craft::$app->getConfig()->getConfigFromFile('craftid');
-        $enablePluginStoreCache = $craftIdConfig['enablePluginStoreCache'];
-        $cacheKey = 'pluginStore-featuredSections-'.$categoryId.'-'.$offset.'-'.$limit.'-'.$orderBy.'-'.$direction.'--' . $this->cmsVersion;
-
-        if ($enablePluginStoreCache) {
-            $data = Craft::$app->getCache()->get($cacheKey);
-        }
-
-        // activeInstalls
-        // lastUpdate
-        // name
-        // price
-
-        if(!$data) {
-            $plugins = Plugin::find()
+        if (!$data) {
+            $plugins = $this->getPluginIndexQuery()
                 ->categoryId($categoryId)
-                ->withLatestReleaseInfo(true, $this->cmsVersion)
-                ->with(['developer', 'categories', 'icon'])
-                ->indexBy('id')
-                ->orderBy([($orderBy === 'name' ? $orderBy = 'LOWER('.$orderBy.')' : $orderBy) => $orderByDirection])
-                ->offset($offset)
-                ->limit($limit)
                 ->all();
 
             $data = $this->_plugins($plugins);
+
+            $this->setPluginIndexCache('category-'.$categoryId, $data);
         }
-
-        if ($enablePluginStoreCache) {
-            Craft::$app->getCache()->set($cacheKey, $data, null, new FileDependency([
-                'fileName' => $this->module->getJsonDumper()->composerWebroot . '/packages.json',
-            ]));
-        }
-
-        return $this->asJson($data);
-    }
-
-    public function actionSearchPlugins()
-    {
-        $searchQuery = Craft::$app->getRequest()->getParam('searchQuery', 10);
-        $limit = Craft::$app->getRequest()->getParam('limit', 10);
-        $offset = Craft::$app->getRequest()->getParam('offset', 0);
-        $orderBy = Craft::$app->getRequest()->getParam('orderBy', 'activeInstalls');
-        $direction = Craft::$app->getRequest()->getParam('direction', 'desc');
-        $orderByDirection = $direction === 'asc' ? SORT_ASC : SORT_DESC;
-
-        $plugins = Plugin::find()
-            ->withLatestReleaseInfo(true, $this->cmsVersion)
-            ->with(['developer', 'categories', 'icon'])
-            ->indexBy('id')
-            ->orderBy([($orderBy === 'name' ? $orderBy = 'LOWER('.$orderBy.')' : $orderBy) => $orderByDirection])
-            ->offset($offset)
-            ->limit($limit)
-            ->andWhere([
-                'or',
-                ['like', 'name', $searchQuery . '%', false],
-                ['like', 'packageName', $searchQuery],
-                ['like', 'shortDescription', $searchQuery],
-                ['like', 'description', $searchQuery],
-                // ['like', 'developerName', $searchQuery],
-                // ['like', 'developerUrl', $searchQuery],
-                // ['like', 'keywords', $searchQuery],
-            ])
-            ->all();
-
-        $data = $this->_plugins($plugins);
 
         return $this->asJson($data);
     }
 
     public function actionPluginsByDeveloper($developerId): Response
     {
-        $limit = Craft::$app->getRequest()->getParam('limit', 10);
-        $offset = Craft::$app->getRequest()->getParam('offset', 0);
-        $orderBy = Craft::$app->getRequest()->getParam('orderBy', 'activeInstalls');
-        $direction = Craft::$app->getRequest()->getParam('direction', 'desc');
-        $orderByDirection = $direction === 'asc' ? SORT_ASC : SORT_DESC;
-
-        $plugins = Plugin::find()
+        $plugins = $this->getPluginIndexQuery()
             ->developerId($developerId)
-            ->withLatestReleaseInfo(true, $this->cmsVersion)
-            ->with(['developer', 'categories', 'icon'])
-            ->indexBy('id')
-            ->orderBy([($orderBy === 'name' ? $orderBy = 'LOWER('.$orderBy.')' : $orderBy) => $orderByDirection])
-            ->offset($offset)
-            ->limit($limit)
             ->all();
 
         $data = $this->_plugins($plugins);
 
         return $this->asJson($data);
-    }
-
-    public function actionFeaturedSections(): Response
-    {
-        $featuredSections = null;
-
-        $craftIdConfig = Craft::$app->getConfig()->getConfigFromFile('craftid');
-        $enablePluginStoreCache = $craftIdConfig['enablePluginStoreCache'];
-        $cacheKey = 'pluginStore-featuredSections--' . $this->cmsVersion;
-
-        if ($enablePluginStoreCache) {
-            $featuredSections = Craft::$app->getCache()->get($cacheKey);
-        }
-        
-        if(!$featuredSections) {
-            $featuredSections = [];
-
-            foreach ($this->featuredSectionQuery()->all() as $featuredSectionEntry) {
-                $plugins = $this->getFeaturedSectionPlugins($featuredSectionEntry, 8);
-
-                $featuredSections[] = [
-                    'id' => $featuredSectionEntry->id,
-                    'slug' => $featuredSectionEntry->slug,
-                    'title' => $featuredSectionEntry->title,
-                    'limit' => $featuredSectionEntry->limit,
-                    'plugins' => $plugins,
-                ];
-            }
-        }
-
-        if ($enablePluginStoreCache) {
-            Craft::$app->getCache()->set($cacheKey, $featuredSections, null, new FileDependency([
-                'fileName' => $this->module->getJsonDumper()->composerWebroot . '/packages.json',
-            ]));
-        }
-        
-        return $this->asJson($featuredSections);
     }
 
     public function actionPluginsByFeaturedSection($handle): Response
@@ -256,7 +190,6 @@ class PluginStoreController extends BaseApiController
 
         return $this->asJson($plugins);
     }
-
 
     public function actionPluginsByHandles(): Response
     {
@@ -275,19 +208,106 @@ class PluginStoreController extends BaseApiController
         return $this->asJson($data);
     }
 
-    public function actionFeaturedSection($handle): Response
+    public function actionSearchPlugins()
     {
-        $featuredSectionEntry = $this->featuredSectionQuery()
-            ->slug($handle)
-            ->one();
+        $searchQuery = Craft::$app->getRequest()->getParam('searchQuery', '');
 
-        $featuredSection = $this->transformFeaturedSection($featuredSectionEntry);
+        $plugins = $this->getPluginIndexQuery()
+            ->andWhere([
+                'or',
+                ['like', 'name', $searchQuery . '%', false],
+                ['like', 'packageName', $searchQuery],
+                ['like', 'shortDescription', $searchQuery],
+                ['like', 'description', $searchQuery],
+                // ['like', 'developerName', $searchQuery],
+                // ['like', 'developerUrl', $searchQuery],
+                // ['like', 'keywords', $searchQuery],
+            ])
+            ->all();
 
-        return $this->asJson($featuredSection);
+        $data = $this->_plugins($plugins);
+
+        return $this->asJson($data);
     }
 
     // Private Methods
     // =========================================================================
+
+    private function getPluginIndexCache($key)
+    {
+        $craftIdConfig = Craft::$app->getConfig()->getConfigFromFile('craftid');
+        $enablePluginStoreCache = $craftIdConfig['enablePluginStoreCache'];
+
+        if (!$enablePluginStoreCache) {
+            return null;
+        }
+
+        $cacheKey = $this->getPluginIndexCacheKey($key);
+
+        return Craft::$app->getCache()->get($cacheKey);
+    }
+
+    private function setPluginIndexCache($key, $value)
+    {
+        $craftIdConfig = Craft::$app->getConfig()->getConfigFromFile('craftid');
+        $enablePluginStoreCache = $craftIdConfig['enablePluginStoreCache'];
+
+        if (!$enablePluginStoreCache) {
+            return null;
+        }
+
+        $cacheKey = $this->getPluginIndexCacheKey($key);
+
+        Craft::$app->getCache()->set($cacheKey, $value, null, new FileDependency([
+            'fileName' => $this->module->getJsonDumper()->composerWebroot . '/packages.json',
+        ]));
+    }
+
+    private function getPluginIndexCacheKey($key)
+    {
+        $params = $this->getPluginIndexParams();
+
+        $identifiers = [
+            'pluginStore',
+            $key,
+            $params,
+            $this->cmsVersion
+        ];
+
+        $string = Json::encode($identifiers);
+
+        return md5($string);
+    }
+    private function getPluginIndexParams()
+    {
+        $limit = Craft::$app->getRequest()->getParam('limit', 10);
+        $offset = Craft::$app->getRequest()->getParam('offset', 0);
+        $orderBy = Craft::$app->getRequest()->getParam('orderBy', 'activeInstalls');
+        $direction = Craft::$app->getRequest()->getParam('direction', 'desc');
+        $direction = $direction === 'asc' ? SORT_ASC : SORT_DESC;
+
+        return [
+            'limit' => $limit,
+            'offset' => $offset,
+            'orderBy' => $orderBy,
+            'direction' => $direction,
+        ];
+    }
+
+    private function getPluginIndexQuery()
+    {
+        $params = $this->getPluginIndexParams();
+
+        $query = Plugin::find()
+            ->withLatestReleaseInfo(true, $this->cmsVersion)
+            ->with(['developer', 'categories', 'icon'])
+            ->indexBy('id')
+            ->orderBy([($params['orderBy'] === 'name' ? $params['orderBy'] = 'LOWER('.$params['orderBy'].')' : $params['orderBy']) => $params['direction']])
+            ->offset($params['offset'])
+            ->limit($params['limit']);
+
+        return $query;
+    }
 
     private function featuredSectionQuery()
     {
