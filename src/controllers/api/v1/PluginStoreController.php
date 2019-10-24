@@ -65,6 +65,11 @@ class PluginStoreController extends BaseApiController
         return $this->asJson($pluginStoreData);
     }
 
+    /**
+     * Handles /v1/plugin-store/core-data requests.
+     *
+     * @return Response
+     */
     public function actionCoreData(): Response
     {
         $pluginStoreData = [
@@ -74,6 +79,13 @@ class PluginStoreController extends BaseApiController
 
         return $this->asJson($pluginStoreData);
     }
+
+    /**
+     * Handles /v1/plugin-store/featured-section/<handle:{slug}> requests.
+     *
+     * @param $handle
+     * @return Response
+     */
     public function actionFeaturedSection($handle): Response
     {
         $featuredSectionEntry = $this->featuredSectionQuery()
@@ -85,6 +97,11 @@ class PluginStoreController extends BaseApiController
         return $this->asJson($featuredSection);
     }
 
+    /**
+     * Handles /v1/plugin-store/featured-sections requests.
+     *
+     * @return Response
+     */
     public function actionFeaturedSections(): Response
     {
         $featuredSections = null;
@@ -137,6 +154,14 @@ class PluginStoreController extends BaseApiController
         ]);
     }
 
+    /**
+     * Handles /v1/plugin-store/plugin/<handle:{slug}> requests.
+     *
+     * @param $handle
+     * @return Response
+     * @throws \craftnet\errors\MissingTokenException
+     * @throws \yii\base\InvalidConfigException
+     */
     public function actionPlugin($handle): Response
     {
         $plugin = Plugin::find()
@@ -152,6 +177,14 @@ class PluginStoreController extends BaseApiController
         return $this->asJson($this->transformPlugin($plugin, true));
     }
 
+    /**
+     * Handles /v1/plugin-store/plugins-by-category/<categoryId:\d+> requests.
+     *
+     * @param $categoryId
+     * @return Response
+     * @throws \craftnet\errors\MissingTokenException
+     * @throws \yii\base\InvalidConfigException
+     */
     public function actionPluginsByCategory($categoryId): Response
     {
         $data = $this->getPluginIndexCache('category-'.$categoryId);
@@ -169,6 +202,14 @@ class PluginStoreController extends BaseApiController
         return $this->asJson($data);
     }
 
+    /**
+     * Handles /v1/plugin-store/plugins-by-developer/<developerId:\d+> requests.
+     *
+     * @param $developerId
+     * @return Response
+     * @throws \craftnet\errors\MissingTokenException
+     * @throws \yii\base\InvalidConfigException
+     */
     public function actionPluginsByDeveloper($developerId): Response
     {
         $plugins = $this->getPluginIndexQuery()
@@ -180,6 +221,12 @@ class PluginStoreController extends BaseApiController
         return $this->asJson($data);
     }
 
+    /**
+     * Handles /v1/plugin-store/plugins-by-featured-section/<handle:{slug}> requests.
+     *
+     * @param $handle
+     * @return Response
+     */
     public function actionPluginsByFeaturedSection($handle): Response
     {
         $featuredSectionEntry = $this->featuredSectionQuery()
@@ -191,6 +238,13 @@ class PluginStoreController extends BaseApiController
         return $this->asJson($plugins);
     }
 
+    /**
+     * Handles /v1/plugin-store/plugins-by-handles requests.
+     *
+     * @return Response
+     * @throws \craftnet\errors\MissingTokenException
+     * @throws \yii\base\InvalidConfigException
+     */
     public function actionPluginsByHandles(): Response
     {
         $pluginHandles = Craft::$app->getRequest()->getParam('pluginHandles', '');
@@ -208,6 +262,13 @@ class PluginStoreController extends BaseApiController
         return $this->asJson($data);
     }
 
+    /**
+     * Handles /v1/plugin-store/search-plugins requests.
+     *
+     * @return Response
+     * @throws \craftnet\errors\MissingTokenException
+     * @throws \yii\base\InvalidConfigException
+     */
     public function actionSearchPlugins()
     {
         $searchQuery = Craft::$app->getRequest()->getParam('searchQuery', '');
@@ -233,7 +294,11 @@ class PluginStoreController extends BaseApiController
     // Private Methods
     // =========================================================================
 
-    private function getPluginIndexCache($key)
+    /**
+     * @param $key
+     * @return mixed|null
+     */
+    private function getPluginIndexCache(string $key)
     {
         $craftIdConfig = Craft::$app->getConfig()->getConfigFromFile('craftid');
         $enablePluginStoreCache = $craftIdConfig['enablePluginStoreCache'];
@@ -247,7 +312,12 @@ class PluginStoreController extends BaseApiController
         return Craft::$app->getCache()->get($cacheKey);
     }
 
-    private function setPluginIndexCache($key, $value)
+    /**
+     * @param string $key
+     * @param $value
+     * @return null
+     */
+    private function setPluginIndexCache(string $key, $value)
     {
         $craftIdConfig = Craft::$app->getConfig()->getConfigFromFile('craftid');
         $enablePluginStoreCache = $craftIdConfig['enablePluginStoreCache'];
@@ -263,7 +333,11 @@ class PluginStoreController extends BaseApiController
         ]));
     }
 
-    private function getPluginIndexCacheKey($key)
+    /**
+     * @param string $key
+     * @return string
+     */
+    private function getPluginIndexCacheKey(string $key): string
     {
         $params = $this->getPluginIndexParams();
 
@@ -278,7 +352,11 @@ class PluginStoreController extends BaseApiController
 
         return md5($string);
     }
-    private function getPluginIndexParams()
+
+    /**
+     * @return array
+     */
+    private function getPluginIndexParams(): array
     {
         $limit = Craft::$app->getRequest()->getParam('limit', 10);
         $offset = Craft::$app->getRequest()->getParam('offset', 0);
@@ -294,6 +372,9 @@ class PluginStoreController extends BaseApiController
         ];
     }
 
+    /**
+     * @return \craft\db\Query|\craft\elements\db\ElementQueryInterface|PluginQuery|self
+     */
     private function getPluginIndexQuery()
     {
         $params = $this->getPluginIndexParams();
@@ -309,6 +390,9 @@ class PluginStoreController extends BaseApiController
         return $query;
     }
 
+    /**
+     * @return \craft\elements\db\ElementQueryInterface|\craft\elements\db\EntryQuery
+     */
     private function featuredSectionQuery()
     {
         return Entry::find()
@@ -316,7 +400,11 @@ class PluginStoreController extends BaseApiController
             ->section('featuredPlugins');
     }
 
-    private function transformFeaturedSection($featuredSectionEntry)
+    /**
+     * @param $featuredSectionEntry
+     * @return array
+     */
+    private function transformFeaturedSection($featuredSectionEntry): array
     {
         return [
             'id' => $featuredSectionEntry->id,
@@ -326,6 +414,13 @@ class PluginStoreController extends BaseApiController
         ];
     }
 
+    /**
+     * @param $featuredSectionEntry
+     * @param null $limit
+     * @return array|null
+     * @throws \craftnet\errors\MissingTokenException
+     * @throws \yii\base\InvalidConfigException
+     */
     private function getFeaturedSectionPlugins($featuredSectionEntry, $limit = null)
     {
         $limit = $limit ?? Craft::$app->getRequest()->getParam('limit', 10);
@@ -366,6 +461,9 @@ class PluginStoreController extends BaseApiController
         return $this->_transformPlugins($plugins);
     }
 
+    /**
+     * @return array
+     */
     private function _categories(): array
     {
         $ret = [];
