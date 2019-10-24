@@ -31,15 +31,8 @@ class PluginStoreController extends BaseApiController
      */
     public function actionIndex(): Response
     {
-        $pluginStoreData = null;
-
-        $craftIdConfig = Craft::$app->getConfig()->getConfigFromFile('craftid');
-        $enablePluginStoreCache = $craftIdConfig['enablePluginStoreCache'];
-        $cacheKey = 'pluginStoreData--' . $this->cmsVersion;
-
-        if ($enablePluginStoreCache) {
-            $pluginStoreData = Craft::$app->getCache()->get($cacheKey);
-        }
+        $cacheKey = 'pluginStoreData';
+        $pluginStoreData = $this->getCache($cacheKey);
 
         if (!$pluginStoreData) {
             $plugins = Plugin::find()
@@ -55,11 +48,7 @@ class PluginStoreController extends BaseApiController
                 'expiryDateOptions' => $this->_expiryDateOptions(),
             ];
 
-            if ($enablePluginStoreCache) {
-                Craft::$app->getCache()->set($cacheKey, $pluginStoreData, null, new FileDependency([
-                    'fileName' => $this->module->getJsonDumper()->composerWebroot . '/packages.json',
-                ]));
-            }
+            $this->setCache($cacheKey, $pluginStoreData);
         }
 
         return $this->asJson($pluginStoreData);
@@ -104,15 +93,8 @@ class PluginStoreController extends BaseApiController
      */
     public function actionFeaturedSections(): Response
     {
-        $featuredSections = null;
-
-        $craftIdConfig = Craft::$app->getConfig()->getConfigFromFile('craftid');
-        $enablePluginStoreCache = $craftIdConfig['enablePluginStoreCache'];
-        $cacheKey = 'pluginStore-featuredSections--' . $this->cmsVersion;
-
-        if ($enablePluginStoreCache) {
-            $featuredSections = Craft::$app->getCache()->get($cacheKey);
-        }
+        $cacheKey = 'featuredSections';
+        $featuredSections = $this->getCache($cacheKey);
 
         if(!$featuredSections) {
             $featuredSections = [];
@@ -128,12 +110,8 @@ class PluginStoreController extends BaseApiController
                     'plugins' => $plugins,
                 ];
             }
-        }
 
-        if ($enablePluginStoreCache) {
-            Craft::$app->getCache()->set($cacheKey, $featuredSections, null, new FileDependency([
-                'fileName' => $this->module->getJsonDumper()->composerWebroot . '/packages.json',
-            ]));
+            $this->setCache($cacheKey, $featuredSections);
         }
 
         return $this->asJson($featuredSections);
@@ -295,11 +273,13 @@ class PluginStoreController extends BaseApiController
     // =========================================================================
 
     /**
-     * @param $key
+     * @param string $key
      * @return mixed|null
      */
-    private function getPluginIndexCache(string $key)
+    private function getCache(string $key)
     {
+        $key = 'pluginStore-' . $key . '-' . $this->cmsVersion;
+
         $craftIdConfig = Craft::$app->getConfig()->getConfigFromFile('craftid');
         $enablePluginStoreCache = $craftIdConfig['enablePluginStoreCache'];
 
@@ -307,18 +287,18 @@ class PluginStoreController extends BaseApiController
             return null;
         }
 
-        $cacheKey = $this->getPluginIndexCacheKey($key);
-
-        return Craft::$app->getCache()->get($cacheKey);
+        return Craft::$app->getCache()->get($key);
     }
 
     /**
      * @param string $key
      * @param $value
-     * @return null
+     * @return bool|null
      */
-    private function setPluginIndexCache(string $key, $value)
+    public function setCache(string $key, $value)
     {
+        $key = 'pluginStore-' . $key . '-' . $this->cmsVersion;
+
         $craftIdConfig = Craft::$app->getConfig()->getConfigFromFile('craftid');
         $enablePluginStoreCache = $craftIdConfig['enablePluginStoreCache'];
 
@@ -326,11 +306,32 @@ class PluginStoreController extends BaseApiController
             return null;
         }
 
-        $cacheKey = $this->getPluginIndexCacheKey($key);
-
-        Craft::$app->getCache()->set($cacheKey, $value, null, new FileDependency([
+        return Craft::$app->getCache()->set($key, $value, null, new FileDependency([
             'fileName' => $this->module->getJsonDumper()->composerWebroot . '/packages.json',
         ]));
+    }
+
+    /**
+     * @param string $key
+     * @return mixed|null
+     */
+    private function getPluginIndexCache(string $key)
+    {
+        $cacheKey = $this->getPluginIndexCacheKey($key);
+
+        return $this->getCache($cacheKey);
+    }
+
+    /**
+     * @param string $key
+     * @param $value
+     * @return bool|null
+     */
+    private function setPluginIndexCache(string $key, $value)
+    {
+        $cacheKey = $this->getPluginIndexCacheKey($key);
+
+        return $this->setCache($cacheKey, $value);
     }
 
     /**
@@ -342,10 +343,8 @@ class PluginStoreController extends BaseApiController
         $params = $this->getPluginIndexParams();
 
         $identifiers = [
-            'pluginStore',
             $key,
             $params,
-            $this->cmsVersion
         ];
 
         $string = Json::encode($identifiers);
