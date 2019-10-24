@@ -465,26 +465,33 @@ class PluginStoreController extends BaseApiController
      */
     private function _categories(): array
     {
-        $ret = [];
+        $cacheKey = 'categories';
+        $data = $this->getCache($cacheKey);
 
-        $categories = Category::find()
-            ->group('pluginCategories')
-            ->with('icon')
-            ->all();
+        if (!$data) {
+            $data = [];
 
-        foreach ($categories as $category) {
-            /** @var Asset|null $icon */
-            $icon = $category->icon[0] ?? null;
-            $ret[] = [
-                'id' => $category->id,
-                'title' => $category->title,
-                'description' => $category->description,
-                'slug' => $category->slug,
-                'iconUrl' => $icon ? $icon->getUrl() . '?' . $icon->dateModified->getTimestamp() : null,
-            ];
+            $categories = Category::find()
+                ->group('pluginCategories')
+                ->with('icon')
+                ->all();
+
+            foreach ($categories as $category) {
+                /** @var Asset|null $icon */
+                $icon = $category->icon[0] ?? null;
+                $data[] = [
+                    'id' => $category->id,
+                    'title' => $category->title,
+                    'description' => $category->description,
+                    'slug' => $category->slug,
+                    'iconUrl' => $icon ? $icon->getUrl() . '?' . $icon->dateModified->getTimestamp() : null,
+                ];
+            }
+
+            $this->setCache($cacheKey, $data);
         }
 
-        return $ret;
+        return $data;
     }
 
     /**
