@@ -77,13 +77,20 @@ class PluginStoreController extends BaseApiController
      */
     public function actionFeaturedSection($handle): Response
     {
-        $featuredSectionEntry = $this->featuredSectionQuery()
-            ->slug($handle)
-            ->one();
+        $cacheKey = 'featuredSection-' . $handle;
+        $data = $this->getCache($cacheKey);
 
-        $featuredSection = $this->transformFeaturedSection($featuredSectionEntry);
+        if (!$data) {
+            $featuredSectionEntry = $this->featuredSectionQuery()
+                ->slug($handle)
+                ->one();
 
-        return $this->asJson($featuredSection);
+            $data = $this->transformFeaturedSection($featuredSectionEntry);
+
+            $this->setCache($cacheKey, $data);
+        }
+
+        return $this->asJson($data);
     }
 
     /**
@@ -142,17 +149,26 @@ class PluginStoreController extends BaseApiController
      */
     public function actionPlugin($handle): Response
     {
-        $plugin = Plugin::find()
-            ->handle($handle)
-            ->anyStatus()
-            ->withLatestReleaseInfo(true, $this->cmsVersion)
-            ->one();
+        $cacheKey = 'plugin-' . $handle;
+        $data = $this->getCache($cacheKey);
 
-        if (!$plugin) {
-            return $this->asErrorJson("Couldn't find plugin");
+        if (!$data) {
+            $plugin = Plugin::find()
+                ->handle($handle)
+                ->anyStatus()
+                ->withLatestReleaseInfo(true, $this->cmsVersion)
+                ->one();
+
+            if (!$plugin) {
+                return $this->asErrorJson("Couldn't find plugin");
+            }
+
+            $data = $this->transformPlugin($plugin, true);
+
+            $this->setCache($cacheKey, $data);
         }
 
-        return $this->asJson($this->transformPlugin($plugin, true));
+        return $this->asJson($data);
     }
 
     /**
@@ -191,11 +207,18 @@ class PluginStoreController extends BaseApiController
      */
     public function actionPluginsByDeveloper($developerId): Response
     {
-        $plugins = $this->getPluginIndexQuery()
-            ->developerId($developerId)
-            ->all();
+        $cacheKey = 'developer-'.$developerId;
+        $data = $this->getPluginIndexCache($cacheKey);
 
-        $data = $this->_plugins($plugins);
+        if (!$data) {
+            $plugins = $this->getPluginIndexQuery()
+                ->developerId($developerId)
+                ->all();
+
+            $data = $this->_plugins($plugins);
+
+            $this->setPluginIndexCache($cacheKey, $data);
+        }
 
         return $this->asJson($data);
     }
@@ -227,16 +250,24 @@ class PluginStoreController extends BaseApiController
     public function actionPluginsByHandles(): Response
     {
         $pluginHandles = Craft::$app->getRequest()->getParam('pluginHandles', '');
-        $pluginHandles = explode(',', $pluginHandles);
 
-        $plugins = Plugin::find()
-            ->withLatestReleaseInfo(true, $this->cmsVersion)
-            ->with(['developer', 'categories', 'icon'])
-            ->indexBy('id')
-            ->andWhere(['craftnet_plugins.handle' => $pluginHandles])
-            ->all();
+        $cacheKey = 'pluginsByHandles-'.$pluginHandles;
+        $data = $this->getCache($cacheKey);
 
-        $data = $this->_transformPlugins($plugins);
+        if (!$data) {
+            $pluginHandles = explode(',', $pluginHandles);
+
+            $plugins = Plugin::find()
+                ->withLatestReleaseInfo(true, $this->cmsVersion)
+                ->with(['developer', 'categories', 'icon'])
+                ->indexBy('id')
+                ->andWhere(['craftnet_plugins.handle' => $pluginHandles])
+                ->all();
+
+            $data = $this->_transformPlugins($plugins);
+
+            $this->setCache($cacheKey,$data);
+        }
 
         return $this->asJson($data);
     }
@@ -252,20 +283,27 @@ class PluginStoreController extends BaseApiController
     {
         $searchQuery = Craft::$app->getRequest()->getParam('searchQuery', '');
 
-        $plugins = $this->getPluginIndexQuery()
-            ->andWhere([
-                'or',
-                ['like', 'name', $searchQuery . '%', false],
-                ['like', 'packageName', $searchQuery],
-                ['like', 'shortDescription', $searchQuery],
-                ['like', 'description', $searchQuery],
-                // ['like', 'developerName', $searchQuery],
-                // ['like', 'developerUrl', $searchQuery],
-                // ['like', 'keywords', $searchQuery],
-            ])
-            ->all();
+        $cacheKey = 'search-'.$searchQuery;
+        $data = $this->getPluginIndexCache($cacheKey);
 
-        $data = $this->_plugins($plugins);
+        if (!$data) {
+            $plugins = $this->getPluginIndexQuery()
+                ->andWhere([
+                    'or',
+                    ['like', 'name', $searchQuery . '%', false],
+                    ['like', 'packageName', $searchQuery],
+                    ['like', 'shortDescription', $searchQuery],
+                    ['like', 'description', $searchQuery],
+                    // ['like', 'developerName', $searchQuery],
+                    // ['like', 'developerUrl', $searchQuery],
+                    // ['like', 'keywords', $searchQuery],
+                ])
+                ->all();
+
+            $data = $this->_plugins($plugins);
+
+            $this->setPluginIndexCache($cacheKey, $data);
+        }
 
         return $this->asJson($data);
     }
@@ -426,39 +464,48 @@ class PluginStoreController extends BaseApiController
         $limit = $limit ?? Craft::$app->getRequest()->getParam('limit', 10);
         $offset = Craft::$app->getRequest()->getParam('offset', 0);
 
-        $pluginIds = null;
+        $cacheKey = 'featuredSectionPlugins-' . $featuredSectionEntry->id . '-' . $limit . '-' . $offset;
+        $data = $this->getCache($cacheKey);
 
-        switch ($featuredSectionEntry->getType()->handle) {
-            case 'manual':
-                /** @var PluginQuery $query */
-                $query = $featuredSectionEntry->plugins;
-                $pluginIds = $query
-                    ->withLatestReleaseInfo(true, $this->cmsVersion)
-                    ->ids();
-                break;
-            case 'dynamic':
-                $pluginIds = $this->_dynamicPlugins($featuredSectionEntry->slug);
-                break;
-            default:
-                $pluginIds = null;
+        if (!$data) {
+            $pluginIds = null;
+
+            switch ($featuredSectionEntry->getType()->handle) {
+                case 'manual':
+                    /** @var PluginQuery $query */
+                    $query = $featuredSectionEntry->plugins;
+                    $pluginIds = $query
+                        ->withLatestReleaseInfo(true, $this->cmsVersion)
+                        ->ids();
+                    break;
+                case 'dynamic':
+                    $pluginIds = $this->_dynamicPlugins($featuredSectionEntry->slug);
+                    break;
+                default:
+                    $pluginIds = null;
+            }
+
+            if (!$pluginIds) {
+                return null;
+            }
+
+            $pluginQuery = Plugin::find()
+                ->withLatestReleaseInfo(true, $this->cmsVersion)
+                ->with(['developer', 'categories', 'icon'])
+                ->indexBy('id')
+                ->offset($offset)
+                ->limit($limit);
+
+            $pluginQuery->andWhere(['craftnet_plugins.id' => $pluginIds]);
+
+            $plugins = $pluginQuery->all();
+
+            $data = $this->_transformPlugins($plugins);
+
+            $this->setCache($cacheKey, $data);
         }
 
-        if (!$pluginIds) {
-            return null;
-        }
-
-        $pluginQuery = Plugin::find()
-            ->withLatestReleaseInfo(true, $this->cmsVersion)
-            ->with(['developer', 'categories', 'icon'])
-            ->indexBy('id')
-            ->offset($offset)
-            ->limit($limit);
-
-        $pluginQuery->andWhere(['craftnet_plugins.id' => $pluginIds]);
-
-        $plugins = $pluginQuery->all();
-
-        return $this->_transformPlugins($plugins);
+        return $data;
     }
 
     /**
