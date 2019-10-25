@@ -31,7 +31,7 @@ class PluginStoreController extends BaseApiController
      */
     public function actionIndex(): Response
     {
-        $cacheKey = 'pluginStoreData';
+        $cacheKey = __METHOD__;
         $pluginStoreData = $this->getCache($cacheKey);
 
         if (!$pluginStoreData) {
@@ -77,7 +77,7 @@ class PluginStoreController extends BaseApiController
      */
     public function actionFeaturedSection($handle): Response
     {
-        $cacheKey = 'featuredSection-' . $handle;
+        $cacheKey = __METHOD__ . $handle;
         $data = $this->getCache($cacheKey);
 
         if (!$data) {
@@ -100,7 +100,7 @@ class PluginStoreController extends BaseApiController
      */
     public function actionFeaturedSections(): Response
     {
-        $cacheKey = 'featuredSections';
+        $cacheKey = __METHOD__;
         $featuredSections = $this->getCache($cacheKey);
 
         if(!$featuredSections) {
@@ -149,7 +149,7 @@ class PluginStoreController extends BaseApiController
      */
     public function actionPlugin($handle): Response
     {
-        $cacheKey = 'plugin-' . $handle;
+        $cacheKey = __METHOD__ . $handle;
         $data = $this->getCache($cacheKey);
 
         if (!$data) {
@@ -181,7 +181,7 @@ class PluginStoreController extends BaseApiController
      */
     public function actionPluginsByCategory($categoryId): Response
     {
-        $cacheKey = 'category-'.$categoryId;
+        $cacheKey = __METHOD__ . $categoryId;
         $data = $this->getPluginIndexCache($cacheKey);
 
         if (!$data) {
@@ -207,7 +207,7 @@ class PluginStoreController extends BaseApiController
      */
     public function actionPluginsByDeveloper($developerId): Response
     {
-        $cacheKey = 'developer-'.$developerId;
+        $cacheKey = __METHOD__ . $developerId;
         $data = $this->getPluginIndexCache($cacheKey);
 
         if (!$data) {
@@ -251,7 +251,7 @@ class PluginStoreController extends BaseApiController
     {
         $pluginHandles = Craft::$app->getRequest()->getParam('pluginHandles', '');
 
-        $cacheKey = 'pluginsByHandles-'.$pluginHandles;
+        $cacheKey = __METHOD__ . $pluginHandles;
         $data = $this->getCache($cacheKey);
 
         if (!$data) {
@@ -283,7 +283,7 @@ class PluginStoreController extends BaseApiController
     {
         $searchQuery = Craft::$app->getRequest()->getParam('searchQuery', '');
 
-        $cacheKey = 'search-'.$searchQuery;
+        $cacheKey = __METHOD__ . $searchQuery;
         $data = $this->getPluginIndexCache($cacheKey);
 
         if (!$data) {
@@ -464,7 +464,7 @@ class PluginStoreController extends BaseApiController
         $limit = $limit ?? Craft::$app->getRequest()->getParam('limit', 10);
         $offset = Craft::$app->getRequest()->getParam('offset', 0);
 
-        $cacheKey = 'featuredSectionPlugins-' . $featuredSectionEntry->id . '-' . $limit . '-' . $offset;
+        $cacheKey = __METHOD__ . $featuredSectionEntry->id . '-' . $limit . '-' . $offset;
         $data = $this->getCache($cacheKey);
 
         if (!$data) {
@@ -513,7 +513,7 @@ class PluginStoreController extends BaseApiController
      */
     private function _categories(): array
     {
-        $cacheKey = 'categories';
+        $cacheKey = __METHOD__;
         $data = $this->getCache($cacheKey);
 
         if (!$data) {
