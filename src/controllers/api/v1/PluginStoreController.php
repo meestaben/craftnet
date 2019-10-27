@@ -185,11 +185,10 @@ class PluginStoreController extends BaseApiController
         $data = $this->getPluginIndexCache($cacheKey);
 
         if (!$data) {
-            $plugins = $this->getPluginIndexQuery()
-                ->categoryId($categoryId)
-                ->all();
+            $query = $this->getPluginIndexQuery()
+                ->categoryId($categoryId);
 
-            $data = $this->_plugins($plugins);
+            $data = $this->getPluginIndexResponse($query);
 
             $this->setPluginIndexCache($cacheKey, $data);
         }
@@ -211,11 +210,10 @@ class PluginStoreController extends BaseApiController
         $data = $this->getPluginIndexCache($cacheKey);
 
         if (!$data) {
-            $plugins = $this->getPluginIndexQuery()
-                ->developerId($developerId)
-                ->all();
+            $query = $this->getPluginIndexQuery()
+                ->developerId($developerId);
 
-            $data = $this->_plugins($plugins);
+            $data = $this->getPluginIndexResponse($query);
 
             $this->setPluginIndexCache($cacheKey, $data);
         }
@@ -311,6 +309,29 @@ class PluginStoreController extends BaseApiController
     // Private Methods
     // =========================================================================
 
+    private function getPluginIndexResponse(PluginQuery $query): array
+    {
+        $totalResults = $query->total();
+
+        $pluginResults = $query->all();
+        $plugins = $this->_plugins($pluginResults);
+
+        $params = $this->getPluginIndexParams();
+        $perPage = (int) $params['perPage'];
+
+        $total = ceil($totalResults / $perPage);
+
+        $currentPage = (int) $params['page'];
+
+        return [
+            'plugins' => $plugins,
+            'currentPage' => $currentPage,
+            'perPage' => $perPage,
+            'total' => $total,
+            'totalResults' => $totalResults,
+        ];
+    }
+
     /**
      * @param string $key
      * @return mixed|null
@@ -396,15 +417,15 @@ class PluginStoreController extends BaseApiController
      */
     private function getPluginIndexParams(): array
     {
-        $limit = Craft::$app->getRequest()->getParam('limit', 10);
-        $offset = Craft::$app->getRequest()->getParam('offset', 0);
+        $perPage = Craft::$app->getRequest()->getParam('perPage', 10);
+        $page = Craft::$app->getRequest()->getParam('page', 1);
         $orderBy = Craft::$app->getRequest()->getParam('orderBy', 'activeInstalls');
         $direction = Craft::$app->getRequest()->getParam('direction', 'desc');
         $direction = $direction === 'asc' ? SORT_ASC : SORT_DESC;
 
         return [
-            'limit' => $limit,
-            'offset' => $offset,
+            'perPage' => $perPage,
+            'page' => $page,
             'orderBy' => $orderBy,
             'direction' => $direction,
         ];
@@ -417,13 +438,16 @@ class PluginStoreController extends BaseApiController
     {
         $params = $this->getPluginIndexParams();
 
+        $limit = $params['perPage'];
+        $offset = ($params['page'] - 1) * $limit;
+
         $query = Plugin::find()
             ->withLatestReleaseInfo(true, $this->cmsVersion)
             ->with(['developer', 'categories', 'icon'])
             ->indexBy('id')
             ->orderBy([($params['orderBy'] === 'name' ? $params['orderBy'] = 'LOWER('.$params['orderBy'].')' : $params['orderBy']) => $params['direction']])
-            ->offset($params['offset'])
-            ->limit($params['limit']);
+            ->offset($offset)
+            ->limit($limit);
 
         return $query;
     }
@@ -461,8 +485,10 @@ class PluginStoreController extends BaseApiController
      */
     private function getFeaturedSectionPlugins($featuredSectionEntry, $limit = null)
     {
-        $limit = $limit ?? Craft::$app->getRequest()->getParam('limit', 10);
-        $offset = Craft::$app->getRequest()->getParam('offset', 0);
+        $params = $this->getPluginIndexParams();
+
+        $limit = $limit ?? $params['perPage'];
+        $offset = ($params['page'] - 1) * $limit;
 
         $cacheKey = __METHOD__ . $featuredSectionEntry->id . '-' . $limit . '-' . $offset;
         $data = $this->getCache($cacheKey);
@@ -489,18 +515,16 @@ class PluginStoreController extends BaseApiController
                 return null;
             }
 
-            $pluginQuery = Plugin::find()
+            $query = Plugin::find()
                 ->withLatestReleaseInfo(true, $this->cmsVersion)
                 ->with(['developer', 'categories', 'icon'])
                 ->indexBy('id')
                 ->offset($offset)
                 ->limit($limit);
 
-            $pluginQuery->andWhere(['craftnet_plugins.id' => $pluginIds]);
+            $query->andWhere(['craftnet_plugins.id' => $pluginIds]);
 
-            $plugins = $pluginQuery->all();
-
-            $data = $this->_transformPlugins($plugins);
+            $data = $this->getPluginIndexResponse($query);
 
             $this->setCache($cacheKey, $data);
         }
