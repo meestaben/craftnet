@@ -107,7 +107,8 @@ class PluginStoreController extends BaseApiController
             $featuredSections = [];
 
             foreach ($this->featuredSectionQuery()->all() as $featuredSectionEntry) {
-                $plugins = $this->getFeaturedSectionPlugins($featuredSectionEntry, 8);
+                $data = $this->getFeaturedSectionPlugins($featuredSectionEntry, 8);
+                $plugins = $data['plugins'];
 
                 $featuredSections[] = [
                     'id' => $featuredSectionEntry->id,
@@ -285,7 +286,7 @@ class PluginStoreController extends BaseApiController
         $data = $this->getPluginIndexCache($cacheKey);
 
         if (!$data) {
-            $plugins = $this->getPluginIndexQuery()
+            $query = $this->getPluginIndexQuery()
                 ->andWhere([
                     'or',
                     ['like', 'name', $searchQuery . '%', false],
@@ -295,10 +296,9 @@ class PluginStoreController extends BaseApiController
                     // ['like', 'developerName', $searchQuery],
                     // ['like', 'developerUrl', $searchQuery],
                     // ['like', 'keywords', $searchQuery],
-                ])
-                ->all();
+                ]);
 
-            $data = $this->_plugins($plugins);
+            $data = $this->getPluginIndexResponse($query);
 
             $this->setPluginIndexCache($cacheKey, $data);
         }
