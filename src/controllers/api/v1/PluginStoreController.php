@@ -423,6 +423,12 @@ class PluginStoreController extends BaseApiController
         $direction = Craft::$app->getRequest()->getParam('direction', 'desc');
         $direction = $direction === 'asc' ? SORT_ASC : SORT_DESC;
 
+        $maxPerPage = 100;
+        
+        if ($perPage > $maxPerPage) {
+            $perPage = $maxPerPage;
+        }
+
         return [
             'perPage' => $perPage,
             'page' => $page,
