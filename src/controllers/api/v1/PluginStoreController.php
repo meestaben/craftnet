@@ -293,9 +293,9 @@ class PluginStoreController extends BaseApiController
                     ['like', 'packageName', $searchQuery],
                     ['like', 'shortDescription', $searchQuery],
                     ['like', 'description', $searchQuery],
-                    // ['like', 'developerName', $searchQuery],
+                    ['like', 'craftnet_plugins.keywords', $searchQuery],
                     // ['like', 'developerUrl', $searchQuery],
-                    // ['like', 'keywords', $searchQuery],
+                    // ['like', 'developerName', $searchQuery],
                 ]);
 
             $data = $this->getPluginIndexResponse($query);
