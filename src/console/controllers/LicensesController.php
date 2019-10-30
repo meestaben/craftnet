@@ -6,8 +6,8 @@ use Craft;
 use craft\commerce\elements\Order;
 use craft\commerce\models\PaymentSource;
 use craft\commerce\Plugin as Commerce;
-use craft\commerce\stripe\gateways\Gateway as StripeGateway;
-use craft\commerce\stripe\models\forms\Payment;
+use craft\commerce\stripe\gateways\PaymentIntents as StripeGateway;
+use craft\commerce\stripe\models\forms\payment\PaymentIntent as PaymentForm;
 use craft\commerce\stripe\Plugin as Stripe;
 use craft\elements\User;
 use craft\helpers\ArrayHelper;
@@ -309,10 +309,9 @@ class LicensesController extends Controller
             // Pay for it
             /** @var StripeGateway $gateway */
             $gateway = $commerce->getGateways()->getGatewayById(getenv('STRIPE_GATEWAY_ID'));
-            /** @var Payment $paymentForm */
+            /** @var PaymentForm $paymentForm */
             $paymentForm = $gateway->getPaymentFormModel();
-            $paymentForm->token = $paymentSource->token;
-            $paymentForm->customer = $stripe->getCustomers()->getCustomer($gateway->id, $user)->reference;
+            $paymentForm->populateFromPaymentSource($paymentSource);
             $commerce->getPayments()->processPayment($order, $paymentForm, $redirect, $transaction);
         } catch (\Throwable $e) {
             $this->stderr('error: ' . $e->getMessage() . PHP_EOL, Console::FG_RED);
