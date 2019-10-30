@@ -49,6 +49,9 @@
                                 {{ license.expiresOn.date|moment('YYYY-MM-DD') }}
                             </template>
                         </template>
+                        <template v-else>
+                            Forever
+                        </template>
                     </td>
                     <td>
                         <template v-if="autoRenewSwitch">

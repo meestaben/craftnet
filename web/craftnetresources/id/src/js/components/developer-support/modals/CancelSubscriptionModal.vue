@@ -5,7 +5,7 @@
             <p>Are you sure you want to cancel your subscription?</p>
 
             <div>
-                <btn ref="cancelBtn" :disabled="loading" @click="$emit('cancel')">Cancel</btn>
+                <btn ref="cancelBtn" :disabled="loading" @click="$emit('cancel')">No</btn>
                 <btn ref="submitBtn" kind="primary" :disabled="loading" @click="cancelSubscription(subscriptionUid)">Yes, cancel my subscription</btn>
 
                 <template v-if="loading">

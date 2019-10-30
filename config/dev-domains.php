@@ -67,6 +67,7 @@ return [
     'nxcli.net',
     'ondev.co',
     'oneis.us',
+    'ontwikkeling.site',
     'our-staging-server.net',
     'preview.dev',
     'preview-it.com',
