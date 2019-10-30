@@ -424,7 +424,7 @@ class PluginStoreController extends BaseApiController
         $direction = $direction === 'asc' ? SORT_ASC : SORT_DESC;
 
         $maxPerPage = 100;
-        
+
         if ($perPage > $maxPerPage) {
             $perPage = $maxPerPage;
         }
