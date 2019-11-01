@@ -742,6 +742,7 @@ EOL;
         // Return data
         $data = [
             'id' => $plugin->id,
+            'packageId' => $plugin->packageId,
             'iconUrl' => $icon ? $icon->getUrl() . '?' . $icon->dateModified->getTimestamp() : null,
             'handle' => $plugin->handle,
             'name' => strip_tags($plugin->name),

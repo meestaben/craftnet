@@ -3,11 +3,14 @@
 namespace craftnet\controllers\api\v1;
 
 use Craft;
+use craft\db\Query;
 use craft\elements\Asset;
 use craft\elements\Category;
 use craft\elements\Entry;
 use craft\helpers\Json;
 use craftnet\controllers\api\BaseApiController;
+use craftnet\helpers\Cache;
+use craftnet\Module;
 use craftnet\plugins\Plugin;
 use craftnet\plugins\PluginQuery;
 use yii\caching\FileDependency;
@@ -31,8 +34,8 @@ class PluginStoreController extends BaseApiController
      */
     public function actionIndex(): Response
     {
-        $cacheKey = __METHOD__;
-        $pluginStoreData = $this->getCache($cacheKey);
+        $cacheKey = __METHOD__ . '-' . $this->cmsVersion;
+        $pluginStoreData = Cache::get($cacheKey);
 
         if (!$pluginStoreData) {
             $plugins = Plugin::find()
@@ -43,12 +46,12 @@ class PluginStoreController extends BaseApiController
 
             $pluginStoreData = [
                 'categories' => $this->_categories(),
-                'featuredPlugins' => $this->_featuredPlugins(),
+                'featuredPlugins' => $this->_featuredPlugins(true),
                 'plugins' => $this->_plugins($plugins),
                 'expiryDateOptions' => $this->_expiryDateOptions(),
             ];
 
-            $this->setCache($cacheKey, $pluginStoreData);
+            Cache::set($cacheKey, $pluginStoreData);
         }
 
         return $this->asJson($pluginStoreData);
@@ -78,7 +81,7 @@ class PluginStoreController extends BaseApiController
     public function actionFeaturedSection($handle): Response
     {
         $cacheKey = __METHOD__ . $handle;
-        $data = $this->getCache($cacheKey);
+        $data = Cache::get($cacheKey);
 
         if (!$data) {
             $featuredSectionEntry = $this->featuredSectionQuery()
@@ -87,7 +90,7 @@ class PluginStoreController extends BaseApiController
 
             $data = $this->transformFeaturedSection($featuredSectionEntry);
 
-            $this->setCache($cacheKey, $data);
+            Cache::set($cacheKey, $data);
         }
 
         return $this->asJson($data);
@@ -101,7 +104,7 @@ class PluginStoreController extends BaseApiController
     public function actionFeaturedSections(): Response
     {
         $cacheKey = __METHOD__;
-        $featuredSections = $this->getCache($cacheKey);
+        $featuredSections = Cache::get($cacheKey);
 
         if(!$featuredSections) {
             $featuredSections = [];
@@ -119,7 +122,7 @@ class PluginStoreController extends BaseApiController
                 ];
             }
 
-            $this->setCache($cacheKey, $featuredSections);
+            Cache::set($cacheKey, $featuredSections);
         }
 
         return $this->asJson($featuredSections);
@@ -135,7 +138,7 @@ class PluginStoreController extends BaseApiController
     {
         return $this->asJson([
             'categories' => $this->_categories(),
-            'featuredPlugins' => $this->_featuredPlugins(),
+            'featuredPlugins' => $this->_featuredPlugins(false),
             'expiryDateOptions' => $this->_expiryDateOptions(),
         ]);
     }
@@ -143,21 +146,21 @@ class PluginStoreController extends BaseApiController
     /**
      * Handles /v1/plugin-store/plugin/<handle:{slug}> requests.
      *
-     * @param $handle
+     * @param string $handle
      * @return Response
      * @throws \craftnet\errors\MissingTokenException
      * @throws \yii\base\InvalidConfigException
      */
-    public function actionPlugin($handle): Response
+    public function actionPlugin(string $handle): Response
     {
-        $cacheKey = __METHOD__ . $handle;
-        $data = $this->getCache($cacheKey);
+        $cacheKey = __METHOD__ . '-' . $handle;
+        $data = Cache::get($cacheKey);
 
         if (!$data) {
             $plugin = Plugin::find()
                 ->handle($handle)
                 ->anyStatus()
-                ->withLatestReleaseInfo(true, $this->cmsVersion)
+                ->withLatestReleaseInfo()
                 ->one();
 
             if (!$plugin) {
@@ -165,8 +168,30 @@ class PluginStoreController extends BaseApiController
             }
 
             $data = $this->transformPlugin($plugin, true);
+            Cache::set($cacheKey, $data);
+        }
 
-            $this->setCache($cacheKey, $data);
+        // Add the latest compatible version
+        if ($this->cmsVersion) {
+            $cmsRelease = Module::getInstance()->getPackageManager()->getRelease('craftcms/cms', $this->cmsVersion);
+            if ($cmsRelease) {
+                $data['latestCompatibleVersion'] = (new Query)
+                    ->select(['v.version'])
+                    ->from(['v' => 'craftnet_packageversions'])
+                    ->innerJoin(['craftnet_pluginversionorder vo'], '[[vo.versionId]] = [[v.id]]')
+                    ->where(['v.packageId' => $data['packageId']])
+                    ->andWhere(['vo.stableOrder' =>  (new Query())
+                        ->select(['max([[s_vo.stableOrder]])'])
+                        ->from(['s_vo' => 'craftnet_pluginversionorder'])
+                        ->innerJoin(['craftnet_packageversions s_v'], '[[s_v.id]] = [[s_vo.versionId]]')
+                        ->innerJoin(['craftnet_pluginversioncompat s_vc'], '[[s_vc.pluginVersionId]] = [[s_v.id]]')
+                        ->where(['s_v.packageId' => $data['packageId']])
+                        ->andWhere(['s_vc.cmsVersionId' => $cmsRelease->id])
+                        ->groupBy(['s_v.packageId'])])
+                    ->scalar();
+            } else {
+                $data['latestCompatibleVersion'] = null;
+            }
         }
 
         return $this->asJson($data);
@@ -251,13 +276,13 @@ class PluginStoreController extends BaseApiController
         $pluginHandles = Craft::$app->getRequest()->getParam('pluginHandles', '');
 
         $cacheKey = __METHOD__ . $pluginHandles;
-        $data = $this->getCache($cacheKey);
+        $data = Cache::get($cacheKey);
 
         if (!$data) {
             $pluginHandles = explode(',', $pluginHandles);
 
             $plugins = Plugin::find()
-                ->withLatestReleaseInfo(true, $this->cmsVersion)
+                ->withLatestReleaseInfo()
                 ->with(['developer', 'categories', 'icon'])
                 ->indexBy('id')
                 ->andWhere(['craftnet_plugins.handle' => $pluginHandles])
@@ -265,7 +290,7 @@ class PluginStoreController extends BaseApiController
 
             $data = $this->_transformPlugins($plugins);
 
-            $this->setCache($cacheKey,$data);
+            Cache::set($cacheKey,$data);
         }
 
         return $this->asJson($data);
@@ -336,50 +361,10 @@ class PluginStoreController extends BaseApiController
      * @param string $key
      * @return mixed|null
      */
-    private function getCache(string $key)
-    {
-        $key = 'pluginStore-' . $key . '-' . $this->cmsVersion;
-
-        $craftIdConfig = Craft::$app->getConfig()->getConfigFromFile('craftid');
-        $enablePluginStoreCache = $craftIdConfig['enablePluginStoreCache'];
-
-        if (!$enablePluginStoreCache) {
-            return null;
-        }
-
-        return Craft::$app->getCache()->get($key);
-    }
-
-    /**
-     * @param string $key
-     * @param $value
-     * @return bool|null
-     */
-    public function setCache(string $key, $value)
-    {
-        $key = 'pluginStore-' . $key . '-' . $this->cmsVersion;
-
-        $craftIdConfig = Craft::$app->getConfig()->getConfigFromFile('craftid');
-        $enablePluginStoreCache = $craftIdConfig['enablePluginStoreCache'];
-
-        if (!$enablePluginStoreCache) {
-            return null;
-        }
-
-        return Craft::$app->getCache()->set($key, $value, null, new FileDependency([
-            'fileName' => $this->module->getJsonDumper()->composerWebroot . '/packages.json',
-        ]));
-    }
-
-    /**
-     * @param string $key
-     * @return mixed|null
-     */
     private function getPluginIndexCache(string $key)
     {
         $cacheKey = $this->getPluginIndexCacheKey($key);
-
-        return $this->getCache($cacheKey);
+        return Cache::get($cacheKey);
     }
 
     /**
@@ -390,8 +375,7 @@ class PluginStoreController extends BaseApiController
     private function setPluginIndexCache(string $key, $value)
     {
         $cacheKey = $this->getPluginIndexCacheKey($key);
-
-        return $this->setCache($cacheKey, $value);
+        return Cache::set($cacheKey, $value);
     }
 
     /**
@@ -417,17 +401,11 @@ class PluginStoreController extends BaseApiController
      */
     private function getPluginIndexParams(): array
     {
-        $perPage = Craft::$app->getRequest()->getParam('perPage', 10);
-        $page = Craft::$app->getRequest()->getParam('page', 1);
+        $perPage = min(Craft::$app->getRequest()->getParam('perPage', 10), 100);
+        $page = max(Craft::$app->getRequest()->getParam('page', 1), 1);
         $orderBy = Craft::$app->getRequest()->getParam('orderBy', 'activeInstalls');
         $direction = Craft::$app->getRequest()->getParam('direction', 'desc');
         $direction = $direction === 'asc' ? SORT_ASC : SORT_DESC;
-
-        $maxPerPage = 100;
-
-        if ($perPage > $maxPerPage) {
-            $perPage = $maxPerPage;
-        }
 
         return [
             'perPage' => $perPage,
@@ -448,7 +426,7 @@ class PluginStoreController extends BaseApiController
         $offset = ($params['page'] - 1) * $limit;
 
         $query = Plugin::find()
-            ->withLatestReleaseInfo(true, $this->cmsVersion)
+            ->withLatestReleaseInfo()
             ->with(['developer', 'categories', 'icon'])
             ->indexBy('id')
             ->orderBy([($params['orderBy'] === 'name' ? $params['orderBy'] = 'LOWER('.$params['orderBy'].')' : $params['orderBy']) => $params['direction']])
@@ -497,7 +475,7 @@ class PluginStoreController extends BaseApiController
         $offset = ($params['page'] - 1) * $limit;
 
         $cacheKey = __METHOD__ . $featuredSectionEntry->id . '-' . $limit . '-' . $offset;
-        $data = $this->getCache($cacheKey);
+        $data = Cache::get($cacheKey);
 
         if (!$data) {
             $pluginIds = null;
@@ -507,11 +485,11 @@ class PluginStoreController extends BaseApiController
                     /** @var PluginQuery $query */
                     $query = $featuredSectionEntry->plugins;
                     $pluginIds = $query
-                        ->withLatestReleaseInfo(true, $this->cmsVersion)
+                        ->withLatestReleaseInfo()
                         ->ids();
                     break;
                 case 'dynamic':
-                    $pluginIds = $this->_dynamicPlugins($featuredSectionEntry->slug);
+                    $pluginIds = $this->_dynamicPlugins($featuredSectionEntry->slug, false);
                     break;
                 default:
                     $pluginIds = null;
@@ -522,7 +500,7 @@ class PluginStoreController extends BaseApiController
             }
 
             $query = Plugin::find()
-                ->withLatestReleaseInfo(true, $this->cmsVersion)
+                ->withLatestReleaseInfo()
                 ->with(['developer', 'categories', 'icon'])
                 ->indexBy('id')
                 ->offset($offset)
@@ -532,7 +510,7 @@ class PluginStoreController extends BaseApiController
 
             $data = $this->getPluginIndexResponse($query);
 
-            $this->setCache($cacheKey, $data);
+            Cache::set($cacheKey, $data);
         }
 
         return $data;
@@ -544,7 +522,7 @@ class PluginStoreController extends BaseApiController
     private function _categories(): array
     {
         $cacheKey = __METHOD__;
-        $data = $this->getCache($cacheKey);
+        $data = Cache::get($cacheKey);
 
         if (!$data) {
             $data = [];
@@ -566,17 +544,18 @@ class PluginStoreController extends BaseApiController
                 ];
             }
 
-            $this->setCache($cacheKey, $data);
+            Cache::set($cacheKey, $data);
         }
 
         return $data;
     }
 
     /**
+     * @param bool $compatibleOnly
      * @return array
      * @throws \yii\base\Exception
      */
-    private function _featuredPlugins(): array
+    private function _featuredPlugins(bool $compatibleOnly): array
     {
         $ret = [];
 
@@ -591,11 +570,11 @@ class PluginStoreController extends BaseApiController
                     /** @var PluginQuery $query */
                     $query = $entry->plugins;
                     $pluginIds = $query
-                        ->withLatestReleaseInfo(true, $this->cmsVersion)
+                        ->withLatestReleaseInfo(true, $compatibleOnly ? $this->cmsVersion : null)
                         ->ids();
                     break;
                 case 'dynamic':
-                    $pluginIds = $this->_dynamicPlugins($entry->slug);
+                    $pluginIds = $this->_dynamicPlugins($entry->slug, $compatibleOnly);
                     break;
                 default:
                     $pluginIds = null;
@@ -616,42 +595,45 @@ class PluginStoreController extends BaseApiController
     }
 
     /**
+     * @param bool $compatibleOnly
      * @param string $slug
      * @return int[]
      */
-    private function _dynamicPlugins(string $slug): array
+    private function _dynamicPlugins(string $slug, bool $compatibleOnly): array
     {
         switch ($slug) {
             case 'recently-added':
-                return $this->_recentlyAddedPlugins();
+                return $this->_recentlyAddedPlugins($compatibleOnly);
             case 'top-paid':
-                return $this->_topPaidPlugins();
+                return $this->_topPaidPlugins($compatibleOnly);
             default:
                 return [];
         }
     }
 
     /**
+     * @param bool $compatibleOnly
      * @return int[]
      */
-    private function _recentlyAddedPlugins(): array
+    private function _recentlyAddedPlugins(bool $compatibleOnly): array
     {
         return Plugin::find()
             ->andWhere(['not', ['craftnet_plugins.dateApproved' => null]])
-            ->withLatestReleaseInfo(true, $this->cmsVersion)
+            ->withLatestReleaseInfo(true, $compatibleOnly ? $this->cmsVersion : null)
             ->orderBy(['craftnet_plugins.dateApproved' => SORT_DESC])
             ->limit(20)
             ->ids();
     }
 
     /**
+     * @param bool $compatibleOnly
      * @return int[]
      */
-    private function _topPaidPlugins(): array
+    private function _topPaidPlugins(bool $compatibleOnly): array
     {
         return Plugin::find()
             ->andWhere(['not', ['craftnet_plugins.dateApproved' => null]])
-            ->withLatestReleaseInfo(true, $this->cmsVersion)
+            ->withLatestReleaseInfo(true, $compatibleOnly ? $this->cmsVersion : null)
             ->withTotalPurchases(true, (new \DateTime())->modify('-1 month'))
             ->andWhere(['not', ['elements.id' => 983]])
             ->orderBy(['totalPurchases' => SORT_DESC])
