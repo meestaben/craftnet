@@ -809,7 +809,7 @@ EOL;
      * @throws \craftnet\errors\MissingTokenException
      * @throws \yii\base\InvalidConfigException
      */
-    protected function _transformPlugins(array $plugins): array
+    protected function transformPlugins(array $plugins): array
     {
         $ret = [];
 

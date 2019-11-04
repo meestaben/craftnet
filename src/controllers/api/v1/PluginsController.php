@@ -35,7 +35,7 @@ class PluginsController extends BaseApiController
 
         $plugins = $pluginQuery->all();
 
-        $data = $this->_transformPlugins($plugins);
+        $data = $this->transformPlugins($plugins);
 
         return $this->asJson($data);
     }

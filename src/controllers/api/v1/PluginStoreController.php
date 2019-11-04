@@ -14,6 +14,9 @@ use craftnet\helpers\Cache;
 use craftnet\Module;
 use craftnet\plugins\Plugin;
 use craftnet\plugins\PluginQuery;
+use yii\base\InvalidArgumentException;
+use yii\web\BadRequestHttpException;
+use yii\web\NotFoundHttpException;
 use yii\web\Response;
 
 /**
@@ -38,16 +41,32 @@ class PluginStoreController extends BaseApiController
         $pluginStoreData = Cache::get($cacheKey);
 
         if (!$pluginStoreData) {
-            $plugins = Plugin::find()
+            $featuredPlugins = [];
+
+            foreach ($this->_createFeaturedSectionQuery()->all() as $entry) {
+                try {
+                    $pluginIds = $this->_createFeaturedPluginQuery($entry)
+                        ->withLatestReleaseInfo(true, $this->cmsVersion)
+                        ->ids();
+                } catch (InvalidArgumentException $e) {
+                    continue;
+                }
+
+                if (!empty($pluginIds)) {
+                    $featuredPlugins[] = $this->_transformFeaturedSection($entry) +
+                        ['plugins' => $pluginIds];
+                }
+            }
+
+            $plugins = $this->_createPluginQuery()
                 ->withLatestReleaseInfo(true, $this->cmsVersion)
-                ->with(['developer', 'categories', 'icon'])
                 ->indexBy('id')
                 ->all();
 
             $pluginStoreData = [
                 'categories' => $this->_categories(),
-                'featuredPlugins' => $this->_featuredPlugins(true),
-                'plugins' => $this->_plugins($plugins),
+                'featuredPlugins' => $featuredPlugins,
+                'plugins' => $this->transformPlugins($plugins),
                 'expiryDateOptions' => $this->_expiryDateOptions(),
             ];
 
@@ -89,12 +108,11 @@ class PluginStoreController extends BaseApiController
         $data = Cache::get($cacheKey);
 
         if (!$data) {
-            $featuredSectionEntry = $this->featuredSectionQuery()
+            $featuredSectionEntry = $this->_createFeaturedSectionQuery()
                 ->slug($handle)
                 ->one();
 
-            $data = $this->transformFeaturedSection($featuredSectionEntry);
-
+            $data = $this->_transformFeaturedSection($featuredSectionEntry);
             Cache::set($cacheKey, $data);
         }
 
@@ -109,28 +127,30 @@ class PluginStoreController extends BaseApiController
     public function actionFeaturedSections(): Response
     {
         $cacheKey = __METHOD__;
-        $featuredSections = Cache::get($cacheKey);
+        $data = Cache::get($cacheKey);
 
-        if (!$featuredSections) {
-            $featuredSections = [];
+        if (!$data) {
+            $data = [];
 
-            foreach ($this->featuredSectionQuery()->all() as $featuredSectionEntry) {
-                $data = $this->getFeaturedSectionPlugins($featuredSectionEntry, 8);
-                $plugins = $data['plugins'];
+            foreach ($this->_createFeaturedSectionQuery()->all() as $entry) {
+                try {
+                    $plugins = $this->_createFeaturedPluginQuery($entry)
+                        ->limit(8)
+                        ->all();
+                } catch (InvalidArgumentException $e) {
+                    continue;
+                }
 
-                $featuredSections[] = [
-                    'id' => $featuredSectionEntry->id,
-                    'slug' => $featuredSectionEntry->slug,
-                    'title' => $featuredSectionEntry->title,
-                    'limit' => $featuredSectionEntry->limit,
-                    'plugins' => $plugins,
-                ];
+                if (!empty($plugins)) {
+                    $data[] = $this->_transformFeaturedSection($entry) +
+                        ['plugins' => $this->transformPlugins($plugins)];
+                }
             }
 
-            Cache::set($cacheKey, $featuredSections);
+            Cache::set($cacheKey, $data);
         }
 
-        return $this->asJson($featuredSections);
+        return $this->asJson($data);
     }
 
     /**
@@ -147,10 +167,9 @@ class PluginStoreController extends BaseApiController
         $data = Cache::get($cacheKey);
 
         if (!$data) {
-            $plugin = Plugin::find()
+            $plugin = $this->_createPluginQuery(false)
                 ->handle($handle)
                 ->anyStatus()
-                ->withLatestReleaseInfo()
                 ->one();
 
             if (!$plugin) {
@@ -190,50 +209,92 @@ class PluginStoreController extends BaseApiController
     }
 
     /**
-     * Handles /v1/plugin-store/plugins-by-category/<categoryId:\d+> requests.
+     * Handles /v1/plugin-store/plugins requests.
      *
-     * @param $categoryId
+     * @param int|null $categoryId
+     * @param int|null $developerId
+     * @param string|null $searchQuery
+     * @param int $perPage
+     * @param int $page
+     * @param string $orderBy
+     * @param string $direction
      * @return Response
-     * @throws \craftnet\errors\MissingTokenException
-     * @throws \yii\base\InvalidConfigException
+     * @throws BadRequestHttpException
      */
-    public function actionPluginsByCategory($categoryId): Response
-    {
-        $cacheKey = __METHOD__ . $categoryId;
-        $data = $this->getPluginIndexCache($cacheKey);
+    public function actionPlugins(
+        int $categoryId = null,
+        int $developerId = null,
+        string $searchQuery = null,
+        int $perPage = 10,
+        int $page = 1,
+        string $orderBy = 'dateUpdated',
+        string $direction = 'desc'
+    ): Response {
+        $perPage = max(min($perPage, 100), 1);
+        $page = max($page, 1);
+        $direction = $direction === 'asc' ? SORT_ASC : SORT_DESC;
+
+        $cacheKey = __METHOD__ . "-{$categoryId}-{$developerId}-{$searchQuery}-{$perPage}-{$page}-{$orderBy}-{$direction}";
+        $data = Cache::get($cacheKey);
 
         if (!$data) {
-            $query = $this->getPluginIndexQuery()
-                ->categoryId($categoryId);
+            $query = $this->_createPluginQuery()
+                ->limit($perPage);
 
-            $data = $this->getPluginIndexResponse($query);
+            if ($categoryId) {
+                $query->categoryId($categoryId);
+            }
 
-            $this->setPluginIndexCache($cacheKey, $data);
-        }
+            if ($developerId) {
+                $query->developerId($developerId);
+            }
 
-        return $this->asJson($data);
-    }
+            if ($searchQuery) {
+                $query->search($searchQuery);
+            }
 
-    /**
-     * Handles /v1/plugin-store/plugins-by-developer/<developerId:\d+> requests.
-     *
-     * @param $developerId
-     * @return Response
-     * @throws \craftnet\errors\MissingTokenException
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function actionPluginsByDeveloper($developerId): Response
-    {
-        $cacheKey = __METHOD__ . $developerId;
-        $data = $this->getPluginIndexCache($cacheKey);
+            // Make sure a valid page number was requested
+            $totalResults = $query->count();
+            $totalPages = ceil($totalResults / $perPage);
+            if ($page > $totalPages) {
+                $page = $totalPages;
+                // Start over in case the actual last page is already cached
+                return $this->runAction('plugins', compact(
+                    'developerId',
+                    'categoryId',
+                    'searchQuery',
+                    'perPage',
+                    'page',
+                    'orderBy',
+                    'direction'
+                ));
+            }
 
-        if (!$data) {
-            $query = $this->getPluginIndexQuery()
-                ->developerId($developerId);
+            switch ($orderBy) {
+                case 'dateUpdated':
+                    $query->orderBy(['latestVersionTime' => $direction]);
+                    break;
+                case 'name':
+                    $query->orderBy(['lower([[name]])' => $direction]);
+                    break;
+                case 'activeInstalls':
+                    $query->orderBy(['activeInstalls' => $direction]);
+                    break;
+                default:
+                    throw new BadRequestHttpException('Unsupported orderBy param: ' . $orderBy);
+            }
 
-            $data = $this->getPluginIndexResponse($query);
+            $query->offset(($page - 1) * $perPage);
 
-            $this->setPluginIndexCache($cacheKey, $data);
+            $data = [
+                'plugins' => $this->transformPlugins($query->all()),
+                'totalResults' => $totalResults,
+                'currentPage' => $page,
+                'perPage' => $perPage,
+                'total' => $totalPages,
+            ];
+
+            Cache::set($cacheKey, $data);
         }
 
         return $this->asJson($data);
@@ -242,18 +303,43 @@ class PluginStoreController extends BaseApiController
     /**
      * Handles /v1/plugin-store/plugins-by-featured-section/<handle> requests.
      *
-     * @param $handle
+     * @param string $handle
      * @return Response
+     * @throws NotFoundHttpException if $handle is invalid
      */
-    public function actionPluginsByFeaturedSection($handle): Response
+    public function actionPluginsByFeaturedSection(string $handle): Response
     {
-        $featuredSectionEntry = $this->featuredSectionQuery()
-            ->slug($handle)
-            ->one();
+        $cacheKey = __METHOD__ . '-' . $handle;
+        $data = Cache::get($cacheKey);
 
-        $plugins = $this->getFeaturedSectionPlugins($featuredSectionEntry);
+        if (!$data) {
+            $entry = $this->_createFeaturedSectionQuery()
+                ->slug($handle)
+                ->one();
 
-        return $this->asJson($plugins);
+            if (!$entry) {
+                throw new NotFoundHttpException("Invalid featured plugin list: {$handle}");
+            }
+
+            try {
+                $plugins = $this->_createFeaturedPluginQuery($entry)
+                    ->all();
+            } catch (InvalidArgumentException $e) {
+                $plugins = [];
+            }
+
+            $data = [
+                'plugins' => $this->transformPlugins($plugins),
+                'currentPage' => 1,
+                'perPage' => 100,
+                'total' => 1,
+                'totalResults' => count($plugins),
+            ];
+
+            Cache::set($cacheKey, $data);
+        }
+
+        return $this->asJson($data);
     }
 
     /**
@@ -273,51 +359,12 @@ class PluginStoreController extends BaseApiController
         if (!$data) {
             $pluginHandles = explode(',', $pluginHandles);
 
-            $plugins = Plugin::find()
-                ->withLatestReleaseInfo()
-                ->with(['developer', 'categories', 'icon'])
-                ->indexBy('id')
+            $plugins = $this->_createPluginQuery()
                 ->andWhere(['craftnet_plugins.handle' => $pluginHandles])
                 ->all();
 
-            $data = $this->_transformPlugins($plugins);
-
-            Cache::set($cacheKey,$data);
-        }
-
-        return $this->asJson($data);
-    }
-
-    /**
-     * Handles /v1/plugin-store/search-plugins requests.
-     *
-     * @return Response
-     * @throws \craftnet\errors\MissingTokenException
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function actionSearchPlugins()
-    {
-        $searchQuery = Craft::$app->getRequest()->getParam('searchQuery', '');
-
-        $cacheKey = __METHOD__ . $searchQuery;
-        $data = $this->getPluginIndexCache($cacheKey);
-
-        if (!$data) {
-            $query = $this->getPluginIndexQuery()
-                ->andWhere([
-                    'or',
-                    ['like', 'name', $searchQuery . '%', false],
-                    ['like', 'packageName', $searchQuery],
-                    ['like', 'shortDescription', $searchQuery],
-                    ['like', 'description', $searchQuery],
-                    ['like', 'craftnet_plugins.keywords', $searchQuery],
-                    // ['like', 'developerUrl', $searchQuery],
-                    // ['like', 'developerName', $searchQuery],
-                ]);
-
-            $data = $this->getPluginIndexResponse($query);
-
-            $this->setPluginIndexCache($cacheKey, $data);
+            $data = $this->transformPlugins($plugins);
+            Cache::set($cacheKey, $data);
         }
 
         return $this->asJson($data);
@@ -326,107 +373,10 @@ class PluginStoreController extends BaseApiController
     // Private Methods
     // =========================================================================
 
-    private function getPluginIndexResponse(PluginQuery $query): array
-    {
-        $totalResults = $query->total();
-
-        $pluginResults = $query->all();
-        $plugins = $this->_plugins($pluginResults);
-
-        $params = $this->getPluginIndexParams();
-        $perPage = (int)$params['perPage'];
-
-        $total = ceil($totalResults / $perPage);
-
-        $currentPage = (int)$params['page'];
-
-        return [
-            'plugins' => $plugins,
-            'currentPage' => $currentPage,
-            'perPage' => $perPage,
-            'total' => $total,
-            'totalResults' => $totalResults,
-        ];
-    }
-
-    /**
-     * @param string $key
-     * @return mixed|null
-     */
-    private function getPluginIndexCache(string $key)
-    {
-        $cacheKey = $this->getPluginIndexCacheKey($key);
-        return Cache::get($cacheKey);
-    }
-
-    /**
-     * @param string $key
-     * @param $value
-     * @return bool|null
-     */
-    private function setPluginIndexCache(string $key, $value)
-    {
-        $cacheKey = $this->getPluginIndexCacheKey($key);
-        return Cache::set($cacheKey, $value);
-    }
-
-    /**
-     * @param string $key
-     * @return string
-     */
-    private function getPluginIndexCacheKey(string $key): string
-    {
-        $params = $this->getPluginIndexParams();
-
-        $identifiers = [
-            $key,
-            $params,
-        ];
-
-        $string = Json::encode($identifiers);
-
-        return md5($string);
-    }
-
-    /**
-     * @return array
-     */
-    private function getPluginIndexParams(): array
-    {
-        return [
-            'perPage' => min(Craft::$app->getRequest()->getParam('perPage', 10), 100),
-            'page' => max(Craft::$app->getRequest()->getParam('page', 1), 1),
-            'orderBy' => Craft::$app->getRequest()->getParam('orderBy', 'activeInstalls'),
-            'direction' => Craft::$app->getRequest()->getParam('direction') === 'asc' ? SORT_ASC : SORT_DESC,
-            'searchQuery' => Craft::$app->getRequest()->getParam('searchQuery'),
-        ];
-    }
-
-    /**
-     * @return \craft\db\Query|\craft\elements\db\ElementQueryInterface|PluginQuery|self
-     */
-    private function getPluginIndexQuery()
-    {
-        $params = $this->getPluginIndexParams();
-
-        $limit = $params['perPage'];
-        $offset = ($params['page'] - 1) * $limit;
-
-        $query = Plugin::find()
-            ->withLatestReleaseInfo()
-            ->with(['developer', 'categories', 'icon'])
-            ->indexBy('id')
-            ->orderBy([($params['orderBy'] === 'name' ? $params['orderBy'] = 'LOWER('.$params['orderBy'].')' : $params['orderBy']) => $params['direction']])
-            ->offset($offset)
-            ->limit($limit);
-
-        return $query;
-    }
-
     /**
      * @return EntryQuery
      */
-    private function featuredSectionQuery()
+    private function _createFeaturedSectionQuery(): EntryQuery
     {
         return Entry::find()
             ->site('craftId')
@@ -437,7 +387,7 @@ class PluginStoreController extends BaseApiController
      * @param $featuredSectionEntry
      * @return array
      */
-    private function transformFeaturedSection($featuredSectionEntry): array
+    private function _transformFeaturedSection($featuredSectionEntry): array
     {
         return [
             'id' => $featuredSectionEntry->id,
@@ -445,62 +395,6 @@ class PluginStoreController extends BaseApiController
             'title' => $featuredSectionEntry->title,
             'limit' => $featuredSectionEntry->limit,
         ];
-    }
-
-    /**
-     * @param $featuredSectionEntry
-     * @param null $limit
-     * @return array|null
-     * @throws \craftnet\errors\MissingTokenException
-     * @throws \yii\base\InvalidConfigException
-     */
-    private function getFeaturedSectionPlugins($featuredSectionEntry, $limit = null)
-    {
-        $params = $this->getPluginIndexParams();
-
-        $limit = $limit ?? $params['perPage'];
-        $offset = ($params['page'] - 1) * $limit;
-
-        $cacheKey = __METHOD__ . $featuredSectionEntry->id . '-' . $limit . '-' . $offset;
-        $data = Cache::get($cacheKey);
-
-        if (!$data) {
-            $pluginIds = null;
-
-            switch ($featuredSectionEntry->getType()->handle) {
-                case 'manual':
-                    /** @var PluginQuery $query */
-                    $query = $featuredSectionEntry->plugins;
-                    $pluginIds = $query
-                        ->withLatestReleaseInfo()
-                        ->ids();
-                    break;
-                case 'dynamic':
-                    $pluginIds = $this->_dynamicPlugins($featuredSectionEntry->slug, false);
-                    break;
-                default:
-                    $pluginIds = null;
-            }
-
-            if (!$pluginIds) {
-                return null;
-            }
-
-            $query = Plugin::find()
-                ->withLatestReleaseInfo()
-                ->with(['developer', 'categories', 'icon'])
-                ->indexBy('id')
-                ->offset($offset)
-                ->limit($limit);
-
-            $query->andWhere(['craftnet_plugins.id' => $pluginIds]);
-
-            $data = $this->getPluginIndexResponse($query);
-
-            Cache::set($cacheKey, $data);
-        }
-
-        return $data;
     }
 
     /**
@@ -538,111 +432,64 @@ class PluginStoreController extends BaseApiController
     }
 
     /**
-     * @param bool $compatibleOnly
-     * @return array
-     * @throws \yii\base\Exception
+     * @param bool $withEagerLoading
+     * @return PluginQuery
      */
-    private function _featuredPlugins(bool $compatibleOnly): array
+    private function _createPluginQuery(bool $withEagerLoading = true): PluginQuery
     {
-        $ret = [];
-
-        $entries = Entry::find()
-            ->site('craftId')
-            ->section('featuredPlugins')
-            ->all();
-
-        foreach ($entries as $entry) {
-            switch ($entry->getType()->handle) {
-                case 'manual':
-                    /** @var PluginQuery $query */
-                    $query = $entry->plugins;
-                    $pluginIds = $query
-                        ->withLatestReleaseInfo(true, $compatibleOnly ? $this->cmsVersion : null)
-                        ->ids();
-                    break;
-                case 'dynamic':
-                    $pluginIds = $this->_dynamicPlugins($entry->slug, $compatibleOnly);
-                    break;
-                default:
-                    $pluginIds = null;
-            }
-
-            if (!empty($pluginIds)) {
-                $ret[] = [
-                    'id' => $entry->id,
-                    'slug' => $entry->slug,
-                    'title' => $entry->title,
-                    'plugins' => $pluginIds,
-                    'limit' => $entry->limit,
-                ];
-            }
-        }
-
-        return $ret;
+        $query = Plugin::find();
+        $this->_preparePluginQuery($query, $withEagerLoading);
+        return $query;
     }
 
     /**
-     * @param bool $compatibleOnly
-     * @param string $slug
-     * @return int[]
+     * @param PluginQuery $query
+     * @param bool $withEagerLoading
      */
-    private function _dynamicPlugins(string $slug, bool $compatibleOnly): array
+    private function _preparePluginQuery(PluginQuery $query, bool $withEagerLoading = true)
     {
-        switch ($slug) {
-            case 'recently-added':
-                return $this->_recentlyAddedPlugins($compatibleOnly);
-            case 'top-paid':
-                return $this->_topPaidPlugins($compatibleOnly);
+        $query->withLatestReleaseInfo();
+        if ($withEagerLoading) {
+            $query->with(['developer', 'categories', 'icon']);
+        }
+    }
+
+    /**
+     * @param Entry $entry The Featured Plugins entry
+     * @return PluginQuery
+     * @throws InvalidArgumentException
+     */
+    private function _createFeaturedPluginQuery(Entry $entry): PluginQuery
+    {
+        $type = $entry->getType();
+
+        switch ($type->handle) {
+            case 'manual':
+                $query = clone $entry->plugins;
+                $this->_preparePluginQuery($query);
+                return $query;
+            case 'dynamic':
+                $query = $this->_createPluginQuery()
+                    ->limit(20);
+                switch ($entry->slug) {
+                    case 'recently-added':
+                        $query
+                            ->andWhere(['not', ['craftnet_plugins.dateApproved' => null]])
+                            ->orderBy(['craftnet_plugins.dateApproved' => SORT_DESC]);
+                        break;
+                    case 'top-paid':
+                        $query
+                            ->withTotalPurchases(true, (new \DateTime())->modify('-1 month'))
+                            ->andWhere(['not', ['elements.id' => 983]])
+                            ->orderBy(['totalPurchases' => SORT_DESC]);
+                        break;
+                    default:
+                        throw new InvalidArgumentException("Invalid Featured Plugins entry slug: {$entry->slug}");
+                }
+                return $query;
             default:
-                return [];
+                throw new InvalidArgumentException("Invalid Featured Plugins entry type: {$type->handle}");
         }
-    }
-
-    /**
-     * @param bool $compatibleOnly
-     * @return int[]
-     */
-    private function _recentlyAddedPlugins(bool $compatibleOnly): array
-    {
-        return Plugin::find()
-            ->andWhere(['not', ['craftnet_plugins.dateApproved' => null]])
-            ->withLatestReleaseInfo(true, $compatibleOnly ? $this->cmsVersion : null)
-            ->orderBy(['craftnet_plugins.dateApproved' => SORT_DESC])
-            ->limit(20)
-            ->ids();
-    }
-
-    /**
-     * @param bool $compatibleOnly
-     * @return int[]
-     */
-    private function _topPaidPlugins(bool $compatibleOnly): array
-    {
-        return Plugin::find()
-            ->andWhere(['not', ['craftnet_plugins.dateApproved' => null]])
-            ->withLatestReleaseInfo(true, $compatibleOnly ? $this->cmsVersion : null)
-            ->withTotalPurchases(true, (new \DateTime())->modify('-1 month'))
-            ->andWhere(['not', ['elements.id' => 983]])
-            ->orderBy(['totalPurchases' => SORT_DESC])
-            ->limit(20)
-            ->ids();
-    }
-
-    /**
-     * @param Plugin[] $plugins
-     * @return array
-     * @throws \craftnet\errors\MissingTokenException
-     * @throws \yii\base\InvalidConfigException
-     */
-    private function _plugins(array $plugins): array
-    {
-        $ret = [];
-
-        foreach ($plugins as $plugin) {
-            $ret[] = $this->transformPlugin($plugin, false);
-        }
-
-        return $ret;
     }
 
     /**
