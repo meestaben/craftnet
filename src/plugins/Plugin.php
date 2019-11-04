@@ -357,6 +357,11 @@ class Plugin extends Element
     public $dateApproved;
 
     /**
+     * @var int|null The total number of times this plugin has been purchased.
+     */
+    public $totalPurchases;
+
+    /**
      * @var PluginEdition[]|null
      */
     private $_editions;
