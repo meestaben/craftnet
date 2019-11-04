@@ -138,7 +138,6 @@ class PluginStoreController extends BaseApiController
     {
         return $this->asJson([
             'categories' => $this->_categories(),
-            'featuredPlugins' => $this->_featuredPlugins(false),
             'expiryDateOptions' => $this->_expiryDateOptions(),
         ]);
     }
