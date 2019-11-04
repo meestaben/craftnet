@@ -6,6 +6,7 @@ use Craft;
 use craft\db\Query;
 use craft\elements\Asset;
 use craft\elements\Category;
+use craft\elements\db\EntryQuery;
 use craft\elements\Entry;
 use craft\helpers\Json;
 use craftnet\controllers\api\BaseApiController;
@@ -13,7 +14,6 @@ use craftnet\helpers\Cache;
 use craftnet\Module;
 use craftnet\plugins\Plugin;
 use craftnet\plugins\PluginQuery;
-use yii\caching\FileDependency;
 use yii\web\Response;
 
 /**
@@ -78,7 +78,7 @@ class PluginStoreController extends BaseApiController
     }
 
     /**
-     * Handles /v1/plugin-store/featured-section/<handle:{slug}> requests.
+     * Handles /v1/plugin-store/featured-section/<handle> requests.
      *
      * @param $handle
      * @return Response
@@ -111,7 +111,7 @@ class PluginStoreController extends BaseApiController
         $cacheKey = __METHOD__;
         $featuredSections = Cache::get($cacheKey);
 
-        if(!$featuredSections) {
+        if (!$featuredSections) {
             $featuredSections = [];
 
             foreach ($this->featuredSectionQuery()->all() as $featuredSectionEntry) {
@@ -134,7 +134,7 @@ class PluginStoreController extends BaseApiController
     }
 
     /**
-     * Handles /v1/plugin-store/plugin/<handle:{slug}> requests.
+     * Handles /v1/plugin-store/plugin/<handle> requests.
      *
      * @param string $handle
      * @return Response
@@ -170,14 +170,16 @@ class PluginStoreController extends BaseApiController
                     ->from(['v' => 'craftnet_packageversions'])
                     ->innerJoin(['craftnet_pluginversionorder vo'], '[[vo.versionId]] = [[v.id]]')
                     ->where(['v.packageId' => $data['packageId']])
-                    ->andWhere(['vo.stableOrder' =>  (new Query())
-                        ->select(['max([[s_vo.stableOrder]])'])
-                        ->from(['s_vo' => 'craftnet_pluginversionorder'])
-                        ->innerJoin(['craftnet_packageversions s_v'], '[[s_v.id]] = [[s_vo.versionId]]')
-                        ->innerJoin(['craftnet_pluginversioncompat s_vc'], '[[s_vc.pluginVersionId]] = [[s_v.id]]')
-                        ->where(['s_v.packageId' => $data['packageId']])
-                        ->andWhere(['s_vc.cmsVersionId' => $cmsRelease->id])
-                        ->groupBy(['s_v.packageId'])])
+                    ->andWhere([
+                        'vo.stableOrder' => (new Query())
+                            ->select(['max([[s_vo.stableOrder]])'])
+                            ->from(['s_vo' => 'craftnet_pluginversionorder'])
+                            ->innerJoin(['craftnet_packageversions s_v'], '[[s_v.id]] = [[s_vo.versionId]]')
+                            ->innerJoin(['craftnet_pluginversioncompat s_vc'], '[[s_vc.pluginVersionId]] = [[s_v.id]]')
+                            ->where(['s_v.packageId' => $data['packageId']])
+                            ->andWhere(['s_vc.cmsVersionId' => $cmsRelease->id])
+                            ->groupBy(['s_v.packageId'])
+                    ])
                     ->scalar();
             } else {
                 $data['latestCompatibleVersion'] = null;
@@ -238,7 +240,7 @@ class PluginStoreController extends BaseApiController
     }
 
     /**
-     * Handles /v1/plugin-store/plugins-by-featured-section/<handle:{slug}> requests.
+     * Handles /v1/plugin-store/plugins-by-featured-section/<handle> requests.
      *
      * @param $handle
      * @return Response
@@ -332,11 +334,11 @@ class PluginStoreController extends BaseApiController
         $plugins = $this->_plugins($pluginResults);
 
         $params = $this->getPluginIndexParams();
-        $perPage = (int) $params['perPage'];
+        $perPage = (int)$params['perPage'];
 
         $total = ceil($totalResults / $perPage);
 
-        $currentPage = (int) $params['page'];
+        $currentPage = (int)$params['page'];
 
         return [
             'plugins' => $plugins,
@@ -391,17 +393,12 @@ class PluginStoreController extends BaseApiController
      */
     private function getPluginIndexParams(): array
     {
-        $perPage = min(Craft::$app->getRequest()->getParam('perPage', 10), 100);
-        $page = max(Craft::$app->getRequest()->getParam('page', 1), 1);
-        $orderBy = Craft::$app->getRequest()->getParam('orderBy', 'activeInstalls');
-        $direction = Craft::$app->getRequest()->getParam('direction', 'desc');
-        $direction = $direction === 'asc' ? SORT_ASC : SORT_DESC;
-
         return [
-            'perPage' => $perPage,
-            'page' => $page,
-            'orderBy' => $orderBy,
-            'direction' => $direction,
+            'perPage' => min(Craft::$app->getRequest()->getParam('perPage', 10), 100),
+            'page' => max(Craft::$app->getRequest()->getParam('page', 1), 1),
+            'orderBy' => Craft::$app->getRequest()->getParam('orderBy', 'activeInstalls'),
+            'direction' => Craft::$app->getRequest()->getParam('direction') === 'asc' ? SORT_ASC : SORT_DESC,
+            'searchQuery' => Craft::$app->getRequest()->getParam('searchQuery'),
         ];
     }
 
@@ -427,7 +424,7 @@ class PluginStoreController extends BaseApiController
     }
 
     /**
-     * @return \craft\elements\db\ElementQueryInterface|\craft\elements\db\EntryQuery
+     * @return EntryQuery
      */
     private function featuredSectionQuery()
     {
