@@ -66,6 +66,11 @@ class PluginStoreController extends BaseApiController
     {
         $pluginStoreData = [
             'categories' => $this->_categories(),
+            'sortOptions' => [
+                'dateUpdated' => 'desc',
+                'name' => 'asc',
+                'activeInstalls' => 'desc',
+            ],
             'expiryDateOptions' => $this->_expiryDateOptions(),
         ];
 
