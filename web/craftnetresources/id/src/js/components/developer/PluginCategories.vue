@@ -92,7 +92,7 @@
 
         methods: {
             ...mapActions({
-                getMeta: 'pluginStore/getMeta',
+                getCoreData: 'pluginStore/getCoreData',
             }),
 
             /**
@@ -127,7 +127,7 @@
         mounted() {
             this.loading = true
 
-            this.getMeta()
+            this.getCoreData()
                 .then(() => {
                     this.loading = false
                 })

@@ -1,8 +1,8 @@
 import axios from 'axios'
 
 export default {
-    getMeta() {
-        return axios.get(process.env.VUE_APP_CRAFT_API_ENDPOINT + '/plugin-store/meta', {withCredentials: false})
+    getCoreData() {
+        return axios.get(process.env.VUE_APP_CRAFT_API_ENDPOINT + '/plugin-store/core-data', {withCredentials: false})
     },
 
     getPlugins(pluginIds) {
