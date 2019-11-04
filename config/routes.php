@@ -45,7 +45,6 @@ return [
         'GET     v1/plugin-store/featured-section/<handle:{slug}>' => 'craftnet/api/v1/plugin-store/featured-section',
         'GET     v1/plugin-store/featured-sections' => 'craftnet/api/v1/plugin-store/featured-sections',
         'GET     v1/plugin-store/core-data' => 'craftnet/api/v1/plugin-store/core-data',
-        'GET     v1/plugin-store/meta' => 'craftnet/api/v1/plugin-store/meta',
         'GET     v1/plugin-store/plugin/<handle:{slug}>' => 'craftnet/api/v1/plugin-store/plugin',
         'GET     v1/plugin-store/plugins-by-category/<categoryId:\d+>' => 'craftnet/api/v1/plugin-store/plugins-by-category',
         'GET     v1/plugin-store/plugins-by-developer/<developerId:\d+>' => 'craftnet/api/v1/plugin-store/plugins-by-developer',
