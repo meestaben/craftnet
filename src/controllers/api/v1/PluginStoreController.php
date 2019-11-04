@@ -129,20 +129,6 @@ class PluginStoreController extends BaseApiController
     }
 
     /**
-     * Handles /v1/plugin-store/meta requests.
-     *
-     * @return Response
-     * @throws \yii\base\Exception
-     */
-    public function actionMeta(): Response
-    {
-        return $this->asJson([
-            'categories' => $this->_categories(),
-            'expiryDateOptions' => $this->_expiryDateOptions(),
-        ]);
-    }
-
-    /**
      * Handles /v1/plugin-store/plugin/<handle:{slug}> requests.
      *
      * @param string $handle
