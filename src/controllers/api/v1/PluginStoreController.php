@@ -450,7 +450,7 @@ class PluginStoreController extends BaseApiController
     {
         $query->withLatestReleaseInfo();
         if ($withEagerLoading) {
-            $query->with(['developer', 'categories', 'icon']);
+            $query->with(['developer', 'categories', 'icon', 'editions']);
         }
     }
 
