@@ -211,6 +211,7 @@ class PluginStoreController extends BaseApiController
     /**
      * Handles /v1/plugin-store/plugins requests.
      *
+     * @param string|null $handle
      * @param int|null $categoryId
      * @param int|null $developerId
      * @param string|null $searchQuery
@@ -222,6 +223,7 @@ class PluginStoreController extends BaseApiController
      * @throws BadRequestHttpException
      */
     public function actionPlugins(
+        string $handle = null,
         int $categoryId = null,
         int $developerId = null,
         string $searchQuery = null,
@@ -240,6 +242,10 @@ class PluginStoreController extends BaseApiController
         if (!$data) {
             $query = $this->_createPluginQuery()
                 ->limit($perPage);
+
+            if ($handle) {
+                $query->handle(explode(',', $handle));
+            }
 
             if ($categoryId) {
                 $query->categoryId($categoryId);
