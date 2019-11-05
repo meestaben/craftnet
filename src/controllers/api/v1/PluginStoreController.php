@@ -43,7 +43,7 @@ class PluginStoreController extends BaseApiController
         if (!$pluginStoreData) {
             $plugins = Plugin::find()
                 ->withLatestReleaseInfo(true, $this->cmsVersion)
-                ->with(['developer', 'categories', 'icon'])
+                ->with(['developer', 'categories', 'icon', 'editions'])
                 ->indexBy('id')
                 ->all();
 
