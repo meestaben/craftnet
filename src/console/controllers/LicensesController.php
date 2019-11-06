@@ -257,10 +257,8 @@ class LicensesController extends Controller
     private function _autoRenewLicenses(array $licenses, User $user): bool
     {
         try {
-            $commerce = Commerce::getInstance();
-            $stripe = Stripe::getInstance();
-
             // Make sure they have a Commerce customer record
+            $commerce = Commerce::getInstance();
             $customer = $commerce->getCustomers()->getCustomerByUserId($user->id);
             if ($customer === null || !$customer->primaryBillingAddressId) {
                 return false;

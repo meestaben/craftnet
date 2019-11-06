@@ -133,7 +133,7 @@ return [
                 return $session;
             },
             'log' => function() {
-                $log = Craft::createObject([
+                return Craft::createObject([
                     'class' => yii\log\Dispatcher::class,
                     'targets' => [
                         [
@@ -148,8 +148,6 @@ return [
                         ],
                     ],
                 ]);
-
-                return $log;
             },
         ],
     ],
