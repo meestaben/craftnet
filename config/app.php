@@ -143,7 +143,7 @@ return [
                         ],
                         [
                             'class' => craft\log\FileTarget::class,
-                            'logFile' => getenv('CRAFT_STORAGE_PATH') . '/logs/web.log',
+                            'logFile' => getenv('CRAFT_STORAGE_PATH') . '/logs/' . Craft::$app->getRequest()->getIsConsoleRequest() ? 'console.log' : 'web.log',
                             'levels' => !YII_DEBUG ? yii\log\Logger::LEVEL_ERROR | yii\log\Logger::LEVEL_WARNING : yii\log\Logger::LEVEL_ERROR | yii\log\Logger::LEVEL_WARNING | yii\log\Logger::LEVEL_INFO | yii\log\Logger::LEVEL_TRACE | yii\log\Logger::LEVEL_PROFILE,
                         ],
                     ],
