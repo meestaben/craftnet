@@ -14,7 +14,7 @@
     "adam-paterson/oauth2-stripe": "^2.0.0",
     "stripe/stripe-php": "^6.1",
     "stevenmaguire/oauth2-bitbucket": "^2.0",
-    "craftcms/commerce": "2.2.7",
+    "craftcms/commerce": "dev-develop#149dec633369cfb1baea40514112e0a05ab3841d as 2.2.7",
     "craftcms/commerce-stripe": "2.2.1",
     "layershifter/tld-extract": "^1.2",
     "ddeboer/vatin": "^2.1",
