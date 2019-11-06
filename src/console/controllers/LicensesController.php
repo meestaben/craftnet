@@ -314,7 +314,7 @@ class LicensesController extends Controller
             $paymentForm->populateFromPaymentSource($paymentSource);
             $commerce->getPayments()->processPayment($order, $paymentForm, $redirect, $transaction);
         } catch (\Throwable $e) {
-            $this->stderr('error: ' . $e->getMessage() . PHP_EOL, Console::FG_RED);
+            $this->stderr(PHP_EOL . 'error: ' . $e->getMessage() . PHP_EOL, Console::FG_RED);
             Craft::$app->getErrorHandler()->logException($e);
             return false;
         }
