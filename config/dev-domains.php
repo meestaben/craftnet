@@ -89,6 +89,7 @@ return [
     'the-neighbourhood-staging.com',
     'umstesting.com',
     'untuckstage.com',
+    'venveodev.com',
     'vrielingdev.nl',
     'wave-dev.com',
     'wave-stage.com',
