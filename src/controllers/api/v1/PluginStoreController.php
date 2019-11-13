@@ -86,9 +86,9 @@ class PluginStoreController extends BaseApiController
         $pluginStoreData = [
             'categories' => $this->_categories(),
             'sortOptions' => [
+                'popularity' => 'desc',
                 'dateUpdated' => 'desc',
                 'name' => 'asc',
-                'activeInstalls' => 'desc',
             ],
             'expiryDateOptions' => $this->_expiryDateOptions(),
         ];
@@ -283,7 +283,7 @@ class PluginStoreController extends BaseApiController
                 case 'name':
                     $query->orderBy(['lower([[name]])' => $direction]);
                     break;
-                case 'activeInstalls':
+                case 'popularity':
                     $query->orderBy(['activeInstalls' => $direction]);
                     break;
                 default:
