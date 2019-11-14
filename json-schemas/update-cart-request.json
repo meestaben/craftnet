@@ -14,7 +14,7 @@
         "address2": {"type": ["string", "null"]},
         "city": {"type": ["string", "null"]},
         "state": {"type": ["string", "null"]},
-        "country": {"type": "string", "pattern": "^[A-Z][A-Z]$"},
+        "country": {"type": "string", "pattern": "^([A-Z][A-Z])?$"},
         "zipCode": {"type": ["string", "null"]},
         "phone": {"type": ["string", "null"]},
         "alternativePhone": {"type": ["string", "null"]},
