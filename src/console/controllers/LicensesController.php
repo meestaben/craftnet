@@ -257,10 +257,8 @@ class LicensesController extends Controller
     private function _autoRenewLicenses(array $licenses, User $user): bool
     {
         try {
-            $commerce = Commerce::getInstance();
-            $stripe = Stripe::getInstance();
-
             // Make sure they have a Commerce customer record
+            $commerce = Commerce::getInstance();
             $customer = $commerce->getCustomers()->getCustomerByUserId($user->id);
             if ($customer === null || !$customer->primaryBillingAddressId) {
                 return false;
@@ -314,7 +312,7 @@ class LicensesController extends Controller
             $paymentForm->populateFromPaymentSource($paymentSource);
             $commerce->getPayments()->processPayment($order, $paymentForm, $redirect, $transaction);
         } catch (\Throwable $e) {
-            $this->stderr('error: ' . $e->getMessage() . PHP_EOL, Console::FG_RED);
+            $this->stderr(PHP_EOL . 'error: ' . $e->getMessage() . PHP_EOL, Console::FG_RED);
             Craft::$app->getErrorHandler()->logException($e);
             return false;
         }

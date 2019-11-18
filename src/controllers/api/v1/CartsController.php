@@ -376,7 +376,7 @@ class CartsController extends BaseApiController
         $addressErrors = [];
 
         // get the country
-        if (isset($billingAddress->country)) {
+        if (!empty($billingAddress->country)) {
             if (($country = $commerce->getCountries()->getCountryByIso($billingAddress->country)) === null) {
                 $addressErrors[] = [
                     'param' => 'billingAddress.country',
