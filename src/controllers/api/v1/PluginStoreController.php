@@ -30,6 +30,8 @@ class PluginStoreController extends BaseApiController
     /**
      * Handles /v1/plugin-store requests.
      *
+     * Used by Craft CMS < 3.3.16.
+     *
      * @return Response
      * @throws \craftnet\errors\MissingTokenException
      * @throws \yii\base\Exception
