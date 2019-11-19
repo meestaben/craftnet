@@ -185,6 +185,9 @@ abstract class BaseApiController extends Controller
         $identity = $requestHeaders->get('X-Craft-User-Email') ?: 'anonymous';
         $db = Craft::$app->getDb();
 
+        // allow ajax requests to see the response headers
+        $responseHeaders->add('Access-Control-Expose-Headers', '*');
+
         // was system info provided?
         if ($requestHeaders->has('X-Craft-System')) {
             foreach (explode(',', $requestHeaders->get('X-Craft-System')) as $info) {
