@@ -293,7 +293,7 @@ const actions = {
                         }
 
                         items.forEach((cartItem, cartItemKey) => {
-                            if (cartItem.licenseKey === item.licenseKey) {
+                            if ((cartItem.licenseKey && cartItem.licenseKey === item.licenseKey) || (item.type === 'plugin-edition' && cartItem.plugin === item.plugin) || (item.type === 'cms-edition' && cartItem.edition === item.edition)) {
                                 items.splice(cartItemKey, 1)
                             }
                         })
