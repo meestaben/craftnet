@@ -263,39 +263,47 @@ class PluginStoreController extends BaseApiController
 
             // Make sure a valid page number was requested
             $totalResults = $query->count();
-            $totalPages = ceil($totalResults / $perPage);
-            if ($page > $totalPages) {
-                $page = $totalPages;
-                // Start over in case the actual last page is already cached
-                return $this->runAction('plugins', compact(
-                    'developerId',
-                    'categoryId',
-                    'searchQuery',
-                    'perPage',
-                    'page',
-                    'orderBy',
-                    'direction'
-                ));
+            if ($totalResults) {
+                $totalPages = ceil($totalResults / $perPage);
+                if ($page > $totalPages) {
+                    $page = $totalPages;
+                    // Start over in case the actual last page is already cached
+                    return $this->runAction('plugins', compact(
+                        'developerId',
+                        'categoryId',
+                        'searchQuery',
+                        'perPage',
+                        'page',
+                        'orderBy',
+                        'direction'
+                    ));
+                }
+
+                switch ($orderBy) {
+                    case 'dateUpdated':
+                        $query->orderBy(['latestVersionTime' => $direction]);
+                        break;
+                    case 'name':
+                        $query->orderBy(['lower([[name]])' => $direction]);
+                        break;
+                    case 'popularity':
+                        $query->orderBy(['activeInstalls' => $direction]);
+                        break;
+                    default:
+                        throw new BadRequestHttpException('Unsupported orderBy param: ' . $orderBy);
+                }
+
+                $query->offset(($page - 1) * $perPage);
+                $plugins = $query->all();
+            } else {
+                $page = 1;
+                $totalPages = 1;
+                $plugins = [];
             }
 
-            switch ($orderBy) {
-                case 'dateUpdated':
-                    $query->orderBy(['latestVersionTime' => $direction]);
-                    break;
-                case 'name':
-                    $query->orderBy(['lower([[name]])' => $direction]);
-                    break;
-                case 'popularity':
-                    $query->orderBy(['activeInstalls' => $direction]);
-                    break;
-                default:
-                    throw new BadRequestHttpException('Unsupported orderBy param: ' . $orderBy);
-            }
-
-            $query->offset(($page - 1) * $perPage);
 
             $data = [
-                'plugins' => $this->transformPlugins($query->all()),
+                'plugins' => $this->transformPlugins($plugins),
                 'totalResults' => $totalResults,
                 'currentPage' => $page,
                 'perPage' => $perPage,
