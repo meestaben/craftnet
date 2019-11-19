@@ -224,7 +224,7 @@
             id: 'developerId',
             name: 'developerId',
             elementType: 'craft\\elements\\User',
-            sources: ['group:'~(craft.app.userGroups.getGroupByHandle('developers').id)],
+            sources: ['group:'~(craft.app.userGroups.getGroupByHandle('developers').uid)],
             limit: 1,
             elements: plugin.developerId ? [plugin.getDeveloper()] : null,
             errors: plugin.getErrors('developerId'),

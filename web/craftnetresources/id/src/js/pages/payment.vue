@@ -27,7 +27,7 @@
                                 :replaceCard.sync="replaceCard"></payment-method>
 
                         <h2 class="mt-4">Coupon Code</h2>
-                        <coupon-code></coupon-code>
+                        <coupon-code ref="couponCode"></coupon-code>
                     </div>
                     <div class="md:w-1/2 px-8 border-l">
                         <h2>Billing Info</h2>
@@ -38,7 +38,7 @@
                 </div>
 
                 <div class="text-center mt-8">
-                    <btn kind="primary" type="submit" :loading="payLoading" large>Pay {{cart.totalPrice|currency}}</btn>
+                    <btn kind="primary" type="submit" :loading="payLoading" large :disabled="$refs.couponCode && $refs.couponCode.couponCodeLoading">Pay {{cart.totalPrice|currency}}</btn>
 
                     <div class="mt-4">
                         <img src="~@/images/powered_by_stripe.svg" height="18" />
