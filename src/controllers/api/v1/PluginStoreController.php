@@ -8,7 +8,6 @@ use craft\elements\Asset;
 use craft\elements\Category;
 use craft\elements\db\EntryQuery;
 use craft\elements\Entry;
-use craft\helpers\Json;
 use craftnet\controllers\api\BaseApiController;
 use craftnet\helpers\Cache;
 use craftnet\Module;
