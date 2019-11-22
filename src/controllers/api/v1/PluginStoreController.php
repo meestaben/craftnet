@@ -238,7 +238,7 @@ class PluginStoreController extends BaseApiController
         $page = max($page, 1);
         $direction = $direction === 'asc' ? SORT_ASC : SORT_DESC;
 
-        $cacheKey = __METHOD__ . "-{$categoryId}-{$developerId}-{$searchQuery}-{$perPage}-{$page}-{$orderBy}-{$direction}";
+        $cacheKey = __METHOD__ . "-{$handle}-{$categoryId}-{$developerId}-{$searchQuery}-{$perPage}-{$page}-{$orderBy}-{$direction}";
         $data = Cache::get($cacheKey);
 
         if (!$data) {
