@@ -3,13 +3,19 @@
 namespace craftnet\controllers\api\v1;
 
 use Craft;
+use craft\db\Query;
 use craft\elements\Asset;
 use craft\elements\Category;
+use craft\elements\db\EntryQuery;
 use craft\elements\Entry;
 use craftnet\controllers\api\BaseApiController;
+use craftnet\helpers\Cache;
+use craftnet\Module;
 use craftnet\plugins\Plugin;
 use craftnet\plugins\PluginQuery;
-use yii\caching\FileDependency;
+use yii\base\InvalidArgumentException;
+use yii\web\BadRequestHttpException;
+use yii\web\NotFoundHttpException;
 use yii\web\Response;
 
 /**
@@ -23,6 +29,8 @@ class PluginStoreController extends BaseApiController
     /**
      * Handles /v1/plugin-store requests.
      *
+     * Used by Craft CMS < 3.3.16.
+     *
      * @return Response
      * @throws \craftnet\errors\MissingTokenException
      * @throws \yii\base\Exception
@@ -30,184 +38,473 @@ class PluginStoreController extends BaseApiController
      */
     public function actionIndex(): Response
     {
-        $pluginStoreData = null;
-
-        $craftIdConfig = Craft::$app->getConfig()->getConfigFromFile('craftid');
-        $enablePluginStoreCache = $craftIdConfig['enablePluginStoreCache'];
-        $cacheKey = 'pluginStoreData--' . $this->cmsVersion;
-
-        if ($enablePluginStoreCache) {
-            $pluginStoreData = Craft::$app->getCache()->get($cacheKey);
-        }
+        $cacheKey = __METHOD__ . '-' . $this->cmsVersion;
+        $pluginStoreData = Cache::get($cacheKey);
 
         if (!$pluginStoreData) {
-            $plugins = Plugin::find()
+            $featuredPlugins = [];
+
+            foreach ($this->_createFeaturedSectionQuery()->all() as $entry) {
+                try {
+                    $pluginIds = $this->_createFeaturedPluginQuery($entry)
+                        ->withLatestReleaseInfo(true, $this->cmsVersion)
+                        ->ids();
+                } catch (InvalidArgumentException $e) {
+                    continue;
+                }
+
+                if (!empty($pluginIds)) {
+                    $featuredPlugins[] = $this->_transformFeaturedSection($entry) +
+                        ['plugins' => $pluginIds];
+                }
+            }
+
+            $plugins = $this->_createPluginQuery()
                 ->withLatestReleaseInfo(true, $this->cmsVersion)
-                ->with(['developer', 'categories', 'icon', 'editions'])
                 ->indexBy('id')
                 ->all();
 
             $pluginStoreData = [
                 'categories' => $this->_categories(),
-                'featuredPlugins' => $this->_featuredPlugins(),
-                'plugins' => $this->_plugins($plugins),
+                'featuredPlugins' => $featuredPlugins,
+                'plugins' => $this->transformPlugins($plugins),
                 'expiryDateOptions' => $this->_expiryDateOptions(),
             ];
 
-            if ($enablePluginStoreCache) {
-                Craft::$app->getCache()->set($cacheKey, $pluginStoreData, null, new FileDependency([
-                    'fileName' => $this->module->getJsonDumper()->composerWebroot . '/packages.json',
-                ]));
-            }
+            Cache::set($cacheKey, $pluginStoreData);
         }
 
         return $this->asJson($pluginStoreData);
     }
 
     /**
-     * Handles /v1/plugin-store/meta requests.
+     * Handles /v1/plugin-store/core-data requests.
      *
      * @return Response
-     * @throws \yii\base\Exception
      */
-    public function actionMeta(): Response
+    public function actionCoreData(): Response
     {
-        return $this->asJson([
+        $pluginStoreData = [
             'categories' => $this->_categories(),
-            'featuredPlugins' => $this->_featuredPlugins(),
+            'sortOptions' => [
+                'popularity' => 'desc',
+                'dateUpdated' => 'desc',
+                'name' => 'asc',
+            ],
             'expiryDateOptions' => $this->_expiryDateOptions(),
-        ]);
+        ];
+
+        return $this->asJson($pluginStoreData);
+    }
+
+    /**
+     * Handles /v1/plugin-store/featured-section/<handle> requests.
+     *
+     * @param $handle
+     * @return Response
+     */
+    public function actionFeaturedSection($handle): Response
+    {
+        $cacheKey = __METHOD__ . $handle;
+        $data = Cache::get($cacheKey);
+
+        if (!$data) {
+            $featuredSectionEntry = $this->_createFeaturedSectionQuery()
+                ->slug($handle)
+                ->one();
+
+            $data = $this->_transformFeaturedSection($featuredSectionEntry);
+            Cache::set($cacheKey, $data);
+        }
+
+        return $this->asJson($data);
+    }
+
+    /**
+     * Handles /v1/plugin-store/featured-sections requests.
+     *
+     * @return Response
+     */
+    public function actionFeaturedSections(): Response
+    {
+        $cacheKey = __METHOD__;
+        $data = Cache::get($cacheKey);
+
+        if (!$data) {
+            $data = [];
+
+            foreach ($this->_createFeaturedSectionQuery()->all() as $entry) {
+                try {
+                    $plugins = $this->_createFeaturedPluginQuery($entry)
+                        ->limit(8)
+                        ->all();
+                } catch (InvalidArgumentException $e) {
+                    continue;
+                }
+
+                if (!empty($plugins)) {
+                    $data[] = $this->_transformFeaturedSection($entry) +
+                        ['plugins' => $this->transformPlugins($plugins)];
+                }
+            }
+
+            Cache::set($cacheKey, $data);
+        }
+
+        return $this->asJson($data);
+    }
+
+    /**
+     * Handles /v1/plugin-store/plugin/<handle> requests.
+     *
+     * @param string $handle
+     * @return Response
+     * @throws \craftnet\errors\MissingTokenException
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function actionPlugin(string $handle): Response
+    {
+        $cacheKey = __METHOD__ . '-' . $handle;
+        $data = Cache::get($cacheKey);
+
+        if (!$data) {
+            $plugin = $this->_createPluginQuery(false)
+                ->handle($handle)
+                ->anyStatus()
+                ->one();
+
+            if (!$plugin) {
+                return $this->asErrorJson("Couldn't find plugin");
+            }
+
+            $data = $this->transformPlugin($plugin, true);
+            Cache::set($cacheKey, $data);
+        }
+
+        // Add the latest compatible version
+        if ($this->cmsVersion) {
+            $cmsRelease = Module::getInstance()->getPackageManager()->getRelease('craftcms/cms', $this->cmsVersion);
+            if ($cmsRelease) {
+                $data['latestCompatibleVersion'] = (new Query)
+                    ->select(['v.version'])
+                    ->from(['v' => 'craftnet_packageversions'])
+                    ->innerJoin(['craftnet_pluginversionorder vo'], '[[vo.versionId]] = [[v.id]]')
+                    ->where(['v.packageId' => $data['packageId']])
+                    ->andWhere([
+                        'vo.stableOrder' => (new Query())
+                            ->select(['max([[s_vo.stableOrder]])'])
+                            ->from(['s_vo' => 'craftnet_pluginversionorder'])
+                            ->innerJoin(['craftnet_packageversions s_v'], '[[s_v.id]] = [[s_vo.versionId]]')
+                            ->innerJoin(['craftnet_pluginversioncompat s_vc'], '[[s_vc.pluginVersionId]] = [[s_v.id]]')
+                            ->where(['s_v.packageId' => $data['packageId']])
+                            ->andWhere(['s_vc.cmsVersionId' => $cmsRelease->id])
+                            ->groupBy(['s_v.packageId'])
+                    ])
+                    ->scalar();
+            } else {
+                $data['latestCompatibleVersion'] = null;
+            }
+        }
+
+        return $this->asJson($data);
+    }
+
+    /**
+     * Handles /v1/plugin-store/plugins requests.
+     *
+     * @param string|null $handle
+     * @param int|null $categoryId
+     * @param int|null $developerId
+     * @param string|null $searchQuery
+     * @param int $perPage
+     * @param int $page
+     * @param string $orderBy
+     * @param string $direction
+     * @return Response
+     * @throws BadRequestHttpException
+     */
+    public function actionPlugins(
+        string $handle = null,
+        int $categoryId = null,
+        int $developerId = null,
+        string $searchQuery = null,
+        int $perPage = 10,
+        int $page = 1,
+        string $orderBy = 'dateUpdated',
+        string $direction = 'desc'
+    ): Response {
+        $perPage = max(min($perPage, 100), 1);
+        $page = max($page, 1);
+        $direction = $direction === 'asc' ? SORT_ASC : SORT_DESC;
+
+        $cacheKey = __METHOD__ . "-{$handle}-{$categoryId}-{$developerId}-{$searchQuery}-{$perPage}-{$page}-{$orderBy}-{$direction}";
+        $data = Cache::get($cacheKey);
+
+        if (!$data) {
+            $query = $this->_createPluginQuery()
+                ->limit($perPage);
+
+            if ($handle) {
+                $query->handle(explode(',', $handle));
+            }
+
+            if ($categoryId) {
+                $query->categoryId($categoryId);
+            }
+
+            if ($developerId) {
+                $query->developerId($developerId);
+            }
+
+            if ($searchQuery) {
+                $query->search($searchQuery);
+            }
+
+            // Make sure a valid page number was requested
+            $totalResults = $query->count();
+            if ($totalResults) {
+                $totalPages = ceil($totalResults / $perPage);
+                if ($page > $totalPages) {
+                    $page = $totalPages;
+                    // Start over in case the actual last page is already cached
+                    return $this->runAction('plugins', compact(
+                        'developerId',
+                        'categoryId',
+                        'searchQuery',
+                        'perPage',
+                        'page',
+                        'orderBy',
+                        'direction'
+                    ));
+                }
+
+                switch ($orderBy) {
+                    case 'dateUpdated':
+                        $query->orderBy(['latestVersionTime' => $direction]);
+                        break;
+                    case 'name':
+                        $query->orderBy(['lower([[name]])' => $direction]);
+                        break;
+                    case 'popularity':
+                        $query->orderBy(['activeInstalls' => $direction]);
+                        break;
+                    default:
+                        throw new BadRequestHttpException('Unsupported orderBy param: ' . $orderBy);
+                }
+
+                $query->offset(($page - 1) * $perPage);
+                $plugins = $query->all();
+            } else {
+                $page = 1;
+                $totalPages = 1;
+                $plugins = [];
+            }
+
+
+            $data = [
+                'plugins' => $this->transformPlugins($plugins),
+                'totalResults' => $totalResults,
+                'currentPage' => $page,
+                'perPage' => $perPage,
+                'total' => $totalPages,
+            ];
+
+            Cache::set($cacheKey, $data);
+        }
+
+        return $this->asJson($data);
+    }
+
+    /**
+     * Handles /v1/plugin-store/plugins-by-featured-section/<handle> requests.
+     *
+     * @param string $handle
+     * @return Response
+     * @throws NotFoundHttpException if $handle is invalid
+     */
+    public function actionPluginsByFeaturedSection(string $handle): Response
+    {
+        $cacheKey = __METHOD__ . '-' . $handle;
+        $data = Cache::get($cacheKey);
+
+        if (!$data) {
+            $entry = $this->_createFeaturedSectionQuery()
+                ->slug($handle)
+                ->one();
+
+            if (!$entry) {
+                throw new NotFoundHttpException("Invalid featured plugin list: {$handle}");
+            }
+
+            try {
+                $plugins = $this->_createFeaturedPluginQuery($entry)
+                    ->all();
+            } catch (InvalidArgumentException $e) {
+                $plugins = [];
+            }
+
+            $data = [
+                'plugins' => $this->transformPlugins($plugins),
+                'currentPage' => 1,
+                'perPage' => 100,
+                'total' => 1,
+                'totalResults' => count($plugins),
+            ];
+
+            Cache::set($cacheKey, $data);
+        }
+
+        return $this->asJson($data);
+    }
+
+    /**
+     * Handles /v1/plugin-store/plugins-by-handles requests.
+     *
+     * @return Response
+     * @throws \craftnet\errors\MissingTokenException
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function actionPluginsByHandles(): Response
+    {
+        $pluginHandles = Craft::$app->getRequest()->getParam('pluginHandles', '');
+
+        $cacheKey = __METHOD__ . $pluginHandles;
+        $data = Cache::get($cacheKey);
+
+        if (!$data) {
+            $pluginHandles = explode(',', $pluginHandles);
+
+            $plugins = $this->_createPluginQuery()
+                ->andWhere(['craftnet_plugins.handle' => $pluginHandles])
+                ->all();
+
+            $data = $this->transformPlugins($plugins);
+            Cache::set($cacheKey, $data);
+        }
+
+        return $this->asJson($data);
     }
 
     // Private Methods
     // =========================================================================
 
+    /**
+     * @return EntryQuery
+     */
+    private function _createFeaturedSectionQuery(): EntryQuery
+    {
+        return Entry::find()
+            ->site('craftId')
+            ->section('featuredPlugins');
+    }
+
+    /**
+     * @param $featuredSectionEntry
+     * @return array
+     */
+    private function _transformFeaturedSection($featuredSectionEntry): array
+    {
+        return [
+            'id' => $featuredSectionEntry->id,
+            'slug' => $featuredSectionEntry->slug,
+            'title' => $featuredSectionEntry->title,
+            'limit' => $featuredSectionEntry->limit,
+        ];
+    }
+
+    /**
+     * @return array
+     */
     private function _categories(): array
     {
-        $ret = [];
+        $cacheKey = __METHOD__;
+        $data = Cache::get($cacheKey);
 
-        $categories = Category::find()
-            ->group('pluginCategories')
-            ->with('icon')
-            ->all();
+        if (!$data) {
+            $data = [];
 
-        foreach ($categories as $category) {
-            /** @var Asset|null $icon */
-            $icon = $category->icon[0] ?? null;
-            $ret[] = [
-                'id' => $category->id,
-                'title' => $category->title,
-                'description' => $category->description,
-                'slug' => $category->slug,
-                'iconUrl' => $icon ? $icon->getUrl() . '?' . $icon->dateModified->getTimestamp() : null,
-            ];
-        }
+            $categories = Category::find()
+                ->group('pluginCategories')
+                ->with('icon')
+                ->all();
 
-        return $ret;
-    }
-
-    /**
-     * @return array
-     * @throws \yii\base\Exception
-     */
-    private function _featuredPlugins(): array
-    {
-        $ret = [];
-
-        $entries = Entry::find()
-            ->site('craftId')
-            ->section('featuredPlugins')
-            ->all();
-
-        foreach ($entries as $entry) {
-            switch ($entry->getType()->handle) {
-                case 'manual':
-                    /** @var PluginQuery $query */
-                    $query = $entry->plugins;
-                    $pluginIds = $query
-                        ->withLatestReleaseInfo(true, $this->cmsVersion)
-                        ->ids();
-                    break;
-                case 'dynamic':
-                    $pluginIds = $this->_dynamicPlugins($entry->slug);
-                    break;
-                default:
-                    $pluginIds = null;
-            }
-
-            if (!empty($pluginIds)) {
-                $ret[] = [
-                    'id' => $entry->id,
-                    'slug' => $entry->slug,
-                    'title' => $entry->title,
-                    'plugins' => $pluginIds,
-                    'limit' => $entry->limit,
+            foreach ($categories as $category) {
+                /** @var Asset|null $icon */
+                $icon = $category->icon[0] ?? null;
+                $data[] = [
+                    'id' => $category->id,
+                    'title' => $category->title,
+                    'description' => $category->description,
+                    'slug' => $category->slug,
+                    'iconUrl' => $icon ? $icon->getUrl() . '?' . $icon->dateModified->getTimestamp() : null,
                 ];
             }
+
+            Cache::set($cacheKey, $data);
         }
 
-        return $ret;
+        return $data;
     }
 
     /**
-     * @param string $slug
-     * @return int[]
+     * @param bool $withEagerLoading
+     * @return PluginQuery
      */
-    private function _dynamicPlugins(string $slug): array
+    private function _createPluginQuery(bool $withEagerLoading = true): PluginQuery
     {
-        switch ($slug) {
-            case 'recently-added':
-                return $this->_recentlyAddedPlugins();
-            case 'top-paid':
-                return $this->_topPaidPlugins();
+        $query = Plugin::find();
+        $this->_preparePluginQuery($query, $withEagerLoading);
+        return $query;
+    }
+
+    /**
+     * @param PluginQuery $query
+     * @param bool $withEagerLoading
+     */
+    private function _preparePluginQuery(PluginQuery $query, bool $withEagerLoading = true)
+    {
+        $query->withLatestReleaseInfo();
+        if ($withEagerLoading) {
+            $query->with(['developer', 'categories', 'icon', 'editions']);
+        }
+    }
+
+    /**
+     * @param Entry $entry The Featured Plugins entry
+     * @return PluginQuery
+     * @throws InvalidArgumentException
+     */
+    private function _createFeaturedPluginQuery(Entry $entry): PluginQuery
+    {
+        $type = $entry->getType();
+
+        switch ($type->handle) {
+            case 'manual':
+                $query = clone $entry->plugins;
+                $this->_preparePluginQuery($query);
+                return $query;
+            case 'dynamic':
+                $query = $this->_createPluginQuery()
+                    ->limit(20);
+                switch ($entry->slug) {
+                    case 'recently-added':
+                        $query
+                            ->andWhere(['not', ['craftnet_plugins.dateApproved' => null]])
+                            ->orderBy(['craftnet_plugins.dateApproved' => SORT_DESC]);
+                        break;
+                    case 'top-paid':
+                        $query
+                            ->withTotalPurchases(true, (new \DateTime())->modify('-1 month'))
+                            ->andWhere(['not', ['elements.id' => 983]])
+                            ->orderBy(['totalPurchases' => SORT_DESC]);
+                        break;
+                    default:
+                        throw new InvalidArgumentException("Invalid Featured Plugins entry slug: {$entry->slug}");
+                }
+                return $query;
             default:
-                return [];
+                throw new InvalidArgumentException("Invalid Featured Plugins entry type: {$type->handle}");
         }
-    }
-
-    /**
-     * @return int[]
-     */
-    private function _recentlyAddedPlugins(): array
-    {
-        return Plugin::find()
-            ->andWhere(['not', ['craftnet_plugins.dateApproved' => null]])
-            ->withLatestReleaseInfo(true, $this->cmsVersion)
-            ->orderBy(['craftnet_plugins.dateApproved' => SORT_DESC])
-            ->limit(20)
-            ->ids();
-    }
-
-    /**
-     * @return int[]
-     */
-    private function _topPaidPlugins(): array
-    {
-        return Plugin::find()
-            ->andWhere(['not', ['craftnet_plugins.dateApproved' => null]])
-            ->withLatestReleaseInfo(true, $this->cmsVersion)
-            ->withTotalPurchases(true, (new \DateTime())->modify('-1 month'))
-            ->andWhere(['not', ['elements.id' => 983]])
-            ->orderBy(['totalPurchases' => SORT_DESC])
-            ->limit(20)
-            ->ids();
-    }
-
-    /**
-     * @param Plugin[] $plugins
-     * @return array
-     * @throws \craftnet\errors\MissingTokenException
-     * @throws \yii\base\InvalidConfigException
-     */
-    private function _plugins(array $plugins): array
-    {
-        $ret = [];
-
-        foreach ($plugins as $plugin) {
-            $ret[] = $this->transformPlugin($plugin, false);
-        }
-
-        return $ret;
     }
 
     /**

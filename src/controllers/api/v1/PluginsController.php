@@ -35,7 +35,7 @@ class PluginsController extends BaseApiController
 
         $plugins = $pluginQuery->all();
 
-        $data = $this->_transformPlugins($plugins);
+        $data = $this->transformPlugins($plugins);
 
         return $this->asJson($data);
     }
@@ -52,22 +52,5 @@ class PluginsController extends BaseApiController
             ->withLatestReleaseInfo(true, $this->cmsVersion)
             ->with(['developer', 'categories', 'icon'])
             ->indexBy('id');
-    }
-
-    /**
-     * @param array $plugins
-     * @return array
-     * @throws \craftnet\errors\MissingTokenException
-     * @throws \yii\base\InvalidConfigException
-     */
-    private function _transformPlugins(array $plugins): array
-    {
-        $ret = [];
-
-        foreach ($plugins as $plugin) {
-            $ret[] = $this->transformPlugin($plugin, false);
-        }
-
-        return $ret;
     }
 }

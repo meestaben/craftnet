@@ -120,7 +120,7 @@
 
         methods: {
             ...mapActions({
-                getMeta: 'pluginStore/getMeta',
+                getCoreData: 'pluginStore/getCoreData',
             }),
 
             addToCart() {
@@ -149,7 +149,7 @@
         mounted() {
             this.loading = true
 
-            this.getMeta()
+            this.getCoreData()
                 .then(() => {
                     this.loading = false
                     this.renew = 0

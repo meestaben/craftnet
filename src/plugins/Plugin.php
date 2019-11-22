@@ -213,6 +213,8 @@ class Plugin extends Element
             'name',
             'handle',
             'license',
+            'shortDescription',
+            'description',
             'keywords',
         ];
     }
@@ -353,6 +355,11 @@ class Plugin extends Element
      * @var DateTime|null The date that the plugin was approved
      */
     public $dateApproved;
+
+    /**
+     * @var int|null The total number of times this plugin has been purchased.
+     */
+    public $totalPurchases;
 
     /**
      * @var PluginEdition[]|null

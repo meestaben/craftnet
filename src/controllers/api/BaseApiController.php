@@ -185,6 +185,9 @@ abstract class BaseApiController extends Controller
         $identity = $requestHeaders->get('X-Craft-User-Email') ?: 'anonymous';
         $db = Craft::$app->getDb();
 
+        // allow ajax requests to see the response headers
+        $responseHeaders->add('Access-Control-Expose-Headers', '*');
+
         // was system info provided?
         if ($requestHeaders->has('X-Craft-System')) {
             foreach (explode(',', $requestHeaders->get('X-Craft-System')) as $info) {
@@ -742,6 +745,7 @@ EOL;
         // Return data
         $data = [
             'id' => $plugin->id,
+            'packageId' => $plugin->packageId,
             'iconUrl' => $icon ? $icon->getUrl() . '?' . $icon->dateModified->getTimestamp() : null,
             'handle' => $plugin->handle,
             'name' => strip_tags($plugin->name),
@@ -800,6 +804,23 @@ EOL;
         }
 
         return $data;
+    }
+
+    /**
+     * @param array $plugins
+     * @return array
+     * @throws \craftnet\errors\MissingTokenException
+     * @throws \yii\base\InvalidConfigException
+     */
+    protected function transformPlugins(array $plugins): array
+    {
+        $ret = [];
+
+        foreach ($plugins as $plugin) {
+            $ret[] = $this->transformPlugin($plugin, false);
+        }
+
+        return $ret;
     }
 
     /**
