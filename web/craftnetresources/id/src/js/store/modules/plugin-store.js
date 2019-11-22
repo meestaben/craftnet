@@ -24,10 +24,10 @@ const getters = {}
  * Actions
  */
 const actions = {
-    getMeta({commit, state}) {
+    getCoreData({commit, state}) {
         return new Promise((resolve, reject) => {
             if (!state.metaLoaded) {
-                pluginStoreApi.getMeta()
+                pluginStoreApi.getCoreData()
                     .then((response) => {
                         commit('updatePluginStoreMeta', {response})
                         resolve()
