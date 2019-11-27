@@ -24,8 +24,6 @@ if ($keyPath = getenv('LICENSE_KEY_PATH')) {
     define('CRAFT_LICENSE_KEY_PATH', $keyPath);
 }
 
-define('CRAFT_ENVIRONMENT', getenv('CRAFT_ENV') ?: 'prod');
-
 // Manually load environment variables so they're available to the PHP CLI
 $envVars = '/opt/elasticbeanstalk/support/envvars';
 
@@ -47,6 +45,8 @@ if (file_exists($envVars) && is_file($envVars)) {
         putenv($variable_name. '=' .$variable_value);
     }
 }
+
+define('CRAFT_ENVIRONMENT', getenv('CRAFT_ENV') ?: 'prod');
 
 // Craft
 $app = require CRAFT_VENDOR_PATH.'/craftcms/cms/bootstrap/console.php';
