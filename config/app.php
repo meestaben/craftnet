@@ -149,6 +149,33 @@ return [
                     ],
                 ]);
             },
+            'db' => function() {
+                // Get the default component config
+                $config = craft\helpers\App::dbConfig();
+
+                // Use read/write query splitting
+                // (https://www.yiiframework.com/doc/guide/2.0/en/db-dao#read-write-splitting)
+
+                // Define the default config for replica DB connections
+                $config['slaveConfig'] = [
+                    'username' => getenv('DB_USER'),
+                    'password' => getenv('DB_PASSWORD'),
+                    'tablePrefix' => getenv('DB_TABLE_PREFIX'),
+                    'attributes' => [
+                        // Use a smaller connection timeout
+                        PDO::ATTR_TIMEOUT => 10,
+                    ],
+                    'charset' => 'utf8',
+                ];
+
+                // Define the replica DB connections
+                $config['slaves'] = [
+                    ['dsn' => getenv('DB_READ_DSN_1')],
+                ];
+
+                // Instantiate and return it
+                return Craft::createObject($config);
+            },
         ],
     ],
     'dev' => [
