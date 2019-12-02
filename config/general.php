@@ -15,7 +15,7 @@ return [
         'devMode' => isset($_REQUEST['secret']) && $_REQUEST['secret'] === getenv('DEV_MODE_SECRET'),
         'omitScriptNameInUrls' => true,
         'cpTrigger' => getenv('CRAFT_CP_TRIGGER'),
-        'imageDriver' => 'imagick',
+        'imageDriver' => 'gd',
         'preventUserEnumeration' => true,
         'securityKey' => getenv('CRAFT_SECURITY_KEY'),
         'csrfTokenName' => 'CRAFTNET_CSRF_TOKEN',
