@@ -31,6 +31,7 @@ class PluginStoreController extends BaseApiController
         if (!in_array($id, [
             '',
             'core-data',
+            'plugin',
         ])) {
             $this->checkCraftHeaders = false;
         }
