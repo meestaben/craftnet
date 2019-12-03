@@ -4,6 +4,7 @@ namespace craftnet\controllers\api\v1;
 
 use craftnet\ChangelogParser;
 use craftnet\controllers\api\BaseApiController;
+use craftnet\helpers\Cache;
 use craftnet\Module;
 use craftnet\plugins\Plugin;
 use yii\web\Response;
@@ -52,20 +53,28 @@ class PluginController extends BaseApiController
      */
     public function actionChangelog($pluginId): Response
     {
-        $plugin = Plugin::find()
-            ->id($pluginId)
-            ->anyStatus()
-            ->withLatestReleaseInfo()
-            ->one();
+        $cacheKey = __METHOD__ . '-' . $pluginId;
+        $changelogData = Cache::get($cacheKey);
 
-        if (!$plugin) {
-            return $this->asErrorJson("Couldn't find plugin");
+        if (!$changelogData) {
+            $plugin = Plugin::find()
+                ->id($pluginId)
+                ->anyStatus()
+                ->withLatestReleaseInfo()
+                ->one();
+
+            if (!$plugin) {
+                return $this->asErrorJson("Couldn't find plugin");
+            }
+
+            $packageManager = Module::getInstance()->getPackageManager();
+            $release = $packageManager->getRelease($plugin->packageName, $plugin->latestVersion);
+
+            $releases = (new ChangelogParser())->parse($release->changelog ?? '');
+            $changelogData = array_values($releases);
+            Cache::set($cacheKey, $changelogData);
         }
 
-        $packageManager = Module::getInstance()->getPackageManager();
-        $release = $packageManager->getRelease($plugin->packageName, $plugin->latestVersion);
-
-        $releases = (new ChangelogParser())->parse($release->changelog ?? '');
-        return $this->asJson(array_values($releases));
+        return $this->asJson($changelogData);
     }
 }
