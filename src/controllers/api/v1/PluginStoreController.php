@@ -26,6 +26,18 @@ class PluginStoreController extends BaseApiController
     // Public Methods
     // =========================================================================
 
+    public function runAction($id, $params = []): Response
+    {
+        if (!in_array($id, [
+            '',
+            'core-data',
+        ])) {
+            $this->checkCraftHeaders = false;
+        }
+
+        return parent::runAction($id, $params);
+    }
+
     /**
      * Handles /v1/plugin-store requests.
      *

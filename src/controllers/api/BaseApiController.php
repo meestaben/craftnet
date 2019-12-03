@@ -65,6 +65,11 @@ abstract class BaseApiController extends Controller
     public $enableCsrfValidation = false;
 
     /**
+     * Whether to check X-Craft headers on this request
+     */
+    protected $checkCraftHeaders = true;
+
+    /**
      * The API request ID, if there is one.
      *
      * @var int|null
@@ -189,7 +194,7 @@ abstract class BaseApiController extends Controller
         $responseHeaders->add('Access-Control-Expose-Headers', '*');
 
         // was system info provided?
-        if ($requestHeaders->has('X-Craft-System')) {
+        if ($this->checkCraftHeaders && $requestHeaders->has('X-Craft-System')) {
             foreach (explode(',', $requestHeaders->get('X-Craft-System')) as $info) {
                 list($name, $installed) = array_pad(explode(':', $info, 2), 2, null);
                 if ($installed !== null) {
@@ -223,7 +228,7 @@ abstract class BaseApiController extends Controller
         $cmsLicense = null;
 
         try {
-            $cmsLicenseKey = $requestHeaders->get('X-Craft-License');
+            $cmsLicenseKey = $this->checkCraftHeaders ? $requestHeaders->get('X-Craft-License') : null;
             if ($cmsLicenseKey === '🙏') {
                 $cmsLicense = $this->cmsLicenses[] = $this->createCmsLicense();
                 $responseHeaders
@@ -313,7 +318,8 @@ abstract class BaseApiController extends Controller
             }
 
             // collect the plugin licenses & their editions
-            if (($pluginLicenseKeys = $requestHeaders->get('X-Craft-Plugin-Licenses')) !== null) {
+            $pluginLicenseKeys = $this->checkCraftHeaders ? $requestHeaders->get('X-Craft-Plugin-Licenses') : null;
+            if ($pluginLicenseKeys !== null) {
                 $pluginLicenseManager = $this->module->getPluginLicenseManager();
                 foreach (explode(',', $pluginLicenseKeys) as $pluginLicenseInfo) {
                     list($pluginHandle, $pluginLicenseKey) = explode(':', $pluginLicenseInfo);

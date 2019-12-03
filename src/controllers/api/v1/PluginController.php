@@ -16,6 +16,15 @@ class PluginController extends BaseApiController
     // Public Methods
     // =========================================================================
 
+    public function runAction($id, $params = []): Response
+    {
+        if ($id === 'changelog') {
+            $this->checkCraftHeaders = false;
+        }
+
+        return parent::runAction($id, $params);
+    }
+
     /**
      * Handles /v1/plugin/<pluginId> requests.
      *

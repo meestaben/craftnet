@@ -15,9 +15,10 @@ use yii\web\Response;
  */
 class CountriesController extends BaseApiController
 {
-
     const COUNTRY_CACHE_KEY = 'countryListData';
     const COUNTRY_CACHE_DURATION = 60 * 60 * 24 * 7;
+
+    protected $checkCraftHeaders = false;
 
     /**
      * Handles /v1/countries requests.
