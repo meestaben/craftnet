@@ -229,7 +229,7 @@ abstract class BaseApiController extends Controller
 
         try {
             $cmsLicenseKey = $this->checkCraftHeaders ? $requestHeaders->get('X-Craft-License') : null;
-            if ($cmsLicenseKey === '__REQUEST__') {
+            if ($cmsLicenseKey === '__REQUEST__' || $cmsLicenseKey === '🙏') {
                 $cmsLicense = $this->cmsLicenses[] = $this->createCmsLicense();
                 $responseHeaders
                     ->set('X-Craft-License', $cmsLicense->key)
