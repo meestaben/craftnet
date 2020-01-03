@@ -570,16 +570,19 @@ class PluginLicenseManager extends Component
         if (!empty($license['expiresOn'])) {
             // Expiry date options
             $expiryDateOptions = LicenseHelper::getExpiryDateOptions($license['expiresOn']);
+            $renewalStart = max($license['expiresOn'], new \DateTime());
 
             // Renewal options
             $license['renewalOptions'] = [];
 
             foreach ($expiryDateOptions as $key => $expiryDateOption) {
-                $renewalPrice = $license['edition']->renewalPrice;
+                $optionDate = OrderHelper::expiryStr2Obj($expiryDateOption[1]);
+                $paidRenewalYears = OrderHelper::dateDiffInYears($optionDate, $renewalStart);
+                $amount = max(0, round($license['edition']->renewalPrice * $paidRenewalYears, 2));
 
                 $license['renewalOptions'][$key] = [
                     'expiryDate' => $expiryDateOption[1],
-                    'amount' => round($renewalPrice * ($key + 1), 2)
+                    'amount' => $amount,
                 ];
             }
         }
