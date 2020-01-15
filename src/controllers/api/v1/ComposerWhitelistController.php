@@ -32,6 +32,7 @@ class ComposerWhitelistController extends BaseApiController
         $whitelist = [
             'craftcms/vue-asset' => true,
             'danielstjules/stringy' => true,
+            'zendframework/zend-feed' => true,
         ];
 
         $this->_ignoreDeps = [
