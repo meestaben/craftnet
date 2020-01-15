@@ -35,6 +35,7 @@ return [
     'frb.io',
     'fusionarydev.com',
     'fusiondgdev.com',
+    'gbdev.co',
     'ghdev.xyz',
     'gw-staging.com',
     'herokuapp.com',
