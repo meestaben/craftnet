@@ -7,10 +7,10 @@
 {% set totalCraftSalesNumber = 0 %}
 {% set totalCraftRenewalAmount = 0 %}
 {% set totalCraftRenewalNumber = 0 %}
-{% set totalCommerceSalesAmount = 0 %}
-{% set totalCommerceSalesNumber = 0 %}
-{% set totalCommerceRenewalAmount = 0 %}
-{% set totalCommerceRenewalNumber = 0 %}
+{% set totalCommerceProSalesAmount = 0 %}
+{% set totalCommerceProSalesNumber = 0 %}
+{% set totalCommerceProRenewalAmount = 0 %}
+{% set totalCommerceProRenewalNumber = 0 %}
 {% set totalCommerceLiteSalesAmount = 0 %}
 {% set totalCommerceLiteSalesNumber = 0 %}
 {% set totalCommerceLiteRenewalAmount = 0 %}
@@ -71,8 +71,8 @@
                             {% set totalCraftSalesNumber = totalCraftSalesNumber + lineItem.qty %}
                         {% elseif lineItem.sku in commercePurchasables %}
                             {% if lineItem.sku == 'COMMERCE-STANDARD' or lineItem.sku == 'COMMERCE-PRO' %}
-                                {% set totalCommerceSalesAmount = totalCommerceSalesAmount + lineItem.total %}
-                                {% set totalCommerceSalesNumber = totalCommerceSalesNumber + lineItem.qty %}
+                                {% set totalCommerceProSalesAmount = totalCommerceProSalesAmount + lineItem.total %}
+                                {% set totalCommerceProSalesNumber = totalCommerceProSalesNumber + lineItem.qty %}
                             {% elseif lineItem.sku == 'COMMERCE-LITE' %}
                                 {% set totalCommerceLiteSalesAmount = totalCommerceLiteSalesAmount + lineItem.total %}
                                 {% set totalCommerceLiteSalesNumber = totalCommerceLiteSalesNumber + lineItem.qty %}
@@ -159,7 +159,7 @@
 <h2>Total Discounts: {{ totalDiscounts|currency }}</h2>
 <h2>Total Craft Sales: {{ totalCraftSalesAmount|currency }} ({{ totalCraftSalesNumber }})</h2>
 <h2>Total Craft Renewals: {{ totalCraftRenewalAmount|currency }} ({{ totalCraftRenewalNumber }})</h2>
-<h2>Total Commerce Pro Sales: {{ totalCommerceSalesAmount|currency }} ({{ totalCommerceSalesNumber }})</h2>
+<h2>Total Commerce Pro Sales: {{ totalCommerceProSalesAmount|currency }} ({{ totalCommerceProSalesNumber }})</h2>
 <h2>Total Commerce Pro Renewals: {{ totalCommerceProRenewalAmount|currency }} ({{ totalCommerceProRenewalNumber }})</h2>
 <h2>Total Commerce Lite Sales: {{ totalCommerceLiteSalesAmount|currency }} ({{ totalCommerceLiteSalesNumber }})</h2>
 <h2>Total Commerce Lite Renewals: {{ totalCommerceLiteRenewalAmount|currency }} ({{ totalCommerceLiteRenewalNumber }})</h2>
