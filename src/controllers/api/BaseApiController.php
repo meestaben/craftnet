@@ -785,10 +785,16 @@ EOL;
             $screenshotIds = [];
 
             foreach ($plugin->getScreenshots() as $screenshot) {
-                $screenshotUrls[] = $screenshot->getUrl() . '?' . $screenshot->dateModified->getTimestamp();
-                $thumbnailUrls[] = $screenshot->getUrl([
-                        'height' => 300,
+                $screenshotUrls[] = $screenshot->getUrl([
+                            'width' => 2200,
+                            'height' => 2200,
+                            'mode' => 'fit',
                     ]) . '?' . $screenshot->dateModified->getTimestamp();
+
+                $thumbnailUrls[] = $screenshot->getUrl([
+                        'height' => 400,
+                    ]) . '?' . $screenshot->dateModified->getTimestamp();
+
                 $screenshotIds[] = $screenshot->getId();
             }
 
