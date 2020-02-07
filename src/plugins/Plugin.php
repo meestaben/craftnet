@@ -771,6 +771,16 @@ class Plugin extends Element
 
         $rules[] = [
             [
+                'name',
+            ],
+            UniqueValidator::class,
+            'targetClass' => PluginRecord::class,
+            'targetAttribute' => ['name'],
+            'message' => Craft::t('yii', '{attribute} "{value}" has already been taken.'),
+        ];
+
+        $rules[] = [
+            [
                 'handle',
             ],
             UniqueValidator::class,

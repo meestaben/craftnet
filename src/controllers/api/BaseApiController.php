@@ -434,7 +434,8 @@ abstract class BaseApiController extends Controller
                         ($pluginHandle === 'freeform' && Comparator::lessThan($this->pluginVersions[$pluginHandle], 3)) ||
                         ($pluginHandle === 'sprout-forms' && Comparator::lessThan($this->pluginVersions[$pluginHandle], '3.2')) ||
                         ($pluginHandle === 'sprout-seo' && Comparator::lessThan($this->pluginVersions[$pluginHandle], '4.1')) ||
-                        ($pluginHandle === 'guide' && Comparator::lessThan($this->pluginVersions[$pluginHandle], 2))
+                        ($pluginHandle === 'guide' && Comparator::lessThan($this->pluginVersions[$pluginHandle], 2)) ||
+                        ($pluginHandle === 'calendar' && Comparator::lessThan($this->pluginVersions[$pluginHandle], 3))
                     ) {
                         $pluginLicenseEditions[] = "{$pluginHandle}:standard";
                     } else {
