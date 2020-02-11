@@ -241,6 +241,10 @@ return [
         'statusColor' => 'orange',
         'status' => 'Not available yet, but [Guide](https://github.com/wbrowar/craft-3-guide) can be used instead.'
     ],
+    'HtmlAttributes' => [
+        'statusColor' => 'orange',
+        'status' => 'No longer needed thanks to Craft 3’s `attr()` Twig function.'
+    ],
     'Htmlcache' => [
         'statusColor' => 'orange',
         'status' => 'Not available yet, but [HTML Cache](https://github.com/boldenamsterdam/htmlcache) can be used instead.'
