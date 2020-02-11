@@ -159,8 +159,7 @@ return [
         'status' => 'Not available yet, but [Mobile Detect](https://github.com/sjelfull/craft3-mobiledetect) can be used instead.'
     ],
     'Dump' => [
-        'statusColor' => 'orange',
-        'status' => 'Not available yet, but [Enupal Backup](https://github.com/enupal/backup) can be used instead.'
+        'handle' => 'db-dump'
     ],
     'DuplicateUserDashboard' => [
         'statusColor' => 'orange',
