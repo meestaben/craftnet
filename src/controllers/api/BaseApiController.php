@@ -191,7 +191,15 @@ abstract class BaseApiController extends Controller
         $db = Craft::$app->getDb();
 
         // allow ajax requests to see the response headers
-        $responseHeaders->add('Access-Control-Expose-Headers', '*');
+        $responseHeaders->add('Access-Control-Expose-Headers', implode(', ', [
+            'x-craft-allow-trials',
+            'x-craft-license-status',
+            'x-craft-license-domain',
+            'x-craft-license-edition',
+            'x-craft-plugin-license-statuses',
+            'x-craft-plugin-license-editions',
+            'x-craft-license',
+        ]));
 
         // was system info provided?
         if ($this->checkCraftHeaders && $requestHeaders->has('X-Craft-System')) {
