@@ -94,6 +94,7 @@
                             {% set total3rdPartyPluginStoreRenewalNumber = total3rdPartyPluginStoreRenewalNumber + lineItem.qty %}
                         {% else %}
                             {% set total3rdPartyPluginStoreSalesNumber = total3rdPartyPluginStoreSalesNumber + lineItem.qty %}
+                            {% set total3rdPartyPluginStoreSaleAmount = total3rdPartyPluginStoreSaleAmount + lineItem.total %}
                         {% endif %}
                     {% endfor %}
                 </table>
@@ -128,7 +129,7 @@
                         </tr>
                         {% for devPayment in devPayments[order.id] %}
                             {% if devPayment['credit'] is defined %}
-                                {% set total3rdPartyPluginStoreSalesAmount = total3rdPartyPluginStoreSalesAmount + devPayment['credit'] %}
+                            {# {% set total3rdPartyPluginStoreSalesAmount = total3rdPartyPluginStoreSalesAmount + devPayment['credit'] %} #}
                             {% endif %}
 
                             {% if devPayment['fee'] is defined %}
