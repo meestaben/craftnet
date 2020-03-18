@@ -13,6 +13,13 @@ module.exports = {
         // Fix bug caused by webpack-dev-server 3.1.11.
         // https://github.com/vuejs/vue-cli/issues/3173#issuecomment-449573901
         disableHostCheck: true,
+
+        public: process.env.VUE_APP_PUBLIC_PATH,
+        watchContentBase: true,
+        watchOptions: {
+            poll: 1,
+            ignored: /node_modules/,
+        }
     },
     publicPath: process.env.VUE_APP_PUBLIC_PATH,
     configureWebpack: {
