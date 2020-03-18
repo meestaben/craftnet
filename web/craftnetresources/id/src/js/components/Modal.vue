@@ -46,7 +46,7 @@
 
 <style lang="scss">
     .modal {
-        @apply .fixed .pin .block .z-10 .flex .items-center .content-center .justify-center;
+        @apply .fixed .pin .block .z-10 .flex .items-center .content-center .justify-center .p-8;
         background: rgba(0,0,0,0.7);
 
         .modal-wide {
@@ -54,7 +54,7 @@
         }
 
         .modal-content {
-            @apply .flex .flex-col .bg-white .rounded .p-8;
+            @apply .flex .flex-col .bg-white .rounded .p-8 .max-h-full .overflow-auto;
             border: 1px solid rgba(0,0,0,.2);
         }
     }

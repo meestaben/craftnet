@@ -21,7 +21,8 @@
                 </div>
             </div>
         </div>
-        <modal v-if="isEditing" :show="isEditing" transition="fade" modal-type="wide" style="max-height: 100vh; overflow: scroll;">
+
+        <modal v-if="isEditing" :show="isEditing" transition="fade" modal-type="wide">
             <div slot="body" class="p-4">
                 <textbox id="name" label="Project Name" v-model="project.name" :errors="localErrors.name" />
                 <textbox id="role" label="Role" instructions="e.g. “Craft Commerce with custom Hubspot integration” or “Design and custom plugin development”. Max 55 characters." v-model="project.role" :max="55" :errors="localErrors.role" />
