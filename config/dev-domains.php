@@ -88,6 +88,7 @@ return [
     'steadfa.st',
     'tad.am',
     'testsite.no',
+    'tdebv.nl',
     'the-neighbourhood-production.com',
     'the-neighbourhood-staging.com',
     'umstesting.com',
