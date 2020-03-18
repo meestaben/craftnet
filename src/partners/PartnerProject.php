@@ -19,6 +19,7 @@ class PartnerProject extends Model
     public $withCraftCommerce;
     public $dateCreated;
     public $dateUpdated;
+    public $sortOrder;
     public $uid;
 
     /**

@@ -762,11 +762,14 @@ class Partner extends Element
         $savedIds = [];
         $without = array_unique(array_merge($without, ['dateCreated', 'dateUpdated', 'uid']));
 
+        $key = 0;
+
         foreach ($models as &$model) {
             $model->partnerId = $this->id;
 
             if (!$model->id) {
                 $data = $model->getAttributes(null, array_merge($without, ['id']));
+                $data['sortOrder'] = $key;
                 $db->createCommand()
                     ->insert($table, $data)
                     ->execute();
@@ -775,12 +778,15 @@ class Partner extends Element
                 $savedIds[] = $model->id;
             } else {
                 $data = $model->getAttributes(null, $without);
+                $data['sortOrder'] = $key;
                 $db->createCommand()
                     ->update($table, $data, 'id=:id', [':id' => $data['id']], true)
                     ->execute();
 
                 $savedIds[] = $model->id;
             }
+
+            $key++;
         }
 
         if ($prune) {

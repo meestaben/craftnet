@@ -32,7 +32,8 @@ class PartnerProjectsQuery extends Query
     {
         $this
             ->select('*')
-            ->from('craftnet_partnerprojects p');
+            ->from('craftnet_partnerprojects p')
+            ->orderBy(['p.sortOrder' => SORT_ASC]);
 
         if (isset($this->_partnerId)) {
             $this->where(['p.partnerId' => $this->_partnerId]);
