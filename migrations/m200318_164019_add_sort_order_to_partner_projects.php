@@ -15,7 +15,7 @@ class m200318_164019_add_sort_order_to_partner_projects extends Migration
      */
     public function safeUp()
     {
-        $this->addColumn('craftnet_partnerprojects', 'sortOrder', $this->smallInteger()->unsigned());
+        $this->addColumn('craftnet_partnerprojects', 'sortOrder', $this->smallInteger()->unsigned()->notNull()->defaultValue(0));
     }
 
     /**
