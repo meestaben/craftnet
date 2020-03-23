@@ -7,19 +7,21 @@
             Each must have a public URL for a case study or website.
         </p>
 
-        <partner-project
-            v-for="(project, index) in draftProjects"
-            :project="project"
-            :key="index"
-            :index="index"
-            :edit-index="editIndex"
-            :request-pending="requestPending"
-            :errors="errors[index]"
-            @cancel="onCancel"
-            @delete="onDelete"
-            @edit="onEdit"
-            @save="onSave"
-        ></partner-project>
+        <draggable v-model="draftProjects" @update="onSave">
+            <partner-project
+                v-for="(project, index) in draftProjects"
+                :project="project"
+                :key="index"
+                :index="index"
+                :edit-index="editIndex"
+                :request-pending="requestPending"
+                :errors="errors[index]"
+                @cancel="onCancel"
+                @delete="onDelete"
+                @edit="onEdit"
+                @save="onSave"
+            ></partner-project>
+        </draggable>
 
         <div  v-if="partner.projects.length < 8 " class="pl-4">
             <btn small icon="plus" @click="onAddProjectClick">Add a Project</btn>
@@ -30,6 +32,7 @@
 <script>
     import helpers from '../../mixins/helpers'
     import PartnerProject from './PartnerProject'
+    import draggable from 'vuedraggable'
 
     export default {
         props: ['partner'],
@@ -38,6 +41,7 @@
 
         components: {
             PartnerProject,
+            draggable,
         },
 
         data() {
