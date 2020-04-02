@@ -133,6 +133,8 @@ return [
                 return $session;
             },
             'log' => function() {
+                $logFileName = Craft::$app->getRequest()->getIsConsoleRequest() ? 'console.log' : 'web.log';
+
                 return Craft::createObject([
                     'class' => yii\log\Dispatcher::class,
                     'targets' => [
@@ -143,7 +145,7 @@ return [
                         ],
                         [
                             'class' => craft\log\FileTarget::class,
-                            'logFile' => getenv('CRAFT_STORAGE_PATH') . '/logs/' . Craft::$app->getRequest()->getIsConsoleRequest() ? 'console.log' : 'web.log',
+                            'logFile' => getenv('CRAFT_STORAGE_PATH') . '/logs/' . $logFileName,
                             'levels' => !YII_DEBUG ? yii\log\Logger::LEVEL_ERROR | yii\log\Logger::LEVEL_WARNING : yii\log\Logger::LEVEL_ERROR | yii\log\Logger::LEVEL_WARNING | yii\log\Logger::LEVEL_INFO | yii\log\Logger::LEVEL_TRACE | yii\log\Logger::LEVEL_PROFILE,
                         ],
                     ],
