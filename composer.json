@@ -26,7 +26,8 @@
     "craftcms/webhooks": "^2.0",
     "craftcms/postmark": "^2.0",
     "omnilight/yii2-scheduling": "^1.1",
-    "zendesk/zendesk_api_client_php": "^2.2"
+    "zendesk/zendesk_api_client_php": "^2.2",
+    "yiisoft/yii2-shell": "^2.0"
   },
   "require-dev": {
     "vlucas/phpdotenv": "^2.4.0"
