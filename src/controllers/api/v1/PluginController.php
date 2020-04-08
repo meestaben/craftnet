@@ -35,7 +35,6 @@ class PluginController extends BaseApiController
     {
         $plugin = Plugin::find()
             ->id($pluginId)
-            ->anyStatus()
             ->withLatestReleaseInfo(true, $this->cmsVersion)
             ->one();
 
@@ -59,7 +58,6 @@ class PluginController extends BaseApiController
         if (!$changelogData) {
             $plugin = Plugin::find()
                 ->id($pluginId)
-                ->anyStatus()
                 ->withLatestReleaseInfo()
                 ->one();
 
