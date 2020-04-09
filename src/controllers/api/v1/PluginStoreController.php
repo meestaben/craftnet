@@ -183,7 +183,6 @@ class PluginStoreController extends BaseApiController
         if (!$data) {
             $plugin = $this->_createPluginQuery(false)
                 ->handle($handle)
-                ->anyStatus()
                 ->one();
 
             if (!$plugin) {
