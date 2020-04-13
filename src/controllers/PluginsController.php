@@ -341,7 +341,7 @@ JS;
                     $plugin->addError('icon', "Icon size must be less than {$maxUploadM}MB.");
                 } else if ($iconFile->getHasError()) {
                     $plugin->addError('icon', "Icon wasn’t uploaded. (Error: {$iconFile->error})");
-                } else if ($iconFile->getMimeType() !== 'image/svg+xml') {
+                } else if (strpos($iconFile->getMimeType(), 'image/svg') !== 0) {
                     $plugin->addError('icon', "Icon must be an SVG.");
                 } else if ($this->_containsEmbeds(file_get_contents($iconFile->tempName))) {
                     $plugin->addError('icon', "Icon can’t contain embedded images or fonts.");
