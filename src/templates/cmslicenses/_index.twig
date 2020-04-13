@@ -60,6 +60,7 @@
                     <th>Domain</th>
                     <th>Owner</th>
                     <th>Created</th>
+                    <th>Last Active</th>
                     <th>Expires</th>
                     <th>Version</th>
                 </tr>
@@ -89,6 +90,13 @@
                         </td>
                         <td>
                             {{ license.dateCreated|date('short') }}
+                        </td>
+                        <td>
+                            {% if license.lastActivityOn %}
+                                {{ license.lastActivityOn|date('short') }}
+                            {% else %}
+                                <span class="light">Unknown</span>
+                            {% endif %}
                         </td>
                         <td>
                             {% if license.expirable and license.expiresOn %}
