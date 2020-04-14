@@ -12,6 +12,7 @@ use craft\elements\db\ElementQueryInterface;
 use craft\elements\User;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Db;
+use craft\helpers\UrlHelper;
 use craft\validators\UniqueValidator;
 use craftnet\composer\Package;
 use craftnet\developers\UserBehavior;
@@ -1113,7 +1114,7 @@ EOD;
      */
     public function getCpEditUrl()
     {
-        return "plugins/{$this->id}-{$this->handle}";
+        return UrlHelper::cpUrl("plugins/{$this->id}-{$this->handle}");
     }
 
     // Protected Methods
