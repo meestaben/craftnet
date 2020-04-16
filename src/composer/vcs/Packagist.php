@@ -106,8 +106,14 @@ class Packagist extends BaseVcs
      */
     public function getVersions(): array
     {
-        $packageInfo = self::packageInfo($this->package->name);
         $versions = [];
+
+        try {
+            $packageInfo = self::packageInfo($this->package->name);
+        } catch (Exception $e) {
+            return $versions;
+        }
+
         if (!empty($packageInfo['packages'][$this->package->name])) {
             foreach ($packageInfo['packages'][$this->package->name] as $version => $info) {
                 $sha = $info['source']['reference'] ?? $info['dist']['reference'] ?? null;
@@ -118,6 +124,7 @@ class Packagist extends BaseVcs
                 $versions[$version] = $sha;
             }
         }
+
         return $versions;
     }
 
