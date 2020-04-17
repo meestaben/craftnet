@@ -769,7 +769,11 @@ class Partner extends Element
 
             if (!$model->id) {
                 $data = $model->getAttributes(null, array_merge($without, ['id']));
-                $data['sortOrder'] = $key;
+
+                if ($table === 'craftnet_partnerprojects') {
+                    $data['sortOrder'] = $key;
+                }
+
                 $db->createCommand()
                     ->insert($table, $data)
                     ->execute();
@@ -778,7 +782,11 @@ class Partner extends Element
                 $savedIds[] = $model->id;
             } else {
                 $data = $model->getAttributes(null, $without);
-                $data['sortOrder'] = $key;
+
+                if ($table === 'craftnet_partnerprojects') {
+                    $data['sortOrder'] = $key;
+                }
+
                 $db->createCommand()
                     ->update($table, $data, 'id=:id', [':id' => $data['id']], true)
                     ->execute();
