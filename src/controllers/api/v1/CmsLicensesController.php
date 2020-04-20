@@ -61,7 +61,7 @@ class CmsLicensesController extends BaseApiController
     public function actionGet(string $include = null): Response
     {
         if (empty($this->cmsLicenses)) {
-            throw new BadRequestHttpException('Missing X-Craft-License Header');
+            throw new BadRequestHttpException('Missing or invalid X-Craft-License Header');
         }
 
         $license = reset($this->cmsLicenses);
