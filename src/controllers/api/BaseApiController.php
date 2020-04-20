@@ -191,7 +191,7 @@ abstract class BaseApiController extends Controller
         $db = Craft::$app->getDb();
 
         // allow ajax requests to see the response headers
-        $responseHeaders->add('Access-Control-Expose-Headers', implode(', ', [
+        $responseHeaders->set('access-control-expose-headers', implode(', ', [
             'x-craft-allow-trials',
             'x-craft-license-status',
             'x-craft-license-domain',
@@ -240,14 +240,14 @@ abstract class BaseApiController extends Controller
             if ($cmsLicenseKey === '__REQUEST__' || $cmsLicenseKey === '🙏') {
                 $cmsLicense = $this->cmsLicenses[] = $this->createCmsLicense();
                 $responseHeaders
-                    ->set('X-Craft-License', $cmsLicense->key)
-                    ->set('X-Craft-License-Status', self::LICENSE_STATUS_VALID)
-                    ->set('X-Craft-License-Domain', $cmsLicense->domain)
-                    ->set('X-Craft-License-Edition', $cmsLicense->editionHandle);
+                    ->set('x-craft-license', $cmsLicense->key)
+                    ->set('x-craft-license-status', self::LICENSE_STATUS_VALID)
+                    ->set('x-craft-license-domain', $cmsLicense->domain)
+                    ->set('x-craft-license-edition', $cmsLicense->editionHandle);
 
                 // was a host provided with the request?
                 if ($requestHeaders->has('X-Craft-Host')) {
-                    $responseHeaders->set('X-Craft-Allow-Trials', (string)($cmsLicense->domain === null));
+                    $responseHeaders->set('x-craft-allow-trials', (string)($cmsLicense->domain === null));
                 }
             } else if ($cmsLicenseKey !== null) {
                 try {
@@ -270,7 +270,7 @@ abstract class BaseApiController extends Controller
                             }
                         }
 
-                        $responseHeaders->set('X-Craft-Allow-Trials', (string)($domain === null));
+                        $responseHeaders->set('x-craft-allow-trials', (string)($domain === null));
                     }
 
                     // has Craft gone past its current allowed version?
@@ -291,17 +291,17 @@ abstract class BaseApiController extends Controller
                         }
                     }
 
-                    $responseHeaders->set('X-Craft-License-Status', $cmsLicenseStatus);
-                    $responseHeaders->set('X-Craft-License-Domain', $cmsLicenseDomain);
-                    $responseHeaders->set('X-Craft-License-Edition', $cmsLicense->editionHandle);
+                    $responseHeaders->set('x-craft-license-status', $cmsLicenseStatus);
+                    $responseHeaders->set('x-craft-license-domain', $cmsLicenseDomain);
+                    $responseHeaders->set('x-craft-license-edition', $cmsLicense->editionHandle);
 
                     if ($cmsLicense->expirable) {
-                        $responseHeaders->set('X-Craft-License-Expired', (string)(int)$cmsLicense->expired);
+                        $responseHeaders->set('x-craft-license-expired', (string)(int)$cmsLicense->expired);
 
                         $expiryDate = $cmsLicense->getExpiryDate();
 
                         if ($expiryDate) {
-                            $responseHeaders->set('X-Craft-License-Expires-On', $expiryDate->format(\DateTime::ATOM));
+                            $responseHeaders->set('x-craft-license-expires-on', $expiryDate->format(\DateTime::ATOM));
                         }
                     }
 
@@ -320,7 +320,7 @@ abstract class BaseApiController extends Controller
                         $cmsLicenseManager->addHistory($cmsLicense->id, "tied to domain {$cmsLicenseDomain} by {$identity}");
                     }
                 } catch (LicenseNotFoundException $e) {
-                    $responseHeaders->set('X-Craft-License-Status', self::LICENSE_STATUS_INVALID);
+                    $responseHeaders->set('x-craft-license-status', self::LICENSE_STATUS_INVALID);
                     $e = null;
                 }
             }
@@ -430,7 +430,7 @@ abstract class BaseApiController extends Controller
                 foreach ($this->pluginLicenseStatuses as $pluginHandle => $pluginLicenseStatus) {
                     $pluginLicenseStatuses[] = "{$pluginHandle}:{$pluginLicenseStatus}";
                 }
-                $responseHeaders->set('X-Craft-Plugin-License-Statuses', implode(',', $pluginLicenseStatuses));
+                $responseHeaders->set('x-craft-plugin-license-statuses', implode(',', $pluginLicenseStatuses));
             }
 
             // set the X-Craft-Plugin-License-Editions header
@@ -450,7 +450,7 @@ abstract class BaseApiController extends Controller
                         $pluginLicenseEditions[] = "{$pluginHandle}:{$pluginEdition->handle}";
                     }
                 }
-                $responseHeaders->set('X-Craft-Plugin-License-Editions', implode(',', $pluginLicenseEditions));
+                $responseHeaders->set('x-craft-plugin-license-editions', implode(',', $pluginLicenseEditions));
             }
 
             if (($result = YiiController::runAction($id, $params)) instanceof Response) {
