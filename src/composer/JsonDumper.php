@@ -229,7 +229,7 @@ class JsonDumper extends Component
         }
 
         if (!empty($oldPaths)) {
-            Craft::$app->getQueue()->delay(60 * 60)->push(new DeletePaths([
+            Craft::$app->getQueue()->delay(900)->push(new DeletePaths([
                 'paths' => $oldPaths,
             ]));
         }
