@@ -343,9 +343,6 @@ class JsonDumper extends Component
             // Write the new file
             FileHelper::writeToFile($path, $content);
 
-            if ($this->cfDistributionId) {
-                $this->_invalidateCloudFrontPath($relativePath);
-            }
         } catch (\Throwable $throwable) {
             Craft::error($throwable->getMessage(), __METHOD__);
         }
