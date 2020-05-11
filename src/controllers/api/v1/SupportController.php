@@ -30,6 +30,7 @@ class SupportController extends BaseApiController
      */
     public function actionCreate(): Response
     {
+        Craft::error('Support - Made it to create.');
         $request = Craft::$app->getRequest();
         $requestHeaders = $request->getHeaders();
         $body = $request->getRequiredBodyParam('message');
@@ -88,7 +89,7 @@ class SupportController extends BaseApiController
                 'value' => $host
             ];
         }
-
+        Craft::error('Support - Creating ZD client.');
         $client = Zendesk::client();
         $uploadTokens = [];
 
@@ -98,17 +99,17 @@ class SupportController extends BaseApiController
         }
 
         if (!empty($attachments)) {
-            Craft::info('Support - Found '.count($attachments).' attachments to send to ZenDesk.');
+            Craft::error('Support - Found '.count($attachments).' attachments to send to ZenDesk.');
             foreach ($attachments as $i => $attachment) {
-                Craft::info('Support - Attachment Name: '.$attachment->name);
+                Craft::error('Support - Attachment Name: '.$attachment->name);
                 if (!empty($attachment->tempName)) {
-                    Craft::info('Support - Attachment Temp Name: '.$attachment->tempName);
+                    Craft::error('Support - Attachment Temp Name: '.$attachment->tempName);
                     $response = $client->attachments()->upload([
                         'file' => $attachment->tempName,
                         'type' => $attachment->getMimeType(),
                         'name' => $attachment->name,
                     ]);
-                    Craft::info('Support - Attachment Upload Token: '.$response->upload->token);
+                    Craft::error('Support - Attachment Upload Token: '.$response->upload->token);
                     $uploadTokens[] = $response->upload->token;
                 }
             }
@@ -133,7 +134,7 @@ class SupportController extends BaseApiController
             'custom_fields' => $customFields,
         ]);
 
-        Craft::info('Support - Response: '.Craft::dd($response));
+        Craft::error('Support - Response: '.Craft::dd($response));
 
         $this->trigger(self::EVENT_CREATE_TICKET, new ZendeskEvent([
             'ticketId' => $response->ticket->id,
