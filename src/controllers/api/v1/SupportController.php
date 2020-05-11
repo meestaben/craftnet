@@ -98,17 +98,17 @@ class SupportController extends BaseApiController
         }
 
         if (!empty($attachments)) {
-            Craft::info('Found '.count($attachments).' attachments to send to ZenDesk.');
+            Craft::info('Support - Found '.count($attachments).' attachments to send to ZenDesk.');
             foreach ($attachments as $i => $attachment) {
-                Craft::info('Attachment Name: '.$attachment->name);
+                Craft::info('Support - Attachment Name: '.$attachment->name);
                 if (!empty($attachment->tempName)) {
-                    Craft::info('Attachment Temp Name: '.$attachment->tempName);
+                    Craft::info('Support - Attachment Temp Name: '.$attachment->tempName);
                     $response = $client->attachments()->upload([
                         'file' => $attachment->tempName,
                         'type' => $attachment->getMimeType(),
                         'name' => $attachment->name,
                     ]);
-                    Craft::info('Attachment Upload Token: '.$response->upload->token);
+                    Craft::info('Support - Attachment Upload Token: '.$response->upload->token);
                     $uploadTokens[] = $response->upload->token;
                 }
             }
@@ -133,7 +133,7 @@ class SupportController extends BaseApiController
             'custom_fields' => $customFields,
         ]);
 
-        Craft::info('Support Response: '.Craft::dd($response));
+        Craft::info('Support - Response: '.Craft::dd($response));
 
         $this->trigger(self::EVENT_CREATE_TICKET, new ZendeskEvent([
             'ticketId' => $response->ticket->id,
