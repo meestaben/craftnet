@@ -94,8 +94,10 @@ class SupportController extends BaseApiController
         $uploadTokens = [];
 
         $attachments = UploadedFile::getInstancesByName('attachments');
+        Craft::error('Support - count($attachments) 1 = '.count($attachments));
         if (empty($attachments) && $attachment = UploadedFile::getInstanceByName('attachment')) {
             $attachments = [$attachment];
+            Craft::error('Support - count($attachments) 2 = '.count($attachments));
         }
 
         if (!empty($attachments)) {
