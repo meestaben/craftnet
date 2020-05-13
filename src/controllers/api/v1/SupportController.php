@@ -93,6 +93,8 @@ class SupportController extends BaseApiController
         $client = Zendesk::client();
         $uploadTokens = [];
 
+        Craft::error('Support - $FILES = '.var_dump($_FILES));
+
         $attachments = UploadedFile::getInstancesByName('attachments');
         Craft::error('Support - count($attachments) 1 = '.count($attachments));
         if (empty($attachments) && $attachment = UploadedFile::getInstanceByName('attachment')) {
