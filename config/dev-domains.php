@@ -63,6 +63,8 @@ return [
     'mystagingsite.us',
     'nanoapp.io',
     'nerderylabs.com',
+    'newism.dev',
+    'newism.rocks',
     'nextmp.net',
     'ngrok.com',
     'nip.io',
