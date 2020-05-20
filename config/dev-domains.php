@@ -1,6 +1,7 @@
 <?php
 
 return [
+    '288dev.com',
     'aanpqa.com',
     'ai-qa.com',
     'azure.com',
