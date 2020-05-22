@@ -45,6 +45,7 @@ return [
     'hyperlane.co',
     'infomedia-dev.com',
     'isted.dev',
+    'joshbutts.dev',
     'lewisjenkins.dev',
     'lndo.site',
     'madebymasuga.com',
