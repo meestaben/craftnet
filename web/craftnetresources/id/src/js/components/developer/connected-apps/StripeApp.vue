@@ -2,6 +2,7 @@
     <connected-app
             :name="appType.name"
             :description="'Connect to your ' + appType.name + ' account.'"
+            connected-description="Automatic Stripe payouts only occur for U.S., European, Australian, and New Zealand based accounts."
             :icon="staticImageUrl('' + appType.handle + '.svg')"
             :account-name="(stripeAccount ? stripeAccount.display_name : '')"
             :connected="stripeAccount"
