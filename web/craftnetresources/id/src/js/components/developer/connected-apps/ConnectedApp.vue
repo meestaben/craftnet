@@ -8,6 +8,7 @@
                 <div class="flex-1">
                     <template v-if="connected">
                         <h5>{{ accountName }}</h5>
+                        <p v-if="connectedDescription" class="mb-0">{{ connectedDescription }}</p>
                         <p class="mb-0">
                             <span class="text-secondary">{{ name }}</span>
                         </p>
@@ -39,7 +40,7 @@
     import ListGroupItem from '../../ListGroupItem'
 
     export default {
-        props: ['name', 'description', 'icon', 'accountName', 'connected', 'buttonLoading', 'loading'],
+        props: ['name', 'description', 'icon', 'accountName', 'connected', 'connectedDescription', 'buttonLoading', 'loading'],
 
         data() {
             return {
