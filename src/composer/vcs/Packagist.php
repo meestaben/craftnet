@@ -41,7 +41,7 @@ class Packagist extends BaseVcs
         }
 
         $url = self::BASE_URL . $uri;
-        Craft::trace('Fetching ' . $uri, __METHOD__);
+        Craft::debug('Fetching ' . $uri, __METHOD__);
         $response = Craft::createGuzzleClient()->request('get', $url);
         $data = Json::decode((string)$response->getBody());
 
@@ -71,7 +71,7 @@ class Packagist extends BaseVcs
     {
         try {
             $info = Craft::$app->getCache()->getOrSet(__METHOD__ . '--' . $name, function() use ($name) {
-                Craft::trace('Fetching package info for ' . $name, __METHOD__);
+                Craft::debug('Fetching package info for ' . $name, __METHOD__);
                 $root = self::rootComposerInfo();
                 $includes = array_reverse($root['provider-includes'], true);
                 foreach ($includes as $uri => $include) {
