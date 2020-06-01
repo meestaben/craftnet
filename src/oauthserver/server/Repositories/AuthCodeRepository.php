@@ -54,6 +54,7 @@ class AuthCodeRepository implements AuthCodeRepositoryInterface
      * Revoke an auth code.
      *
      * @param string $codeId
+     * @return bool
      */
     public function revokeAuthCode($codeId)
     {

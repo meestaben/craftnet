@@ -53,6 +53,7 @@ class RefreshTokenRepository implements RefreshTokenRepositoryInterface
      * Revoke the refresh token.
      *
      * @param string $tokenId
+     * @return bool
      */
     public function revokeRefreshToken($tokenId)
     {
