@@ -164,7 +164,6 @@ class FundsManager extends BaseObject
 
                     // Update the charge description with the line items
                     Stripe::setApiKey($this->developer->stripeAccessToken);
-                    /** @var Charge $charge */
                     $charge = Charge::retrieve($transfer->destination_payment);
                     $charge->description = implode(', ', $itemDescriptions);
                     $charge->save();

@@ -291,7 +291,6 @@ class LicensesController extends Controller
             // Add the line items to the cart
             $lineItemsService = $commerce->getLineItems();
             foreach ($licenses as $license) {
-                /** @var LicenseInterface $license */
                 $renewalId = $license->getEdition()->getRenewal()->getId();
                 $lineItem = $lineItemsService->resolveLineItem($order->id, $renewalId, [
                     'licenseKey' => $license->getKey(),

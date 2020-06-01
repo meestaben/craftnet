@@ -54,7 +54,6 @@ class CountriesController extends BaseApiController
 
         $sortedStates = [];
 
-        /** @var State $state */
         foreach ($states as $state) {
             if (!array_key_exists($state->countryId, $sortedStates)) {
                 $sortedStates[$state->countryId] = [];
@@ -67,7 +66,6 @@ class CountriesController extends BaseApiController
 
         $countryInfo = new CountryInfo();
 
-        /** @var Country $country */
         foreach ($countries as $country) {
             $countryData = [
                 'name' => $country->name,
