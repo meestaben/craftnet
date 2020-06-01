@@ -25,6 +25,7 @@ return [
                             'dev',
                             'loc',
                             'local',
+                            'qa',
                             'sandbox',
                             'stage',
                             'staging',
