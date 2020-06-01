@@ -673,7 +673,7 @@ JS;
     /**
      * Submits a plugin for approval.
      *
-     * @return Response
+     * @return Response|null
      * @throws Exception
      * @throws ForbiddenHttpException
      * @throws NotFoundHttpException
@@ -681,7 +681,7 @@ JS;
      * @throws \craft\errors\ElementNotFoundException
      * @throws \yii\web\BadRequestHttpException
      */
-    public function actionSubmit(): Response
+    public function actionSubmit()
     {
         $request = Craft::$app->getRequest();
         $pluginId = $request->getBodyParam('pluginId');
