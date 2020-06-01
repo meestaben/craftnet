@@ -258,7 +258,7 @@ class JsonDumper extends Component
                 ]
             );
         } catch (CloudFrontException $exception) {
-            Craft::warning($exception->getMessage());
+            Craft::warning($exception->getMessage(), __METHOD__);
         }
 
         return true;

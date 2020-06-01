@@ -179,7 +179,7 @@ class PluginRenewal extends PluginPurchasable implements RenewalInterface
         try {
             $license = $manager->getLicenseByKey($options['licenseKey']);
         } catch (LicenseNotFoundException $e) {
-            Craft::error("Could not renew plugin license {$options['licenseKey']} for order {$order->number}: {$e->getMessage()}");
+            Craft::error("Could not renew plugin license {$options['licenseKey']} for order {$order->number}: {$e->getMessage()}", __METHOD__);
             Craft::$app->getErrorHandler()->logException($e);
             return;
         }
@@ -192,7 +192,7 @@ class PluginRenewal extends PluginPurchasable implements RenewalInterface
         try {
             // save the license
             if (!$manager->saveLicense($license, false)) {
-                Craft::error("Could not save plugin license {$license->key} for order {$order->number}: " . implode(', ', $license->getErrorSummary(true)));
+                Craft::error("Could not save plugin license {$license->key} for order {$order->number}: " . implode(', ', $license->getErrorSummary(true)), __METHOD__);
                 return;
             }
 
@@ -208,7 +208,7 @@ class PluginRenewal extends PluginPurchasable implements RenewalInterface
             $expiryStr = OrderHelper::expiryObj2Str($license->expiresOn);
             $manager->addHistory($license->id, "Renewed until {$expiryStr} per order {$order->number}");
         } catch (\Throwable $e) {
-            Craft::error("Could not save plugin license {$license->key} for order {$order->number}: {$e->getMessage()}");
+            Craft::error("Could not save plugin license {$license->key} for order {$order->number}: {$e->getMessage()}", __METHOD__);
             Craft::$app->getErrorHandler()->logException($e);
         }
     }

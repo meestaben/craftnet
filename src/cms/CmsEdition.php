@@ -240,7 +240,7 @@ class CmsEdition extends CmsPurchasable implements EditionInterface
             try {
                 $license = $manager->getLicenseByKey($options['licenseKey']);
             } catch (LicenseNotFoundException $e) {
-                Craft::error("Could not upgrade Craft license {$options['licenseKey']} for order {$order->number}: {$e->getMessage()}");
+                Craft::error("Could not upgrade Craft license {$options['licenseKey']} for order {$order->number}: {$e->getMessage()}", __METHOD__);
                 Craft::$app->getErrorHandler()->logException($e);
                 return;
             }
@@ -286,7 +286,7 @@ class CmsEdition extends CmsPurchasable implements EditionInterface
         try {
             // save the license
             if (!$manager->saveLicense($license, false)) {
-                Craft::error("Could not save Craft license {$license->key} for order {$order->number}: " . implode(', ', $license->getErrorSummary(true)));
+                Craft::error("Could not save Craft license {$license->key} for order {$order->number}: " . implode(', ', $license->getErrorSummary(true)), __METHOD__);
                 return;
             }
 
@@ -309,7 +309,7 @@ class CmsEdition extends CmsPurchasable implements EditionInterface
             }
             $manager->addHistory($license->id, "{$note} per order {$order->number}");
         } catch (Exception $e) {
-            Craft::error("Could not save Craft license {$license->key} for order {$order->number}: {$e->getMessage()}");
+            Craft::error("Could not save Craft license {$license->key} for order {$order->number}: {$e->getMessage()}", __METHOD__);
             Craft::$app->getErrorHandler()->logException($e);
         }
     }

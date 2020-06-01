@@ -63,7 +63,7 @@ class Oauth extends Component
                 try {
                     $repos = $paginator->fetchAll($api, 'repositories', ['public']);
                 } catch (RuntimeException $e) {
-                    Craft::error('Error fetching user repos: ' . $e->getMessage());
+                    Craft::error('Error fetching user repos: ' . $e->getMessage(), __METHOD__);
                     Craft::$app->getErrorHandler()->logException($e);
                     continue;
                 }

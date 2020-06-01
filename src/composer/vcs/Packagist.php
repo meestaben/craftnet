@@ -41,7 +41,7 @@ class Packagist extends BaseVcs
         }
 
         $url = self::BASE_URL . $uri;
-        Craft::trace('Fetching ' . $uri);
+        Craft::trace('Fetching ' . $uri, __METHOD__);
         $response = Craft::createGuzzleClient()->request('get', $url);
         $data = Json::decode((string)$response->getBody());
 
@@ -71,7 +71,7 @@ class Packagist extends BaseVcs
     {
         try {
             $info = Craft::$app->getCache()->getOrSet(__METHOD__ . '--' . $name, function() use ($name) {
-                Craft::trace('Fetching package info for ' . $name);
+                Craft::trace('Fetching package info for ' . $name, __METHOD__);
                 $root = self::rootComposerInfo();
                 $includes = array_reverse($root['provider-includes'], true);
                 foreach ($includes as $uri => $include) {
@@ -118,7 +118,7 @@ class Packagist extends BaseVcs
             foreach ($packageInfo['packages'][$this->package->name] as $version => $info) {
                 $sha = $info['source']['reference'] ?? $info['dist']['reference'] ?? null;
                 if ($sha === null) {
-                    Craft::warning('Skipping package version due to unknown hash: ' . $this->package->name . ':' . $version);
+                    Craft::warning('Skipping package version due to unknown hash: ' . $this->package->name . ':' . $version, __METHOD__);
                     continue;
                 }
                 $versions[$version] = $sha;
@@ -136,7 +136,7 @@ class Packagist extends BaseVcs
         $packageInfo = self::packageInfo($this->package->name);
 
         if (!isset($packageInfo['packages'][$this->package->name][$release->version])) {
-            Craft::warning("Ignoring package version {$this->package->name}:{$release->version} because it can't be found in the Packagist provider JSON.");
+            Craft::warning("Ignoring package version {$this->package->name}:{$release->version} because it can't be found in the Packagist provider JSON.", __METHOD__);
             $release->invalidate('not found on Packagist');
             return;
         }

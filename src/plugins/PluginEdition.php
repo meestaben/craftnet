@@ -484,7 +484,7 @@ class PluginEdition extends PluginPurchasable implements EditionInterface
             try {
                 $license = $manager->getLicenseByKey($options['licenseKey'], $this->getPlugin()->handle);
             } catch (LicenseNotFoundException $e) {
-                Craft::error("Could not upgrade plugin license {$options['licenseKey']} for order {$order->number}: {$e->getMessage()}");
+                Craft::error("Could not upgrade plugin license {$options['licenseKey']} for order {$order->number}: {$e->getMessage()}", __METHOD__);
                 Craft::$app->getErrorHandler()->logException($e);
                 return;
             }
@@ -497,7 +497,7 @@ class PluginEdition extends PluginPurchasable implements EditionInterface
                 try {
                     $cmsLicense = Module::getInstance()->getCmsLicenseManager()->getLicenseByKey($options['cmsLicenseKey']);
                 } catch (LicenseNotFoundException $e) {
-                    Craft::error("Could not associate new plugin license with Craft license {$options['cmsLicenseKey']} for order {$order->number}: {$e->getMessage()}");
+                    Craft::error("Could not associate new plugin license with Craft license {$options['cmsLicenseKey']} for order {$order->number}: {$e->getMessage()}", __METHOD__);
                     Craft::$app->getErrorHandler()->logException($e);
                     $cmsLicense = null;
                 }
@@ -544,7 +544,7 @@ class PluginEdition extends PluginPurchasable implements EditionInterface
         try {
             // save the license
             if (!$manager->saveLicense($license)) {
-                Craft::error("Could not save plugin license {$license->key} for order {$order->number}: " . implode(', ', $license->getErrorSummary(true)));
+                Craft::error("Could not save plugin license {$license->key} for order {$order->number}: " . implode(', ', $license->getErrorSummary(true)), __METHOD__);
                 return;
             }
 
@@ -567,7 +567,7 @@ class PluginEdition extends PluginPurchasable implements EditionInterface
             }
             $manager->addHistory($license->id, "{$note} per order {$order->number}");
         } catch (Exception $e) {
-            Craft::error("Could not save plugin license {$license->key} for order {$order->number}: {$e->getMessage()}");
+            Craft::error("Could not save plugin license {$license->key} for order {$order->number}: {$e->getMessage()}", __METHOD__);
             Craft::$app->getErrorHandler()->logException($e);
         }
     }
