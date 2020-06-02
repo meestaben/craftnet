@@ -13,6 +13,7 @@ use craft\helpers\FileHelper;
 use craft\helpers\Json;
 use craft\web\Controller;
 use craft\web\UploadedFile;
+use craftnet\developers\UserBehavior;
 use Throwable;
 use yii\base\UserException;
 use yii\web\BadRequestHttpException;
@@ -158,6 +159,7 @@ class AccountController extends Controller
         $this->requirePostRequest();
         $this->requireLogin();
 
+        /** @var User|UserBehavior $user */
         $user = Craft::$app->getUser()->getIdentity();
 
         if (!$user->isInGroup('developers')) {
@@ -270,7 +272,7 @@ class AccountController extends Controller
 
                 case 'source':
                     return $response['card'];
-                    
+
                 case 'payment_method':
                     return $response['card'];
             }

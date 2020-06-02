@@ -4,6 +4,8 @@ namespace craftnet\controllers\id;
 
 use Craft;
 use craft\elements\Category;
+use craft\elements\User;
+use craftnet\developers\UserBehavior;
 use yii\web\Response;
 
 /**
@@ -23,6 +25,7 @@ class PluginsController extends BaseController
     {
         $this->requireLogin();
 
+        /** @var User|UserBehavior $currentUser */
         $currentUser = Craft::$app->getUser()->getIdentity();
         $data = [];
 
