@@ -31,7 +31,6 @@ class Module extends \yii\base\Module
             'clients' => \craftnet\oauthserver\services\Clients::class,
             'oauth' => \craftnet\oauthserver\services\Oauth::class,
             'refreshTokens' => \craftnet\oauthserver\services\RefreshTokens::class,
-            'tokens' => \craftnet\oauthserver\services\Tokens::class,
         ]);
 
         Event::on(Cp::class, Cp::EVENT_REGISTER_CP_NAV_ITEMS, function(RegisterCpNavItemsEvent $event) {
