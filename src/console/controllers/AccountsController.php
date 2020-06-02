@@ -209,7 +209,7 @@ class AccountsController extends Controller
 
     protected function cmsLicenses(User $user)
     {
-        $cmsLicenses = $this->module->getCmsLicenseManager()->getLicensesByOwner($user->id);
+        $cmsLicenses = $this->module->getCmsLicenseManager()->getLicensesByOwner($user);
 
         $totalCmsLicenses = count($cmsLicenses);
         if ($this->limit) {
@@ -239,7 +239,7 @@ class AccountsController extends Controller
 
     protected function pluginLicenses(User $user)
     {
-        $pluginLicenses = $this->module->getPluginLicenseManager()->getLicensesByOwner($user->id);
+        $pluginLicenses = $this->module->getPluginLicenseManager()->getLicensesByOwner($user);
 
         $totalPluginLicenses = count($pluginLicenses);
         if ($this->limit) {

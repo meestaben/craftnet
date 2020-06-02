@@ -43,28 +43,25 @@ class PluginLicenseManager extends Component
      *
      * @param User $owner
      * @param string|null $searchQuery
-     * @param $limit
-     * @param $page
-     * @param $orderBy
-     * @param $ascending
+     * @param int|null $perPage
+     * @param int $page
+     * @param string|null $orderBy
+     * @param bool $ascending
      * @return array
      */
-    public function getLicensesByOwner(User $owner, string $searchQuery = null, $limit, $page, $orderBy, $ascending): array
+    public function getLicensesByOwner(User $owner, string $searchQuery = null, int $perPage = null, int $page = 1, string $orderBy = null, bool $ascending = false): array
     {
-        $defaultLimit = 30;
-
-        $perPage = $limit ?? $defaultLimit;
-        $offset = ($page - 1) * $perPage;
-
         $licenseQuery = $this->_createLicenseQueryForOwner($owner, $searchQuery);
+
+        if ($perPage) {
+            $licenseQuery
+                ->offset(($page - 1) * $perPage)
+                ->limit($perPage);
+        }
 
         if ($orderBy) {
             $licenseQuery->orderBy([$orderBy => $ascending ? SORT_ASC : SORT_DESC]);
         }
-
-        $licenseQuery
-            ->offset($offset)
-            ->limit($limit);
 
         $results = $licenseQuery->all();
         $resultsArray = [];
@@ -507,7 +504,7 @@ class PluginLicenseManager extends Component
      */
     public function getLicensesArrayByOwner(User $owner)
     {
-        $results = $this->getLicensesByOwner($owner->id);
+        $results = $this->getLicensesByOwner($owner);
 
         return $this->transformLicensesForOwner($results, $owner);
     }

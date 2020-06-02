@@ -130,29 +130,29 @@ class CmsLicensesController extends BaseController
         $user = Craft::$app->getUser()->getIdentity();
 
         $filter = Craft::$app->getRequest()->getParam('filter');
-        $limit = Craft::$app->getRequest()->getParam('per_page', 10);
+        $perPage = Craft::$app->getRequest()->getParam('per_page', 10);
         $page = (int)Craft::$app->getRequest()->getParam('page', 1);
         $orderBy = Craft::$app->getRequest()->getParam('orderBy');
-        $ascending = Craft::$app->getRequest()->getParam('ascending');
+        $ascending = (bool)Craft::$app->getRequest()->getParam('ascending');
         $byColumn = Craft::$app->getRequest()->getParam('byColumn');
 
         try {
-            $licenses = Module::getInstance()->getCmsLicenseManager()->getLicensesByOwner($user, $filter, $limit, $page, $orderBy, $ascending, $byColumn);
+            $licenses = Module::getInstance()->getCmsLicenseManager()->getLicensesByOwner($user, $filter, $perPage, $page, $orderBy, $ascending, $byColumn);
             $totalLicenses = Module::getInstance()->getCmsLicenseManager()->getTotalLicensesByOwner($user, $filter);
 
-            $last_page = ceil($totalLicenses / $limit);
-            $next_page_url = '?next';
-            $prev_page_url = '?prev';
-            $from = ($page - 1) * $limit;
-            $to = ($page * $limit) - 1;
+            $lastPage = ceil($totalLicenses / $perPage);
+            $nextPageUrl = '?next';
+            $prevPageUrl = '?prev';
+            $from = ($page - 1) * $perPage;
+            $to = ($page * $perPage) - 1;
 
             return $this->asJson([
                 'total' => $totalLicenses,
-                'per_page' => $limit,
+                'per_page' => $perPage,
                 'current_page' => $page,
-                'last_page' => $last_page,
-                'next_page_url' => $next_page_url,
-                'prev_page_url' => $prev_page_url,
+                'last_page' => $lastPage,
+                'next_page_url' => $nextPageUrl,
+                'prev_page_url' => $prevPageUrl,
                 'from' => $from,
                 'to' => $to,
                 'data' => $licenses,
