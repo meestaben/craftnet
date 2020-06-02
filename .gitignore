@@ -17,3 +17,4 @@
 /.pgpass
 /storage/config-backups
 /storage/composer-backups
+/storage/config-deltas

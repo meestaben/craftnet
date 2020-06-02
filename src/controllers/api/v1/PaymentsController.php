@@ -14,7 +14,7 @@ use craft\commerce\stripe\Plugin as Stripe;
 use craft\helpers\StringHelper;
 use craftnet\errors\ValidationException;
 use Stripe\Customer as StripeCustomer;
-use Stripe\Error\Base as StripeError;
+use Stripe\Exception\ApiErrorException;
 use Stripe\PaymentMethod as StripePaymentMethod;
 use Stripe\Source as StripeSource;
 use yii\base\Exception;
@@ -122,7 +122,7 @@ class PaymentsController extends CartsController
             try {
                 $this->_populatePaymentForm($payload, $gateway, $paymentForm);
                 $commerce->getPayments()->processPayment($cart, $paymentForm, $redirect, $transaction);
-            } catch (StripeError $e) {
+            } catch (ApiErrorException $e) {
                 throw new BadRequestHttpException($e->getMessage(), 0, $e);
             } catch (PaymentException $e) {
                 throw new BadRequestHttpException($e->getMessage(), 0, $e);
@@ -182,7 +182,7 @@ class PaymentsController extends CartsController
                 'postal_code' => $address->zipCode,
                 'state' => $address->getState(),
             ],
-            'name' => $address->getFullName(),
+            'name' => $address->fullName,
             'email' => $cart->getEmail(),
         ];
 

@@ -13,7 +13,7 @@ use craftnet\errors\InsufficientFundsException;
 use craftnet\errors\MissingStripeAccountException;
 use Moccalotto\Eu\CountryInfo;
 use Stripe\Charge;
-use Stripe\Error\Base as StripeError;
+use Stripe\Exception\ApiErrorException;
 use Stripe\Stripe;
 use Stripe\Transfer;
 use yii\base\BaseObject;
@@ -167,7 +167,7 @@ class FundsManager extends BaseObject
                     $charge = Charge::retrieve($transfer->destination_payment);
                     $charge->description = implode(', ', $itemDescriptions);
                     $charge->save();
-                } catch (StripeError $e) {
+                } catch (ApiErrorException $e) {
                     // Something unexpected happened on Stripe's end
                     Craft::$app->getErrorHandler()->logException($e);
                 } catch (\Throwable $e) {
@@ -225,7 +225,7 @@ class FundsManager extends BaseObject
      * @throws MissingStripeAccountException if the developer doesn't have a Stripe account
      * @throws InaccessibleFundsException if the developer's funds could not be locked
      * @throws InsufficientFundsException if the developer doesn't have enough funds for the transfer
-     * @throws StripeError if anything goes wrong on Stripe's end
+     * @throws ApiErrorException if anything goes wrong on Stripe's end
      */
     private function _transferFunds(string $note, float $amount, array $params = []): Transfer
     {
@@ -264,7 +264,7 @@ class FundsManager extends BaseObject
 
         try {
             $transfer = Transfer::create($params);
-        } catch (StripeError $e) {
+        } catch (ApiErrorException $e) {
             $this->_unlockFunds();
             throw $e;
         }
