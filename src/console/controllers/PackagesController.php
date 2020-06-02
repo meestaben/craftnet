@@ -66,6 +66,7 @@ class PackagesController extends Controller
     {
         // Convert kebab-case names to camelCase
         if (strpos($name, '-') !== false) {
+            /** @noinspection PhpUndefinedClassInspection */
             $name = lcfirst(Inflector::id2camel($name));
             return $this->$name;
         }
@@ -79,6 +80,7 @@ class PackagesController extends Controller
     {
         // Convert kebab-case names to camelCase
         if (strpos($name, '-') !== false) {
+            /** @noinspection PhpUndefinedClassInspection */
             $name = lcfirst(Inflector::id2camel($name));
             $this->$name = $value;
             return;

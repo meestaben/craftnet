@@ -9,6 +9,7 @@ use craftnet\Module;
 use Exception;
 use Throwable;
 use yii\web\Response;
+use yii\web\UnauthorizedHttpException;
 
 /**
  * Class PluginLicensesController

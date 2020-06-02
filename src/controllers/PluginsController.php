@@ -102,6 +102,7 @@ class PluginsController extends Controller
         // Get the title and handle
         $handle = $config['extra']['handle'];
         if (strtolower($handle) !== $handle) {
+            /** @noinspection PhpUndefinedClassInspection */
             $handle = preg_replace('/\-{2,}/', '-', Inflector::camel2id($handle));
         }
         $name = $config['extra']['name'] ?? null;
@@ -768,6 +769,7 @@ JS;
 
         // Kebab-case it
         if (strtolower($handle) !== $handle) {
+            /** @noinspection PhpUndefinedClassInspection */
             $handle = preg_replace('/\-{2,}/', '-', Inflector::camel2id($handle));
         }
 

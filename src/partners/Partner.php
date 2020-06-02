@@ -597,6 +597,7 @@ class Partner extends Element
      */
     public function getCpEditUrl()
     {
+        /** @noinspection PhpUndefinedClassInspection */
         $slug = Inflector::slug($this->businessName);
 
         return UrlHelper::cpUrl("partners/{$this->id}-{$slug}");

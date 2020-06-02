@@ -11,6 +11,7 @@ use Exception;
 use Throwable;
 use yii\web\ForbiddenHttpException;
 use yii\web\Response;
+use yii\web\UnauthorizedHttpException;
 
 /**
  * Class CmsLicensesController

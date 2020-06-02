@@ -39,6 +39,7 @@ class AvailablePluginsController extends BaseApiController
                 if (isset($craft2Plugins[$oldHandle]['handle'])) {
                     $newHandle = ArrayHelper::remove($craft2Plugins[$oldHandle], 'handle');
                 } else {
+                    /** @noinspection PhpUndefinedClassInspection */
                     $newHandle = Inflector::camel2id($oldHandle);
                 }
 

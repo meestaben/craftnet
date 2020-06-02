@@ -3,6 +3,7 @@
 namespace craftnet\controllers\id;
 
 use Craft;
+use craft\elements\Category;
 use yii\web\Response;
 
 /**
