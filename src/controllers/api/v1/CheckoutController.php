@@ -43,16 +43,17 @@ class CheckoutController extends BaseApiController
             $entry->customer = [$userId];
 
             if ($replaceCard && $cardToken) {
+                /** @var StripeCustomerRecord|null $stripeCustomerRecord */
                 $stripeCustomerRecord = StripeCustomerRecord::find()
                     ->where(Db::parseParam('userId', $userId))
                     ->one();
 
                 if ($stripeCustomerRecord) {
-                    if ($stripeCustomerRecord->stripeCustomerId) {
+                    if ($stripeCustomerRecord->reference) {
                         $craftIdConfig = Craft::$app->getConfig()->getConfigFromFile('craftid');
 
                         Stripe::setApiKey($craftIdConfig['stripeApiKey']);
-                        $customer = Customer::retrieve($stripeCustomerRecord->stripeCustomerId);
+                        $customer = Customer::retrieve($stripeCustomerRecord->reference);
 
                         if ($customer->default_source) {
                             /** @var Source $source */

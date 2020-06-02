@@ -9,7 +9,12 @@ use yii\db\ActiveQueryInterface;
 /**
  * Class StripeCustomer
  *
- * @property \yii\db\ActiveQueryInterface $user
+ * @property int $id
+ * @property int $userId
+ * @property int $gatewayId
+ * @property string $reference
+ * @property string|null $response
+ * @property ActiveQueryInterface $user
  */
 class StripeCustomer extends ActiveRecord
 {

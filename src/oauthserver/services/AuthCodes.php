@@ -9,6 +9,13 @@ use yii\base\Component;
 
 /**
  * Class AuthCodes
+ *
+ * @property int $id
+ * @property int $clientId
+ * @property int|null $userId
+ * @property string $identifier
+ * @property string|null $expiryDate
+ * @property string|null $scopes
  */
 class AuthCodes extends Component
 {

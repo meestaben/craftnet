@@ -35,7 +35,7 @@ class AccessToken extends Model
     public $identifier;
 
     /**
-     * @var
+     * @var \DateTime
      */
     public $expiryDate;
 
@@ -85,6 +85,16 @@ class AccessToken extends Model
     }
 
     /**
+     * @inheritdoc
+     */
+    public function datetimeAttributes(): array
+    {
+        $attributes = parent::datetimeAttributes();
+        $attributes[] = 'expiryDate';
+        return $attributes;
+    }
+
+    /**
      * @return Client
      */
     public function getClient()
@@ -108,12 +118,7 @@ class AccessToken extends Model
     public function hasExpired()
     {
         $now = new \DateTime();
-        $expiryDate = new \DateTime($this->expiryDate);
 
-        if ($now->getTimestamp() > $expiryDate->getTimestamp()) {
-            return true;
-        }
-
-        return false;
+        return $now->getTimestamp() >= $this->expiryDate->getTimestamp();
     }
 }

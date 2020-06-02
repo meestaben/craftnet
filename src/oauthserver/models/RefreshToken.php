@@ -28,7 +28,7 @@ class RefreshToken extends Model
     public $identifier;
 
     /**
-     * @var
+     * @var \DateTime
      */
     public $expiryDate;
 
@@ -46,4 +46,14 @@ class RefreshToken extends Model
      * @var
      */
     public $uid;
+
+    /**
+     * @inheritdoc
+     */
+    public function datetimeAttributes(): array
+    {
+        $attributes = parent::datetimeAttributes();
+        $attributes[] = 'expiryDate';
+        return $attributes;
+    }
 }

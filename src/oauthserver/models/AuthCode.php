@@ -35,7 +35,7 @@ class AuthCode extends Model
     public $identifier;
 
     /**
-     * @var
+     * @var \DateTime
      */
     public $expiryDate;
 
@@ -61,6 +61,16 @@ class AuthCode extends Model
 
     // Public Methods
     // =========================================================================
+
+    /**
+     * @inheritdoc
+     */
+    public function datetimeAttributes(): array
+    {
+        $attributes = parent::datetimeAttributes();
+        $attributes[] = 'expiryDate';
+        return $attributes;
+    }
 
     /**
      * @return Client

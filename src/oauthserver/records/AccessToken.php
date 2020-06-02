@@ -4,6 +4,18 @@ namespace craftnet\oauthserver\records;
 
 use craft\db\ActiveRecord;
 
+/**
+ * Class AccessToken
+ *
+ * @property int $id
+ * @property int $clientId
+ * @property int|null $userId
+ * @property string $identifier
+ * @property string|null $expiryDate
+ * @property string|null $userIdentifier
+ * @property string|null $scopes
+ * @property bool $isRevoked
+ */
 class AccessToken extends ActiveRecord
 {
     // Public Methods

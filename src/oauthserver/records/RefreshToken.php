@@ -4,6 +4,14 @@ namespace craftnet\oauthserver\records;
 
 use craft\db\ActiveRecord;
 
+/**
+ * Class RefreshToken
+ *
+ * @property int $id
+ * @property int $accessTokenId
+ * @property string $identifier
+ * @property string|null $expiryDate
+ */
 class RefreshToken extends ActiveRecord
 {
     // Public Methods
