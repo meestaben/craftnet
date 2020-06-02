@@ -12,8 +12,22 @@ use craft\web\UrlManager;
 use craft\web\View;
 use craftnet\oauthserver\base\ModuleTrait;
 use craftnet\oauthserver\models\Settings;
+use craftnet\oauthserver\services\AccessTokens;
+use craftnet\oauthserver\services\AuthCodes;
+use craftnet\oauthserver\services\Clients;
+use craftnet\oauthserver\services\Oauth;
+use craftnet\oauthserver\services\RefreshTokens;
 use yii\base\Event;
 
+/**
+ * Class Module
+ *
+ * @property AccessTokens $accessTokens
+ * @property AuthCodes $authCodes
+ * @property Clients $clients
+ * @property Oauth $oauth
+ * @property RefreshTokens $refreshTokens
+ */
 class Module extends \yii\base\Module
 {
     use ModuleTrait;
@@ -26,11 +40,11 @@ class Module extends \yii\base\Module
         Craft::setAlias('@craftnet/oauthserver/controllers', __DIR__ . '/controllers');
 
         $this->setComponents([
-            'accessTokens' => \craftnet\oauthserver\services\AccessTokens::class,
-            'authCodes' => \craftnet\oauthserver\services\AuthCodes::class,
-            'clients' => \craftnet\oauthserver\services\Clients::class,
-            'oauth' => \craftnet\oauthserver\services\Oauth::class,
-            'refreshTokens' => \craftnet\oauthserver\services\RefreshTokens::class,
+            'accessTokens' => AccessTokens::class,
+            'authCodes' => AuthCodes::class,
+            'clients' => Clients::class,
+            'oauth' => Oauth::class,
+            'refreshTokens' => RefreshTokens::class,
         ]);
 
         Event::on(Cp::class, Cp::EVENT_REGISTER_CP_NAV_ITEMS, function(RegisterCpNavItemsEvent $event) {
