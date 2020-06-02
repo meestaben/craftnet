@@ -6,11 +6,12 @@ namespace craftnet\partners\validators;
 use Craft;
 use craft\db\Query;
 use craft\validators\SlugValidator;
+use craftnet\partners\Partner;
 
 class PartnerSlugValidator extends SlugValidator
 {
     /**
-     * @param \yii\base\Model $model the data model to be validated
+     * @param Partner $model the data model to be validated
      * @param string $attribute the name of the attribute to be validated.
      */
     public function validateAttribute($model, $attribute)

@@ -172,6 +172,7 @@ class Plugin extends Element
             ],
         ];
 
+        /** @var Category[] $categories */
         $categories = Category::find()
             ->group('pluginCategories')
             ->with('icon')

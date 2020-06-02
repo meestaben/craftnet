@@ -9,6 +9,7 @@ use craft\helpers\Json;
 use craftnet\controllers\api\BaseApiController;
 use craftnet\records\StripeCustomer as StripeCustomerRecord;
 use Stripe\Customer;
+use Stripe\Source;
 use Stripe\Stripe;
 use yii\web\Response;
 
@@ -54,11 +55,14 @@ class CheckoutController extends BaseApiController
                         $customer = Customer::retrieve($stripeCustomerRecord->stripeCustomerId);
 
                         if ($customer->default_source) {
-                            $customer->sources->retrieve($customer->default_source)->delete();
+                            /** @var Source $source */
+                            $source = $customer->sources->retrieve($customer->default_source);
+                            $source->detach();
                         }
 
-                        $card = $customer->sources->create(['source' => $cardToken]);
-                        $customer->default_source = $card->id;
+                        /** @var Source $source */
+                        $source = $customer->sources->create(['source' => $cardToken]);
+                        $customer->default_source = $source->id;
                         $customer->save();
                     }
                 }

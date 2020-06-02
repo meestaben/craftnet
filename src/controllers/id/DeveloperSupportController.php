@@ -5,6 +5,7 @@ namespace craftnet\controllers\id;
 use Craft;
 use craft\commerce\elements\Subscription;
 use craft\commerce\Plugin as Commerce;
+use craft\commerce\stripe\base\SubscriptionGateway;
 use craft\commerce\stripe\gateways\PaymentIntents;
 use craft\commerce\stripe\models\forms\CancelSubscription;
 use craft\commerce\stripe\models\forms\Subscription as SubscriptionForm;
@@ -135,6 +136,7 @@ class DeveloperSupportController extends Controller
                     break;
                 }
 
+                /** @var SubscriptionForm $subscriptionForm */
                 $subscriptionForm = $gateway->getSubscriptionFormModel();
 
                 // If premium is expiring, mark it's end the end of this subscription's trial.
@@ -224,6 +226,7 @@ class DeveloperSupportController extends Controller
                     break;
                 }
 
+                /** @var SwitchPlans $switchPlansForm */
                 $switchPlansForm = $gateway->getSwitchPlansFormModel();
                 $switchPlansForm->prorate = true;
                 $switchPlansForm->billingCycleAnchor = 'now';
@@ -319,7 +322,9 @@ class DeveloperSupportController extends Controller
         ];
 
         if (in_array($subscriptionData[self::PLAN_PRO]['status'], ['active', 'expiring'], true) && $subscriptionData[self::PLAN_PREMIUM]['status'] === 'inactive') {
-            $planData[self::PLAN_PREMIUM]['cost']['switch'] = $proSubscription->getGateway()->previewSwitchCost($proSubscription, $premiumPlan);
+            /** @var SubscriptionGateway $gateway */
+            $gateway = $proSubscription->getGateway();
+            $planData[self::PLAN_PREMIUM]['cost']['switch'] = $gateway->previewSwitchCost($proSubscription, $premiumPlan);
         }
 
         return [

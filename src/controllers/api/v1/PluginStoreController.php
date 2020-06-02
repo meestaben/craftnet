@@ -435,6 +435,7 @@ class PluginStoreController extends BaseApiController
         if (!$data) {
             $data = [];
 
+            /** @var Category[] $categories */
             $categories = Category::find()
                 ->group('pluginCategories')
                 ->with('icon')

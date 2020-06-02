@@ -4,7 +4,6 @@ namespace craftnet\partners;
 
 use Craft;
 use craft\base\Element;
-use craft\base\Model;
 use craft\elements\actions\SetStatus;
 use craft\elements\Asset;
 use craft\elements\db\ElementQueryInterface;
@@ -252,12 +251,12 @@ class Partner extends Element
     private $_capabilities = null;
 
     /**
-     * @var array
+     * @var PartnerLocation[]|null
      */
     private $_locations = null;
 
     /**
-     * @var array
+     * @var PartnerProject[]|null
      */
     private $_projects = null;
 
@@ -751,12 +750,12 @@ class Partner extends Element
     /**
      * Generic method to save one-to-many relations like projects and locations.
      *
-     * @param Model[] $models
+     * @param PartnerLocation[]|PartnerProject[] $models
      * @param string $table
      * @param bool $prune Prune rows not belonging to `$models`
      * @param array $without Attributes to exclude
      */
-    private function _saveOneToManyRelations($models, $table, $prune = true, $without = [])
+    private function _saveOneToManyRelations(array $models, string $table, bool $prune = true, array $without = [])
     {
         $db = Craft::$app->getDb();
         $savedIds = [];
@@ -764,7 +763,7 @@ class Partner extends Element
 
         $key = 0;
 
-        foreach ($models as &$model) {
+        foreach ($models as $model) {
             $model->partnerId = $this->id;
 
             if (!$model->id) {
