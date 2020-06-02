@@ -1,4 +1,4 @@
-Hey {{user.friendlyName}},
+Hey {{ user.friendlyName }},
 
 To claim your Craft and plugin licenses, please click the following link, so we can be sure that you're the owner of {{ email }}:
 
