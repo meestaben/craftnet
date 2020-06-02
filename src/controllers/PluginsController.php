@@ -60,7 +60,7 @@ class PluginsController extends Controller
         $this->requireAcceptsJson();
         $parsed = parse_url($repository);
         $uriParts = isset($parsed['path']) ? explode('/', trim($parsed['path'], '/'), 4) : [];
-        list($owner, $repo, $route, $ref) = array_pad($uriParts, 4, null);
+        [$owner, $repo, $route, $ref] = array_pad($uriParts, 4, null);
 
         // Make sure this looks like a GitHub repo
         if (

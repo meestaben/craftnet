@@ -29,7 +29,7 @@ class ChangelogParser
 
                 // Is it an H2 version heading?
                 if (preg_match('/^## (?:.* )?\[?v?(\d+\.\d+\.\d+(?:\.\d+)?(?:-[0-9A-Za-z-\.]+)?)\]?(?:\(.*?\)|\[.*?\])? - (\d{4}[-\.]\d\d?[-\.]\d\d?)( \[critical\])?/i', $line, $match)) {
-                    list(, $version, $releaseDate) = $match;
+                    [, $version, $releaseDate] = $match;
                     $releaseDate = DateTimeHelper::toDateTime(str_replace('.', '-', $releaseDate), false, false);
                     $critical = !empty($match[3]);
 

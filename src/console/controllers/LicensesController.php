@@ -8,7 +8,6 @@ use craft\commerce\models\PaymentSource;
 use craft\commerce\Plugin as Commerce;
 use craft\commerce\stripe\gateways\PaymentIntents as StripeGateway;
 use craft\commerce\stripe\models\forms\payment\PaymentIntent as PaymentForm;
-use craft\commerce\stripe\Plugin as Stripe;
 use craft\elements\User;
 use craft\helpers\ArrayHelper;
 use craftnet\base\LicenseInterface;
@@ -61,7 +60,7 @@ class LicensesController extends Controller
             try {
                 /** @var string $email */
                 /** @var User|null $user */
-                list($email, $user) = $this->_resolveOwnerKey($ownerKey);
+                [$email, $user] = $this->_resolveOwnerKey($ownerKey);
 
                 // Lock in the renewal prices
                 /** @var LicenseInterface[] $ownerLicenses */
@@ -143,11 +142,11 @@ class LicensesController extends Controller
             try {
                 /** @var string $email */
                 /** @var User|null $user */
-                list($email, $user) = $this->_resolveOwnerKey($ownerKey);
+                [$email, $user] = $this->_resolveOwnerKey($ownerKey);
 
                 /** @var LicenseInterface[] $renewLicenses */
                 /** @var LicenseInterface[] $expireLicenses */
-                list ($renewLicenses, $expireLicenses) = $this->_findRenewableLicenses($ownerLicenses, $user);
+                [$renewLicenses, $expireLicenses] = $this->_findRenewableLicenses($ownerLicenses, $user);
 
                 // If there are any licenses that should be auto-renewed, give that a shot
                 if (!empty($renewLicenses)) {

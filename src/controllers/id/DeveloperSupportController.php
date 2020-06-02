@@ -13,7 +13,6 @@ use craft\commerce\stripe\models\forms\SwitchPlans;
 use craft\elements\User;
 use craft\helpers\DateTimeHelper;
 use craft\web\Controller;
-use yii\helpers\Json;
 use yii\web\Response;
 
 /**
@@ -308,11 +307,11 @@ class DeveloperSupportController extends Controller
             $premiumData['uid'] = $premiumSubscription->uid;
 
             if ($premiumSubscriptionData['cancel_at_period_end']) {
-               $premiumData['status'] = 'expiring';
-               $premiumData['expiringDate'] = DateTimeHelper::toDateTime($premiumSubscriptionData['current_period_end'])->format('Y-m-d');
+                $premiumData['status'] = 'expiring';
+                $premiumData['expiringDate'] = DateTimeHelper::toDateTime($premiumSubscriptionData['current_period_end'])->format('Y-m-d');
             } else if ($premiumSubscriptionData['status'] === 'active') {
-               $premiumData['status'] = 'active';
-               $premiumData['nextBillingDate'] = DateTimeHelper::toDateTime($premiumSubscriptionData['current_period_end'])->format('Y-m-d');
+                $premiumData['status'] = 'active';
+                $premiumData['nextBillingDate'] = DateTimeHelper::toDateTime($premiumSubscriptionData['current_period_end'])->format('Y-m-d');
             }
         }
 

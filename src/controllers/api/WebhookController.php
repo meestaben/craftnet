@@ -48,7 +48,7 @@ class WebhookController extends BaseApiController
             throw new BadRequestHttpException('Invalid request body.');
         }
 
-        list($algo, $hash) = explode('=', $header, 2);
+        [$algo, $hash] = explode('=', $header, 2);
 
         $payloadHash = hash_hmac($algo, Craft::$app->getRequest()->getRawBody(), $secret);
 

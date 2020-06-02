@@ -93,27 +93,27 @@ class SupportController extends BaseApiController
         $client = Zendesk::client();
         $uploadTokens = [];
 
-        Craft::error('Support - $FILES = '.var_dump($_FILES), __METHOD__);
+        Craft::error('Support - $FILES = ' . var_dump($_FILES), __METHOD__);
 
         $attachments = UploadedFile::getInstancesByName('attachments');
-        Craft::error('Support - count($attachments) 1 = '.count($attachments), __METHOD__);
+        Craft::error('Support - count($attachments) 1 = ' . count($attachments), __METHOD__);
         if (empty($attachments) && $attachment = UploadedFile::getInstanceByName('attachment')) {
             $attachments = [$attachment];
-            Craft::error('Support - count($attachments) 2 = '.count($attachments), __METHOD__);
+            Craft::error('Support - count($attachments) 2 = ' . count($attachments), __METHOD__);
         }
 
         if (!empty($attachments)) {
-            Craft::error('Support - Found '.count($attachments).' attachments to send to ZenDesk.', __METHOD__);
+            Craft::error('Support - Found ' . count($attachments) . ' attachments to send to ZenDesk.', __METHOD__);
             foreach ($attachments as $i => $attachment) {
-                Craft::error('Support - Attachment Name: '.$attachment->name, __METHOD__);
+                Craft::error('Support - Attachment Name: ' . $attachment->name, __METHOD__);
                 if (!empty($attachment->tempName)) {
-                    Craft::error('Support - Attachment Temp Name: '.$attachment->tempName, __METHOD__);
+                    Craft::error('Support - Attachment Temp Name: ' . $attachment->tempName, __METHOD__);
                     $response = $client->attachments()->upload([
                         'file' => $attachment->tempName,
                         'type' => $attachment->getMimeType(),
                         'name' => $attachment->name,
                     ]);
-                    Craft::error('Support - Attachment Upload Token: '.$response->upload->token, __METHOD__);
+                    Craft::error('Support - Attachment Upload Token: ' . $response->upload->token, __METHOD__);
                     $uploadTokens[] = $response->upload->token;
                 }
             }
@@ -138,7 +138,7 @@ class SupportController extends BaseApiController
             'custom_fields' => $customFields,
         ]);
 
-        Craft::error('Support - Response: '.Craft::dd($response), __METHOD__);
+        Craft::error('Support - Response: ' . Craft::dd($response), __METHOD__);
 
         $this->trigger(self::EVENT_CREATE_TICKET, new ZendeskEvent([
             'ticketId' => $response->ticket->id,

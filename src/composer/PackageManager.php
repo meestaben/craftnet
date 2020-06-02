@@ -832,9 +832,9 @@ class PackageManager extends Component
             $updatedVersions = [];
             foreach (array_intersect($normalizedStoredVersions, $normalizedVcsVersions) as $version) {
                 if (
-                     $force ||
-                     $version === $onlyVersion ||
-                     $storedVersionInfo[$version]['sha'] !== $vcsVersionInfo[$version]['sha']
+                    $force ||
+                    $version === $onlyVersion ||
+                    $storedVersionInfo[$version]['sha'] !== $vcsVersionInfo[$version]['sha']
                 ) {
                     $updatedVersions[] = $version;
                 }

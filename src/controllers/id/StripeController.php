@@ -4,7 +4,6 @@ namespace craftnet\controllers\id;
 
 use AdamPaterson\OAuth2\Client\Provider\Stripe as StripeOauthProvider;
 use Craft;
-use craft\commerce\base\Gateway;
 use craft\commerce\Plugin as Commerce;
 use craft\commerce\stripe\gateways\PaymentIntents;
 use craft\elements\User;

@@ -11,6 +11,7 @@ abstract class Cache
 {
     /**
      * Returns a cached value, or `false` if it doesn’t exist.
+     *
      * @param string $key
      * @return mixed
      */

@@ -57,7 +57,7 @@ abstract class OrderHelper
 
         // Make sure $d2 is greater than $d1
         if ($d1 > $d2) {
-            list($d1, $d2) = [$d2, $d1];
+            [$d1, $d2] = [$d2, $d1];
         }
 
         $utc = new \DateTimeZone('UTC');

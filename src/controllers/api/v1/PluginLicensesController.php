@@ -52,7 +52,7 @@ class PluginLicensesController extends BaseApiController
         $page = $page ? (int)$page : 1;
         $perPage = $perPage ? (int)$perPage : 100;
 
-        list($offset, $limit) = $this->page2offset($page, $perPage);
+        [$offset, $limit] = $this->page2offset($page, $perPage);
         $licenses = $this->module->getPluginLicenseManager()->getLicensesByDeveloper($user->id, $offset, $limit, $total);
         return $this->asJson([
             'total' => $total,

@@ -204,9 +204,9 @@ abstract class BaseApiController extends Controller
         // was system info provided?
         if ($this->checkCraftHeaders && $requestHeaders->has('X-Craft-System')) {
             foreach (explode(',', $requestHeaders->get('X-Craft-System')) as $info) {
-                list($name, $installed) = array_pad(explode(':', $info, 2), 2, null);
+                [$name, $installed] = array_pad(explode(':', $info, 2), 2, null);
                 if ($installed !== null) {
-                    list($version, $edition) = array_pad(explode(';', $installed, 2), 2, null);
+                    [$version, $edition] = array_pad(explode(';', $installed, 2), 2, null);
                 } else {
                     $version = null;
                     $edition = null;
@@ -331,7 +331,7 @@ abstract class BaseApiController extends Controller
 
             if ($pluginLicenseKeys !== null) {
                 foreach (explode(',', $pluginLicenseKeys) as $pluginLicenseInfo) {
-                    list($pluginHandle, $pluginLicenseKey) = explode(':', $pluginLicenseInfo);
+                    [$pluginHandle, $pluginLicenseKey] = explode(':', $pluginLicenseInfo);
                     try {
                         $pluginLicense = $pluginLicenseManager->getLicenseByKey($pluginLicenseKey, $pluginHandle, true);
                         // Ignore it if for a disabled edition
@@ -797,9 +797,9 @@ EOL;
 
             foreach ($plugin->getScreenshots() as $screenshot) {
                 $screenshotUrls[] = $screenshot->getUrl([
-                            'width' => 2200,
-                            'height' => 2200,
-                            'mode' => 'fit',
+                        'width' => 2200,
+                        'height' => 2200,
+                        'mode' => 'fit',
                     ]) . '?' . $screenshot->dateModified->getTimestamp();
 
                 $thumbnailUrls[] = $screenshot->getUrl([
@@ -871,7 +871,7 @@ EOL;
         } catch (\InvalidArgumentException $e) {
         }
 
-        list ($username, $password) = Craft::$app->getRequest()->getAuthCredentials();
+        [$username, $password] = Craft::$app->getRequest()->getAuthCredentials();
 
         if (!$username) {
             return null;

@@ -147,7 +147,7 @@ class Package extends Model
         $parsed = $this->repository ? parse_url($this->repository) : null;
 
         if (isset($parsed['host']) && $parsed['host'] === 'github.com') {
-            list($owner, $repo) = explode('/', trim($parsed['path'], '/'), 2);
+            [$owner, $repo] = explode('/', trim($parsed['path'], '/'), 2);
 
             // Create an authenticated GitHub API client
             $client = new GithubClient();

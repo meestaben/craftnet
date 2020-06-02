@@ -253,7 +253,7 @@ class JsonDumper extends Component
                                 'Quantity' => 1,
                                 'Items' => [$path]
                             ],
-                        'CallerReference' => 'craftnet-'.DateTimeHelper::currentTimeStamp()
+                        'CallerReference' => 'craftnet-' . DateTimeHelper::currentTimeStamp()
                     ]
                 ]
             );
@@ -280,7 +280,7 @@ class JsonDumper extends Component
 
         $client = Craft::createGuzzleClient();
         $config['http_handler'] = new GuzzleHandler($client);
-        $tokenKey = 'craftnet.'.md5($awsKeyId.$awsSecretKey);
+        $tokenKey = 'craftnet.' . md5($awsKeyId . $awsSecretKey);
 
         $credentials = new Credentials($awsKeyId, $awsSecretKey);
 
@@ -342,7 +342,6 @@ class JsonDumper extends Component
         try {
             // Write the new file
             FileHelper::writeToFile($path, $content);
-
         } catch (\Throwable $throwable) {
             Craft::error($throwable->getMessage(), __METHOD__);
         }

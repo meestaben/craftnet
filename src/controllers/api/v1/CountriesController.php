@@ -3,8 +3,6 @@
 namespace craftnet\controllers\api\v1;
 
 use Craft;
-use craft\commerce\models\Country;
-use craft\commerce\models\State;
 use craft\commerce\Plugin as Commerce;
 use craftnet\controllers\api\BaseApiController;
 use Moccalotto\Eu\CountryInfo;
