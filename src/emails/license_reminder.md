@@ -10,7 +10,7 @@
 {% from _self import showLicense %}
 {% set user = user ?? null %}
 
-Hey {{ user.firstName ?? 'there'}},
+Hey {{ user.friendlyName }},
 
 {% set hasManual = licenses.manual is defined %}
 {% set hasAuto = licenses.auto is defined %}
