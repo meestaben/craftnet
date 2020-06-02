@@ -1005,11 +1005,14 @@ class PackageManager extends Component
             // throw the exception later
         }
 
+        $totalAffected = 0;
+
         if ($acquiredLock) {
             if ($isConsole && !isset($exception)) {
                 Console::stdout('Releasing the lock ... ');
             }
 
+            /** @noinspection PhpUndefinedVariableInspection */
             $mutex->release(__METHOD__);
 
             if ($isConsole && !isset($exception)) {

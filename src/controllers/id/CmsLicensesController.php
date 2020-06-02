@@ -230,6 +230,7 @@ class CmsLicensesController extends BaseController
                     throw new Exception("Couldn't save license.");
                 }
 
+                /** @noinspection PhpUndefinedVariableInspection */
                 if ($domain !== null && $license->domain !== $oldDomain) {
                     $note = $license->domain ? "tied to domain {$license->domain}" : "untied from domain {$oldDomain}";
                     $manager->addHistory($license->id, "{$note} by {$user->email}");

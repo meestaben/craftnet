@@ -297,6 +297,7 @@ class FundsManager extends BaseObject
             $adjustment = $debit;
         } else {
             $adjustment = false;
+            $operator = null;
         }
 
         if ($adjustment !== false) {

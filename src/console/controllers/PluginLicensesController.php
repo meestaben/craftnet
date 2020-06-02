@@ -313,6 +313,7 @@ class PluginLicensesController extends Controller
 
             // Send the notification email
             if ($liteEdition->price != 0) {
+                /** @noinspection PhpUndefinedVariableInspection */
                 $owner = User::findOne($liteLicense->ownerId);
                 $editUrl = $liteLicense->getEditUrl();
             } else {
@@ -330,6 +331,7 @@ need to install the {$oldPlugin->name} plugin separately.
 
 EOD;
             if ($liteEdition->price != 0) {
+                /** @noinspection PhpUndefinedVariableInspection */
                 $body .= <<<EOD
 We’ve gone ahead and upgraded your {$plugin->name} license ([`{$liteLicense->shortKey}`]($editUrl)) to the new Pro
 edition, since you had a {$oldPlugin->name} license (`{$oldLicense->shortKey}`) tied to the same Craft project.

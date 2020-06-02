@@ -326,9 +326,10 @@ abstract class BaseApiController extends Controller
             }
 
             // collect the plugin licenses & their editions
+            $pluginLicenseManager = $this->module->getPluginLicenseManager();
             $pluginLicenseKeys = $this->checkCraftHeaders ? $requestHeaders->get('X-Craft-Plugin-Licenses') : null;
+
             if ($pluginLicenseKeys !== null) {
-                $pluginLicenseManager = $this->module->getPluginLicenseManager();
                 foreach (explode(',', $pluginLicenseKeys) as $pluginLicenseInfo) {
                     list($pluginHandle, $pluginLicenseKey) = explode(':', $pluginLicenseInfo);
                     try {
