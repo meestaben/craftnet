@@ -113,6 +113,7 @@ class StripeController extends BaseController
      */
     public function actionAccount(): Response
     {
+        /** @var User|UserBehavior $user */
         $user = Craft::$app->getUser()->getIdentity();
 
         if ($user->stripeAccessToken) {

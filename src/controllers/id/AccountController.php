@@ -33,6 +33,7 @@ class AccountController extends Controller
      */
     public function actionGetAccount(): Response
     {
+        /** @var User|UserBehavior $user */
         $user = Craft::$app->getUser()->getIdentity();
         $photo = $user->getPhoto();
         $photoUrl = $photo ? Craft::$app->getAssets()->getAssetUrl($photo, [

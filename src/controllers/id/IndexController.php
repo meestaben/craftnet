@@ -3,7 +3,9 @@
 namespace craftnet\controllers\id;
 
 use Craft;
+use craft\elements\User;
 use craft\web\Controller;
+use craftnet\developers\UserBehavior;
 use yii\web\Response;
 
 /**
@@ -27,6 +29,7 @@ class IndexController extends Controller
     public function actionIndex(): Response
     {
         $stripeAccessToken = null;
+        /** @var User|UserBehavior|null $user */
         $user = Craft::$app->getUser()->getIdentity();
 
         if ($user) {
