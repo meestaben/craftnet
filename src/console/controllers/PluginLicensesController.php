@@ -124,7 +124,7 @@ class PluginLicensesController extends Controller
         $license->expired = $license->expiresOn !== null ? $license->expiresOn->getTimestamp() < time() : false;
 
         if (!$this->module->getPluginLicenseManager()->saveLicense($license)) {
-            $this->stderr('Could not save license: ' . implode(', ', $license->getFirstErrors() . PHP_EOL), Console::FG_RED);
+            $this->stderr('Could not save license: ' . implode(', ', $license->getFirstErrors()) . PHP_EOL, Console::FG_RED);
             return 1;
         }
 

@@ -75,7 +75,7 @@ class CmsLicensesController extends Controller
             }
 
             if (!$this->module->getCmsLicenseManager()->saveLicense($license)) {
-                $this->stderr('Could not save license: ' . implode(', ', $license->getFirstErrors() . PHP_EOL), Console::FG_RED);
+                $this->stderr('Could not save license: ' . implode(', ', $license->getFirstErrors()) . PHP_EOL, Console::FG_RED);
                 return ExitCode::UNSPECIFIED_ERROR;
             }
 
@@ -175,7 +175,7 @@ class CmsLicensesController extends Controller
         $license->expired = $license->expiresOn !== null ? $license->expiresOn->getTimestamp() < time() : false;
 
         if (!$this->module->getCmsLicenseManager()->saveLicense($license)) {
-            $this->stderr('Could not save license: ' . implode(', ', $license->getFirstErrors() . PHP_EOL), Console::FG_RED);
+            $this->stderr('Could not save license: ' . implode(', ', $license->getFirstErrors()) . PHP_EOL, Console::FG_RED);
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
@@ -210,8 +210,7 @@ class CmsLicensesController extends Controller
                 ->all();
 
             if (empty($licenses)) {
-                $this->stderr('No Craft licenses exist with a key that starts with "' . $key . '".' . PHP_EOL, Console::FG_RED);
-                return ExitCode::UNSPECIFIED_ERROR;
+                throw new LicenseNotFoundException('No Craft licenses exist with a key that starts with "' . $key . '".');
             }
 
             $options = [];
