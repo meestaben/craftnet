@@ -69,6 +69,7 @@ return [
     'newism.rocks',
     'nextmp.net',
     'ngrok.com',
+    'ngrok.io',
     'nip.io',
     'nxcli.net',
     'ondev.co',
