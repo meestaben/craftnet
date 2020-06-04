@@ -32,6 +32,7 @@ return [
     'epwebsites.co.uk',
     'eyekillerdev.com',
     'fauna.org',
+    'fosterstaging.com',
     'fncdev.in.ua',
     'frb.io',
     'fusionarydev.com',
