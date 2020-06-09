@@ -257,6 +257,29 @@ class PluginLicenseManager extends Component
     }
 
     /**
+     * Returns licenses for a given plugin.
+     *
+     * @param int $pluginId
+     * @return PluginLicense[]
+     */
+    public function getLicensesByPlugin(int $pluginId): array
+    {
+        $query = $this->_createLicenseQuery()
+            ->innerJoin('craftnet_plugins p', '[[p.id]] = [[l.pluginId]]')
+            ->where(['l.pluginId' => $pluginId]);
+
+        $results = $query
+            ->orderBy(['l.dateCreated' => SORT_ASC])
+            ->all();
+        $licenses = [];
+        foreach ($results as $result) {
+            $licenses[] = new PluginLicense($result);
+        }
+
+        return $licenses;
+    }
+
+    /**
      * Returns any licenses that are due to expire in the next 14-30 days and haven't been reminded about that yet.
      *
      * @return PluginLicense[]

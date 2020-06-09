@@ -67,6 +67,7 @@ class Module extends \yii\base\Module
     const MESSAGE_KEY_DEVELOPER_SALE = 'developer_sale';
     const MESSAGE_KEY_LICENSE_REMINDER = 'license_reminder';
     const MESSAGE_KEY_LICENSE_NOTIFICATION = 'license_notification';
+    const MESSAGE_KEY_SECURITY_ALERT = 'security_alert';
 
     /**
      * @inheritdoc
@@ -137,6 +138,12 @@ class Module extends \yii\base\Module
                 'heading' => 'When licenses have expired/auto-renewed:',
                 'subject' => 'Important license info',
                 'body' => file_get_contents(__DIR__ . '/emails/license_notification.md'),
+            ]);
+            $e->messages[] = new SystemMessage([
+                'key' => self::MESSAGE_KEY_SECURITY_ALERT,
+                'heading' => 'When a critical update is available:',
+                'subject' => 'Critical {{ name }} update available',
+                'body' => file_get_contents(__DIR__ . '/emails/security_alert.md'),
             ]);
         });
 
