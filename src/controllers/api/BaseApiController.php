@@ -468,33 +468,33 @@ abstract class BaseApiController extends Controller
         // should we update our installed plugin records?
         if ($this->cmsVersion !== null && $cmsLicense !== null) {
             // delete any installedplugins rows where lastActivity > 30 days ago
-            $db->createCommand()
-                ->delete('craftnet_installedplugins', [
-                    'and',
-                    ['craftLicenseKey' => $cmsLicense->key],
-                    ['<', 'lastActivity', Db::prepareDateForDb(new \DateTime('-30 days'))],
-                ])
-                ->execute();
-
-            foreach ($this->plugins as $plugin) {
-                $db->createCommand()
-                    ->upsert('craftnet_installedplugins', [
-                        'craftLicenseKey' => $cmsLicense->key,
-                        'pluginId' => $plugin->id,
-                    ], [
-                        'lastActivity' => $timestamp,
-                    ], [], false)
-                    ->execute();
-
-                // Update the plugin's active installs count
-                $db->createCommand()
-                    ->update('craftnet_plugins', [
-                        'activeInstalls' => new Expression('(select count(*) from [[craftnet_installedplugins]] where [[pluginId]] = :pluginId)', ['pluginId' => $plugin->id]),
-                    ], [
-                        'id' => $plugin->id,
-                    ])
-                    ->execute();
-            }
+//            $db->createCommand()
+//                ->delete('craftnet_installedplugins', [
+//                    'and',
+//                    ['craftLicenseKey' => $cmsLicense->key],
+//                    ['<', 'lastActivity', Db::prepareDateForDb(new \DateTime('-30 days'))],
+//                ])
+//                ->execute();
+//
+//            foreach ($this->plugins as $plugin) {
+//                $db->createCommand()
+//                    ->upsert('craftnet_installedplugins', [
+//                        'craftLicenseKey' => $cmsLicense->key,
+//                        'pluginId' => $plugin->id,
+//                    ], [
+//                        'lastActivity' => $timestamp,
+//                    ], [], false)
+//                    ->execute();
+//
+//                // Update the plugin's active installs count
+//                $db->createCommand()
+//                    ->update('craftnet_plugins', [
+//                        'activeInstalls' => new Expression('(select count(*) from [[craftnet_installedplugins]] where [[pluginId]] = :pluginId)', ['pluginId' => $plugin->id]),
+//                    ], [
+//                        'id' => $plugin->id,
+//                    ])
+//                    ->execute();
+//            }
         }
 
         // log the request
