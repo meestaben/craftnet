@@ -8,6 +8,11 @@ use yii\web\Response;
 class OptionsController extends BaseApiController
 {
     /**
+     * @inheritdoc
+     */
+    public $checkCraftHeaders = false;
+
+    /**
      * Handles pre-flight OPTIONS requests.
      *
      * @return Response

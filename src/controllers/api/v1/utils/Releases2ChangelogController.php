@@ -15,8 +15,10 @@ use yii\web\Response;
  */
 class Releases2ChangelogController extends BaseApiController
 {
-    // Public Methods
-    // =========================================================================
+    /**
+     * @inheritdoc
+     */
+    public $checkCraftHeaders = false;
 
     /**
      * Converts a releases.json file contents into a Markdown changelog

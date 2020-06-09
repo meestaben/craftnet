@@ -13,6 +13,11 @@ use yii\web\NotFoundHttpException;
 class WebhookController extends BaseApiController
 {
     /**
+     * @inheritdoc
+     */
+    public $checkCraftHeaders = false;
+
+    /**
      * @throws NotFoundHttpException
      * @throws BadRequestHttpException
      */
