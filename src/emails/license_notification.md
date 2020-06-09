@@ -10,7 +10,7 @@
 {% from _self import showLicense %}
 {% set user = user ?? null %}
 
-Hey {{ user.friendlyName }},
+Hey {{ user.friendlyName ?? 'there' }},
 
 {% if renewedLicenses|length %}
 {% set pl = renewedLicenses|length != 1 %}
