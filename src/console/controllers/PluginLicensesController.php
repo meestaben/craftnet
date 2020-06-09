@@ -42,7 +42,7 @@ class PluginLicensesController extends Controller
         $license->pluginHandle = $this->prompt('Plugin:', [
             'required' => true,
             'validator' => function(string $input, string &$error = null) {
-                if (Plugin::find()->handle($input)->one() === null) {
+                if (!Plugin::find()->handle($input)->exists()) {
                     $error = 'No plugin exists with that handle.';
                     return false;
                 }
@@ -56,7 +56,7 @@ class PluginLicensesController extends Controller
         $license->edition = $this->prompt('Edition:', [
             'required' => true,
             'validator' => function(string $input, string &$error = null) use ($plugin) {
-                if (PluginEdition::find()->pluginId($plugin->id)->handle($input)->one() === null) {
+                if (!PluginEdition::find()->pluginId($plugin->id)->handle($input)->exists()) {
                     $validEditions = PluginEdition::find()->pluginId($plugin->id)->select(['craftnet_plugineditions.handle'])->column();
                     $error = 'Invalid edition handle. Valid options are: ' . implode(', ', $validEditions);
                     return false;
