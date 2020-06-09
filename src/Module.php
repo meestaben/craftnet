@@ -134,7 +134,7 @@ class Module extends \yii\base\Module
             ]);
             $e->messages[] = new SystemMessage([
                 'key' => self::MESSAGE_KEY_LICENSE_NOTIFICATION,
-                'heading' => 'When licenses have expired/auto-renewed::',
+                'heading' => 'When licenses have expired/auto-renewed:',
                 'subject' => 'Important license info',
                 'body' => file_get_contents(__DIR__ . '/emails/license_notification.md'),
             ]);
