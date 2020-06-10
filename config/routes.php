@@ -19,6 +19,8 @@
  */
 
 return [
+    'queue/handle-message' => 'craftnet/queue/handle-message',
+
     'api' => [
         'OPTIONS <uri:.*>' => 'craftnet/api/options',
         'GET     v1/account' => 'craftnet/api/v1/account',

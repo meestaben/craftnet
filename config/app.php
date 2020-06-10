@@ -106,12 +106,11 @@ return [
                 'class' => \yii\redis\Mutex::class,
             ],
             'queue' => [
-                'class' => pixelandtonic\yii\queue\sqs\Queue::class,
+                'class' => \yii\queue\sqs\Queue::class,
                 'url' => getenv('SQS_URL'),
-                'client' => [
-                    'region' => getenv('REGION'),
-                    'version' => '2012-11-05',
-                ]
+                'key' => getenv('AWS_ACCESS_KEY_ID'),
+                'secret' => getenv('AWS_SECRET_ACCESS_KEY'),
+                'region' => getenv('REGION'),
             ],
             'partnerQueue' => [
                 'class' => \yii\queue\sqs\Queue::class,

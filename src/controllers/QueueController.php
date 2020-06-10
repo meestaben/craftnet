@@ -5,26 +5,41 @@
  * @license   MIT
  */
 
-namespace pixelandtonic\yii\queue\sqs;
+namespace craftnet\controllers;
 
+use yii\di\Instance;
+use yii\queue\sqs\Queue;
 use yii\web\Controller;
+use yii\web\ServerErrorHttpException;
 
 /**
  * Manages the SQS queue
  *
  * @author Pixel & Tonic, Inc. <support@pixelandtonic.com>
  */
-class WebController extends Controller
+class QueueController extends Controller
 {
     /**
-     * @var Queue
+     * @var Queue|array|string
      */
-    public $queue;
+    public $queue = 'queue';
 
     public $enableCsrfValidation = false;
 
     /**
+     * @inheritdoc
+     */
+    public function init()
+    {
+        parent::init();
+
+        $this->queue = Instance::ensure($this->queue, Queue::class);
+    }
+
+    /**
      * Handles an incoming SQS message.
+     *
+     * @throws ServerErrorHttpException
      */
     public function actionHandleMessage()
     {
@@ -36,16 +51,8 @@ class WebController extends Controller
         $attempt = $headers->get('X-Aws-Sqsd-Receive-Count');
         $message = $request->getRawBody();
 
-        $this->queue->handle($id, $message, $ttr, $attempt);
-    }
-
-    /**
-     * Runs new SQS jobs as they show up.
-     *
-     * @param int $delay
-     */
-    public function actionListen($delay = 3)
-    {
-        $this->queue->listen($delay);
+        if (!$this->queue->handle($id, $message, $ttr, $attempt)) {
+            throw new ServerErrorHttpException('Unable to handle the queue message');
+        }
     }
 }
