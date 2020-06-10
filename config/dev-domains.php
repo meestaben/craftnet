@@ -1,6 +1,7 @@
 <?php
 
 return [
+    '288dev.com',
     'aanpqa.com',
     'ai-qa.com',
     'azure.com',
@@ -31,6 +32,7 @@ return [
     'epwebsites.co.uk',
     'eyekillerdev.com',
     'fauna.org',
+    'fosterstaging.com',
     'fncdev.in.ua',
     'frb.io',
     'fusionarydev.com',
@@ -44,6 +46,7 @@ return [
     'hyperlane.co',
     'infomedia-dev.com',
     'isted.dev',
+    'joshbutts.dev',
     'lewisjenkins.dev',
     'lndo.site',
     'madebymasuga.com',
@@ -67,6 +70,7 @@ return [
     'newism.rocks',
     'nextmp.net',
     'ngrok.com',
+    'ngrok.io',
     'nip.io',
     'nxcli.net',
     'ondev.co',

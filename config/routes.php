@@ -38,6 +38,7 @@ return [
         'POST    v1/partners' => 'craftnet/api/v1/partners/list',
         'POST    v1/partners/<id:\d+>' => 'craftnet/api/v1/partners/get',
         'POST    v1/payments' => 'craftnet/api/v1/payments/pay',
+        'GET     v1/ping' => 'craftnet/api/v1/utils/ping',
         'GET     v1/plugin-licenses' => 'craftnet/api/v1/plugin-licenses/list',
         'POST    v1/plugin-licenses' => 'craftnet/api/v1/plugin-licenses/create',
         'GET     v1/plugin-licenses/<key:.*>' => 'craftnet/api/v1/plugin-licenses/get',
