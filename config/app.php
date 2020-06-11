@@ -9,6 +9,7 @@ return [
             'craftnet',
             'oauth-server',
             'queue',
+            'dlq',
         ],
         'modules' => [
             'craftnet' => [
@@ -108,6 +109,13 @@ return [
             'queue' => [
                 'class' => \yii\queue\sqs\Queue::class,
                 'url' => getenv('SQS_URL'),
+                'key' => getenv('AWS_ACCESS_KEY_ID'),
+                'secret' => getenv('AWS_SECRET_ACCESS_KEY'),
+                'region' => getenv('REGION'),
+            ],
+            'dlq' => [
+                'class' => \yii\queue\sqs\Queue::class,
+                'url' => getenv('SQS_DEAD_LETTER_URL'),
                 'key' => getenv('AWS_ACCESS_KEY_ID'),
                 'secret' => getenv('AWS_SECRET_ACCESS_KEY'),
                 'region' => getenv('REGION'),
