@@ -79,7 +79,7 @@ class PluginLicensesController extends Controller
         $perPage = Craft::$app->getRequest()->getParam('per_page', 10);
         $page = (int)Craft::$app->getRequest()->getParam('page', 1);
         $orderBy = Craft::$app->getRequest()->getParam('orderBy');
-        $ascending = Craft::$app->getRequest()->getParam('ascending');
+        $ascending = (bool)Craft::$app->getRequest()->getParam('ascending');
 
         try {
             $licenses = Module::getInstance()->getPluginLicenseManager()->getLicensesByOwner($user, $filter, $perPage, $page, $orderBy, $ascending);
