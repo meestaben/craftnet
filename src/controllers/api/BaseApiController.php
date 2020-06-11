@@ -479,9 +479,13 @@ abstract class BaseApiController extends Controller
             foreach ($this->plugins as $plugin) {
                 $licensePluginsData[] = [$cmsLicense->id, $plugin->id, $timestamp];
             }
-            $db->createCommand()
-                ->batchInsert('craftnet_cmslicense_plugins', ['licenseId', 'pluginId', 'timestamp'], $licensePluginsData, false)
-                ->execute();
+            try {
+                $db->createCommand()
+                    ->batchInsert('craftnet_cmslicense_plugins', ['licenseId', 'pluginId', 'timestamp'], $licensePluginsData, false)
+                    ->execute();
+            } catch (\Throwable $e) {
+                // don't let that ruin our day
+            }
         }
 
         // log the request
