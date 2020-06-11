@@ -9,7 +9,6 @@ return [
             'craftnet',
             'oauth-server',
             'queue',
-            'dlq',
         ],
         'modules' => [
             'craftnet' => [
@@ -88,6 +87,9 @@ return [
         ],
     ],
     'prod' => [
+        'bootstrap' => [
+            'dlq',
+        ],
         'components' => [
             'redis' => [
                 'class' => yii\redis\Connection::class,
