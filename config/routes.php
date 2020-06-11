@@ -19,8 +19,6 @@
  */
 
 return [
-    'queue/handle-message' => 'craftnet/queue/handle-message',
-
     'api' => [
         'OPTIONS <uri:.*>' => 'craftnet/api/options',
         'GET     v1/account' => 'craftnet/api/v1/account',
@@ -66,7 +64,7 @@ return [
         'POST    zendesk/test' => 'craftnet/api/zendesk/test',
     ],
     'craftId' => [
-        'POST    queue/handle-message' => 'queue/handle-message',
+        'POST    queue/handle-message' => 'craftnet/queue/handle-message',
 
         'GET     v1/id' => 'craftnet/id/v1/id',
         'GET     craft-id/countries' => 'craftnet/id/craft-id/countries',
