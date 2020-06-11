@@ -18,3 +18,7 @@ $schedule->command('craftnet/licenses/process-expired-licenses')
 $schedule->command('craftnet/packages/update-deps --queue')
     ->daily()
     ->withoutOverlapping();
+
+$schedule->command('craftnet/plugins/update-install-counts')
+    ->daily()
+    ->withoutOverlapping();
