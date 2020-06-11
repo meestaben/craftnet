@@ -28,7 +28,7 @@ class ValidationException extends BadRequestHttpException
             $message = 'Validation Error';
         }
 
-        parent::__construct($message, $code, $previous instanceof \Exception ? $previous : new \Exception($previous->getMessage()));
+        parent::__construct($message, $code, $previous instanceof \Exception ? $previous : null);
     }
 
     /**
