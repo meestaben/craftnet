@@ -483,7 +483,7 @@ abstract class BaseApiController extends Controller
                 $db->createCommand()
                     ->batchInsert('craftnet_cmslicense_plugins', ['licenseId', 'pluginId', 'timestamp'], $licensePluginsData, false)
                     ->execute();
-            } catch (\Throwable $e) {
+            } catch (\Throwable $exception) {
                 // don't let that ruin our day
             }
         }
