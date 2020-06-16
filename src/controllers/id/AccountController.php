@@ -13,7 +13,7 @@ use craft\helpers\FileHelper;
 use craft\helpers\Json;
 use craft\web\Controller;
 use craft\web\UploadedFile;
-use craftnet\developers\UserBehavior;
+use craftnet\behaviors\UserBehavior;
 use Throwable;
 use yii\base\UserException;
 use yii\web\BadRequestHttpException;

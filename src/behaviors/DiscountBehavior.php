@@ -1,6 +1,6 @@
 <?php
 
-namespace craftnet\discounts;
+namespace craftnet\behaviors;
 
 use craft\commerce\models\Discount;
 use craftnet\cms\CmsEdition;

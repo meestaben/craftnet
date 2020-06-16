@@ -8,6 +8,7 @@ use craft\db\Query;
 use craft\elements\User;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Db;
+use craftnet\behaviors\UserBehavior;
 use craftnet\errors\InaccessibleFundsException;
 use craftnet\errors\InsufficientFundsException;
 use craftnet\errors\MissingStripeAccountException;

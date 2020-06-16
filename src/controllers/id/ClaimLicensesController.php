@@ -6,7 +6,7 @@ use Craft;
 use craft\elements\User;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
-use craftnet\developers\UserBehavior;
+use craftnet\behaviors\UserBehavior;
 use yii\base\InvalidArgumentException;
 use yii\web\BadRequestHttpException;
 use yii\web\NotFoundHttpException;

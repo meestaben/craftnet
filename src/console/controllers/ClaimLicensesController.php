@@ -6,7 +6,7 @@ use Craft;
 use craft\commerce\Plugin as Commerce;
 use craft\elements\User;
 use craft\helpers\ArrayHelper;
-use craftnet\developers\UserBehavior;
+use craftnet\behaviors\UserBehavior;
 use craftnet\Module;
 use yii\console\Controller;
 use yii\db\Query;

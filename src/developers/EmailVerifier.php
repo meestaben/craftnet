@@ -10,6 +10,7 @@ use craft\helpers\DateTimeHelper;
 use craft\helpers\Db;
 use craft\helpers\Template;
 use craft\helpers\UrlHelper;
+use craftnet\behaviors\UserBehavior;
 use craftnet\Module;
 use yii\base\BaseObject;
 use yii\base\InvalidArgumentException;

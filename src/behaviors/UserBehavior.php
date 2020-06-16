@@ -1,10 +1,12 @@
 <?php
 
-namespace craftnet\developers;
+namespace craftnet\behaviors;
 
 use Craft;
 use craft\base\Element;
 use craft\elements\User;
+use craftnet\developers\EmailVerifier;
+use craftnet\developers\FundsManager;
 use craftnet\helpers\KeyHelper;
 use craftnet\partners\Partner;
 use craftnet\plugins\Plugin;

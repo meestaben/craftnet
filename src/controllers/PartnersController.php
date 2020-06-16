@@ -6,7 +6,7 @@ use Craft;
 use craft\base\Element;
 use craft\elements\User;
 use craft\web\Controller;
-use craftnet\developers\UserBehavior;
+use craftnet\behaviors\UserBehavior;
 use craftnet\Module;
 use craftnet\partners\Partner;
 use craftnet\partners\PartnerAsset;

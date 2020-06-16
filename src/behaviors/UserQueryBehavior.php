@@ -1,6 +1,6 @@
 <?php
 
-namespace craftnet\developers;
+namespace craftnet\behaviors;
 
 use craft\elements\db\ElementQuery;
 use craft\elements\db\UserQuery;

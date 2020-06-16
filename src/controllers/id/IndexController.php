@@ -5,7 +5,7 @@ namespace craftnet\controllers\id;
 use Craft;
 use craft\elements\User;
 use craft\web\Controller;
-use craftnet\developers\UserBehavior;
+use craftnet\behaviors\UserBehavior;
 use yii\web\Response;
 
 /**

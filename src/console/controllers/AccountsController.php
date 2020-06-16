@@ -7,7 +7,7 @@ use craft\commerce\elements\Order;
 use craft\commerce\Plugin as Commerce;
 use craft\elements\User;
 use craft\i18n\Formatter;
-use craftnet\developers\UserBehavior;
+use craftnet\behaviors\UserBehavior;
 use craftnet\Module;
 use craftnet\plugins\Plugin;
 use yii\console\Controller;

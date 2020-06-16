@@ -1,6 +1,6 @@
 <?php
 
-namespace craftnet\orders;
+namespace craftnet\behaviors;
 
 use Craft;
 use craft\commerce\elements\Order;
@@ -8,8 +8,8 @@ use craft\commerce\records\Transaction as TransactionRecord;
 use craft\elements\User;
 use craft\helpers\StringHelper;
 use craftnet\cms\CmsLicense;
-use craftnet\developers\UserBehavior;
 use craftnet\Module;
+use craftnet\orders\PdfRenderer;
 use craftnet\plugins\PluginLicense;
 use craftnet\plugins\PluginPurchasable;
 use Stripe\PaymentIntent;

@@ -8,7 +8,7 @@ use craft\commerce\Plugin as Commerce;
 use craft\commerce\stripe\gateways\PaymentIntents;
 use craft\elements\User;
 use craft\helpers\UrlHelper;
-use craftnet\developers\UserBehavior;
+use craftnet\behaviors\UserBehavior;
 use League\OAuth2\Client\Token\AccessToken;
 use Stripe\Account;
 use Stripe\Stripe;

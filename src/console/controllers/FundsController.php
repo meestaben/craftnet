@@ -6,7 +6,7 @@ use Craft;
 use craft\db\Query;
 use craft\elements\User;
 use craft\i18n\Locale;
-use craftnet\developers\UserBehavior;
+use craftnet\behaviors\UserBehavior;
 use craftnet\Module;
 use yii\console\Controller;
 use yii\console\ExitCode;
