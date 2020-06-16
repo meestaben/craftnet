@@ -30,7 +30,7 @@ class PartnerService
     }
 
     /**
-     * @param array|PartnerProject[] $projects
+     * @param PartnerProject[] $projects
      */
     public function eagerLoadProjectScreenshots(&$projects)
     {
@@ -38,24 +38,21 @@ class PartnerService
             return;
         }
 
-        $screenshots = (new PartnerProjectScreenshotsQuery())
-            ->project($projects)
+        $screenshots = Asset::find()
+            ->addSelect(['pps.projectId'])
+            ->innerJoin(['pps' => 'craftnet_partnerprojectscreenshots'], '[[pps.assetId]] = [[elements.id]]')
+            ->andWhere(['pps.projectId' => ArrayHelper::getColumn($projects, 'id')])
+            ->orderBy(['pps.sortOrder' => SORT_ASC])
             ->all();
 
         if (!$screenshots) {
             return;
         }
 
-        $assetsByProjectId = [];
+        $assetsByProjectId = ArrayHelper::index($screenshots, null, ['projectId']);
 
-        foreach ($screenshots as $screenshot) {
-            $projectId = $screenshot['projectId'];
-            unset($screenshot['projectId']);
-            $assetsByProjectId[$projectId][] = new Asset($screenshot);
-        }
-
-        foreach ($projects as &$project) {
-            if (array_key_exists($project->id, $assetsByProjectId)) {
+        foreach ($projects as $project) {
+            if (isset($assetsByProjectId[$project->id])) {
                 $project->screenshots = $assetsByProjectId[$project->id];
             }
         }

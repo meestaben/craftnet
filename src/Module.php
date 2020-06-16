@@ -79,6 +79,9 @@ class Module extends \yii\base\Module
         Craft::setAlias('@craftnet', __DIR__);
 
         // define custom behaviors
+        Event::on(Asset::class, Asset::EVENT_DEFINE_BEHAVIORS, function(DefineBehaviorsEvent $e) {
+            $e->behaviors['cn.asset'] = AssetBehavior::class;
+        });
         Event::on(UserQuery::class, UserQuery::EVENT_DEFINE_BEHAVIORS, function(DefineBehaviorsEvent $e) {
             $e->behaviors['cn.userQuery'] = UserQueryBehavior::class;
         });
