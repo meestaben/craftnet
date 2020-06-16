@@ -691,7 +691,7 @@ class Partner extends Element
     /**
      * @return array
      */
-    public function getProjects()
+    public function getProjects(): array
     {
         // New Partner instance
         if ($this->id === null) {

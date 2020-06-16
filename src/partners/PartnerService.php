@@ -32,7 +32,7 @@ class PartnerService
     /**
      * @param PartnerProject[] $projects
      */
-    public function eagerLoadProjectScreenshots(&$projects)
+    public function eagerLoadProjectScreenshots(array $projects)
     {
         if (!$projects) {
             return;
