@@ -26,7 +26,8 @@
     "craftcms/postmark": "^2.0",
     "omnilight/yii2-scheduling": "^1.1",
     "zendesk/zendesk_api_client_php": "^2.2",
-    "yiisoft/yii2-shell": "^2.0"
+    "yiisoft/yii2-shell": "^2.0",
+    "enupal/backup": "^1.4"
   },
   "require-dev": {
     "vlucas/phpdotenv": "^2.4.0"
