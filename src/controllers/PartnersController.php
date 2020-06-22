@@ -332,7 +332,7 @@ class PartnersController extends Controller
     public function actionFetchHistory($partnerId)
     {
         $history = PartnerHistory::findByPartnerId($partnerId);
-        return $this->asJson(compact('history', 'parnerId'));
+        return $this->asJson(compact('history', 'partnerId'));
     }
 
     public function actionSaveHistory()
