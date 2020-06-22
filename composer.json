@@ -35,8 +35,7 @@
   "autoload": {
     "psr-4": {
       "craftnet\\": "src/",
-      "craftcom\\": "craftcom/",
-      "pixelandtonic\\yii\\queue\\sqs\\": "yii2-queue-sqs/"
+      "craftcom\\": "craftcom/"
     }
   },
   "config": {
