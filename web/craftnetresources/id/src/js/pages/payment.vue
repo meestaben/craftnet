@@ -31,9 +31,9 @@
                     </div>
                     <div class="md:w-1/2 px-8 border-l">
                         <h2>Billing Info</h2>
-                        <billing-infos
+                        <billing-info
                                 :billingInfo.sync="billingInfo"
-                                :errors="errors"></billing-infos>
+                                :errors="errors"></billing-info>
                     </div>
                 </div>
 
@@ -53,7 +53,7 @@
     import {mapState, mapGetters, mapActions} from 'vuex'
     import PaymentMethod from '../components/payment/PaymentMethod'
     import CouponCode from '../components/payment/CouponCode'
-    import BillingInfos from '../components/payment/BillingInfos'
+    import BillingInfo from '../components/payment/BillingInfo'
 
     export default {
         data() {
@@ -85,7 +85,7 @@
         components: {
             PaymentMethod,
             CouponCode,
-            BillingInfos,
+            BillingInfo,
         },
 
         computed: {
@@ -138,7 +138,7 @@
 
                                 this.errors = errors
 
-                                this.$store.dispatch('app/displayError', 'Couldn’t save billing infos.')
+                                this.$store.dispatch('app/displayError', 'Couldn’t save billing info.')
                                 this.payLoading = false
                             })
                     })
