@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b15dc650092000d3b0eadc729a4653f6",
+    "content-hash": "3ac2f47d306b375bb2aa63f415303b99",
     "packages": [
         {
             "name": "adam-paterson/oauth2-stripe",
@@ -6928,63 +6928,6 @@
                 "urlify"
             ],
             "time": "2019-09-03T19:11:20+00:00"
-        },
-        {
-            "name": "weareferal/remote-backup",
-            "version": "1.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/weareferal/craft-remote-backup.git",
-                "reference": "b8f032a3c08ff864be1485e2d1ae6a2818436f0f"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/weareferal/craft-remote-backup/zipball/b8f032a3c08ff864be1485e2d1ae6a2818436f0f",
-                "reference": "b8f032a3c08ff864be1485e2d1ae6a2818436f0f",
-                "shasum": ""
-            },
-            "require": {
-                "craftcms/cms": "^3.0.0-RC1"
-            },
-            "suggest": {
-                "aws/aws-sdk-php": "Required for AWS usage",
-                "gliterd/backblaze-b2": "Required for Backblaze usage",
-                "google/apiclient": "Required for Google Drive usage",
-                "kunalvarma05/dropbox-php-sdk": "Required for Dropbox usage"
-            },
-            "type": "craft-plugin",
-            "extra": {
-                "name": "Remote Backup",
-                "handle": "remote-backup",
-                "hasCpSettings": true,
-                "hasCpSection": false,
-                "changelogUrl": "https://raw.githubusercontent.com/weareferal/craft-remote-backup/master/CHANGELOG.md",
-                "class": "weareferal\\remotebackup\\RemoteBackup"
-            },
-            "autoload": {
-                "psr-4": {
-                    "weareferal\\remotebackup\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "proprietary"
-            ],
-            "authors": [
-                {
-                    "name": "Timmy O'Mahony",
-                    "homepage": "https://weareferal.com"
-                }
-            ],
-            "description": "Backup your database and assets to a remote location",
-            "keywords": [
-                "Craft",
-                "backup",
-                "cms",
-                "craft-plugin",
-                "craftcms"
-            ],
-            "time": "2020-05-18T13:17:25+00:00"
         },
         {
             "name": "webmozart/assert",
