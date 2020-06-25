@@ -68,7 +68,7 @@
                         <div class="flex">
                             <div class="mr-6">
                                 <field>
-                                    <img :src="pluginDraft.iconUrl" height="80" />
+                                    <img :src="pluginDraft.iconUrl" class="w-16 h-16" />
                                 </field>
                             </div>
                             <div class="flex-1">
