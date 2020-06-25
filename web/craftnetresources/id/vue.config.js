@@ -17,7 +17,7 @@ module.exports = {
         public: process.env.VUE_APP_PUBLIC_PATH,
         watchContentBase: true,
         watchOptions: {
-            poll: 1,
+            poll: 1000,
             ignored: /node_modules/,
         }
     },
