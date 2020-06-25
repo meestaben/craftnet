@@ -63,16 +63,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.142.6",
+            "version": "3.143.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "09a2e1ef4e684c9636d27029e1b163d90c4c166a"
+                "reference": "95787e2fa023738835bc2dfceef46b8ccbcdb4ad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/09a2e1ef4e684c9636d27029e1b163d90c4c166a",
-                "reference": "09a2e1ef4e684c9636d27029e1b163d90c4c166a",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/95787e2fa023738835bc2dfceef46b8ccbcdb4ad",
+                "reference": "95787e2fa023738835bc2dfceef46b8ccbcdb4ad",
                 "shasum": ""
             },
             "require": {
@@ -144,7 +144,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2020-06-19T18:20:04+00:00"
+            "time": "2020-06-25T18:46:20+00:00"
         },
         {
             "name": "cebe/markdown",
@@ -564,16 +564,16 @@
         },
         {
             "name": "craftcms/cms",
-            "version": "3.4.24",
+            "version": "3.4.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/craftcms/cms.git",
-                "reference": "a85014a2aa5ea538a9054b360ec257b9e663ac87"
+                "reference": "b5fdef81023c831ddd4f2d7de6063b4f64d1a020"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/craftcms/cms/zipball/a85014a2aa5ea538a9054b360ec257b9e663ac87",
-                "reference": "a85014a2aa5ea538a9054b360ec257b9e663ac87",
+                "url": "https://api.github.com/repos/craftcms/cms/zipball/b5fdef81023c831ddd4f2d7de6063b4f64d1a020",
+                "reference": "b5fdef81023c831ddd4f2d7de6063b4f64d1a020",
                 "shasum": ""
             },
             "require": {
@@ -658,20 +658,20 @@
                 "craftcms",
                 "yii2"
             ],
-            "time": "2020-06-16T19:34:38+00:00"
+            "time": "2020-06-23T23:04:43+00:00"
         },
         {
             "name": "craftcms/commerce",
-            "version": "3.1.9",
+            "version": "3.1.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/craftcms/commerce.git",
-                "reference": "06dcec2ddd364176071fcb9afb777f42a5db06a1"
+                "reference": "9a63e800d80f7ebf89b3d919fdbe38f04df43518"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/craftcms/commerce/zipball/06dcec2ddd364176071fcb9afb777f42a5db06a1",
-                "reference": "06dcec2ddd364176071fcb9afb777f42a5db06a1",
+                "url": "https://api.github.com/repos/craftcms/commerce/zipball/9a63e800d80f7ebf89b3d919fdbe38f04df43518",
+                "reference": "9a63e800d80f7ebf89b3d919fdbe38f04df43518",
                 "shasum": ""
             },
             "require": {
@@ -697,7 +697,7 @@
                 "name": "Craft Commerce",
                 "description": "Create beautifully bespoke ecommerce experiences",
                 "developer": "Pixel & Tonic",
-                "documentationUrl": "https://docs.craftcms.com/commerce/v2/"
+                "documentationUrl": "https://docs.craftcms.com/commerce/v3/"
             },
             "autoload": {
                 "psr-4": {
@@ -717,7 +717,7 @@
                 "craftcms",
                 "yii2"
             ],
-            "time": "2020-06-17T18:10:43+00:00"
+            "time": "2020-06-24T01:54:13+00:00"
         },
         {
             "name": "craftcms/commerce-stripe",
@@ -1500,16 +1500,16 @@
         },
         {
             "name": "enupal/backup",
-            "version": "1.4.0",
+            "version": "1.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/enupal/backup.git",
-                "reference": "c559b654a0789ce4bc08b0eb61d9053de09365e0"
+                "reference": "eb3cfa408c5461d8fbb2e01cae4d513b1c67c4f1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/enupal/backup/zipball/c559b654a0789ce4bc08b0eb61d9053de09365e0",
-                "reference": "c559b654a0789ce4bc08b0eb61d9053de09365e0",
+                "url": "https://api.github.com/repos/enupal/backup/zipball/eb3cfa408c5461d8fbb2e01cae4d513b1c67c4f1",
+                "reference": "eb3cfa408c5461d8fbb2e01cae4d513b1c67c4f1",
                 "shasum": ""
             },
             "require": {
@@ -1554,7 +1554,7 @@
                 "schedule",
                 "sftp"
             ],
-            "time": "2020-03-24T22:14:36+00:00"
+            "time": "2020-06-24T19:49:23+00:00"
         },
         {
             "name": "ezyang/htmlpurifier",
@@ -3641,16 +3641,16 @@
         },
         {
             "name": "nystudio107/craft-twigpack",
-            "version": "1.2.2",
+            "version": "1.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nystudio107/craft-twigpack.git",
-                "reference": "e51e7fd6645d08ca69f3087205b078bdcca7288d"
+                "reference": "f6b6a929621db6cc0e80fd77eb43317f2c87934d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nystudio107/craft-twigpack/zipball/e51e7fd6645d08ca69f3087205b078bdcca7288d",
-                "reference": "e51e7fd6645d08ca69f3087205b078bdcca7288d",
+                "url": "https://api.github.com/repos/nystudio107/craft-twigpack/zipball/f6b6a929621db6cc0e80fd77eb43317f2c87934d",
+                "reference": "f6b6a929621db6cc0e80fd77eb43317f2c87934d",
                 "shasum": ""
             },
             "require": {
@@ -3693,7 +3693,7 @@
                 "webpack",
                 "webpack-dev-server"
             ],
-            "time": "2020-05-26T03:48:38+00:00"
+            "time": "2020-06-24T17:16:55+00:00"
         },
         {
             "name": "omnilight/yii2-scheduling",
@@ -5390,16 +5390,16 @@
         },
         {
             "name": "stripe/stripe-php",
-            "version": "v7.37.1",
+            "version": "v7.38.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stripe/stripe-php.git",
-                "reference": "e3e29131a131785c3d2f85556b0154e8170e9bba"
+                "reference": "65264cace7787083f6c3026d543fa002cc17e2af"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/e3e29131a131785c3d2f85556b0154e8170e9bba",
-                "reference": "e3e29131a131785c3d2f85556b0154e8170e9bba",
+                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/65264cace7787083f6c3026d543fa002cc17e2af",
+                "reference": "65264cace7787083f6c3026d543fa002cc17e2af",
                 "shasum": ""
             },
             "require": {
@@ -5443,7 +5443,7 @@
                 "payment processing",
                 "stripe"
             ],
-            "time": "2020-06-11T16:27:35+00:00"
+            "time": "2020-06-25T04:38:46+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -7568,16 +7568,16 @@
         },
         {
             "name": "yiisoft/yii2-composer",
-            "version": "2.0.9",
+            "version": "2.0.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/yii2-composer.git",
-                "reference": "d191176c4f8372e397a9e3df27360dca6a70efaa"
+                "reference": "94bb3f66e779e2774f8776d6e1bdeab402940510"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii2-composer/zipball/d191176c4f8372e397a9e3df27360dca6a70efaa",
-                "reference": "d191176c4f8372e397a9e3df27360dca6a70efaa",
+                "url": "https://api.github.com/repos/yiisoft/yii2-composer/zipball/94bb3f66e779e2774f8776d6e1bdeab402940510",
+                "reference": "94bb3f66e779e2774f8776d6e1bdeab402940510",
                 "shasum": ""
             },
             "require": {
@@ -7619,7 +7619,7 @@
                 "extension installer",
                 "yii2"
             ],
-            "time": "2020-04-20T18:47:46+00:00"
+            "time": "2020-06-24T00:04:01+00:00"
         },
         {
             "name": "yiisoft/yii2-debug",
