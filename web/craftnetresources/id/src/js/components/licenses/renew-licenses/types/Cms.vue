@@ -2,8 +2,6 @@
     <div>
         <dropdown :value="renew" @input="onRenewChange" :options="renewOptions" />
 
-        <p>Do you want to renew plugin licenses as well?</p>
-
         <table class="table mb-2">
             <thead>
             <tr>
@@ -56,6 +54,7 @@
                 checkAllChecked: false,
                 renew: 0,
                 checkedLicenses: [],
+                checkedLicensesAssoc: {},
             }
         },
 
@@ -82,6 +81,10 @@
 
                     // cms amount
                     let currentAmount = renewalOption.amount
+
+                    if (!this.license.expirable) {
+                        currentAmount = 0
+                    }
 
                     // plugin amounts
                     this.renewableLicenses.forEach((renewableLicense, j) => {
@@ -153,12 +156,27 @@
             onRenewChange($event) {
                 this.renew = $event
 
-                let checkedLicenses = JSON.parse(JSON.stringify(this.checkedLicenses))
-                checkedLicenses.splice(this.renewableLicenses.length)
+                let checkedLicenses = []
+                let checkedLicensesAssoc = {}
+
+                this.renewableLicenses.forEach(function(renewableLicense, key) {
+                    let value = 0
+
+                    if (this.checkedLicensesAssoc[renewableLicense.type + '-' + renewableLicense.key] === 1) {
+                        value = 1
+                    }
+
+                    checkedLicenses[key] = value
+
+                    checkedLicensesAssoc[renewableLicense.type + '-' + renewableLicense.key] = value
+                }.bind(this))
+
                 this.checkedLicenses = checkedLicenses
+                this.checkedLicensesAssoc = checkedLicensesAssoc
+                this.checkAllChecked = true
 
                 this.$nextTick(() => {
-                    if (checkedLicenses.length < this.renewableLicenses.length) {
+                    if (checkedLicenses.find(value => value === 0) !== undefined) {
                         this.checkAllChecked = false
                     }
                 })
@@ -167,6 +185,16 @@
             checkLicense($event, key) {
                 let checkedLicenses = JSON.parse(JSON.stringify(this.checkedLicenses))
                 checkedLicenses[key] = $event.target.checked ? 1 : 0
+
+                this.renewableLicenses.forEach(function(renewableLicense, key) {
+                    let value = 0
+
+                    if (checkedLicenses[key] === 1) {
+                        value = 1
+                    }
+
+                    this.checkedLicensesAssoc[renewableLicense.type + '-' + renewableLicense.key] = value
+                }.bind(this))
 
                 const allChecked = checkedLicenses.find(license => license === 0)
 
@@ -179,18 +207,24 @@
                 this.checkedLicenses = checkedLicenses
             },
 
+
             checkAll($event) {
                 let checkedLicenses = []
+                this.checkedLicensesAssoc = {}
 
-                if ($event.target.checked) {
-                    this.renewableLicenses.forEach(function(renewableLicense, key) {
-                        checkedLicenses[key] = 1
-                    }.bind(this))
-                } else {
-                    if (!$event.target.disabled) {
-                        checkedLicenses[0] = this.checkedLicenses[0]
+                this.renewableLicenses.forEach(function(renewableLicense, key) {
+                    let value = null
+
+                    if (renewableLicense.type === 'cms-renewal') {
+                        value = 1
+                    } else {
+                        value = $event.target.checked ? 1 : 0
                     }
-                }
+
+                    checkedLicenses[key] = value
+
+                    this.checkedLicensesAssoc[renewableLicense.type + '-' + renewableLicense.key] = value
+                }.bind(this))
 
                 this.checkedLicenses = checkedLicenses
             },

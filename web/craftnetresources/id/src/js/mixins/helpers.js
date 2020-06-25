@@ -116,17 +116,19 @@ export default {
             const renewalOption = renewalOptions[renew]
             const expiryDate = renewalOption.expiryDate
 
-            renewableLicenses.push({
-                type: 'cms-renewal',
-                key: license.key,
-                description: 'Craft ' + license.editionDetails.name,
-                renew: renew,
-                expiryDate: expiryDate,
-                expiresOn: license.expiresOn,
-                edition: license.editionDetails,
-                alreadyInCart: this.licenseKeyAlreadyInCart(license.key, cartItems),
-                amount: renewalOption.amount
-            })
+            if (license.expirable) {
+                renewableLicenses.push({
+                    type: 'cms-renewal',
+                    key: license.key,
+                    description: 'Craft ' + license.editionDetails.name,
+                    renew: renew,
+                    expiryDate: expiryDate,
+                    expiresOn: license.expiresOn,
+                    edition: license.editionDetails,
+                    alreadyInCart: this.licenseKeyAlreadyInCart(license.key, cartItems),
+                    amount: renewalOption.amount
+                })
+            }
 
             // Plugin licenses
             if (license.pluginLicenses.length > 0) {

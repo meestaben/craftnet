@@ -536,15 +536,40 @@ class CmsLicenseManager extends Component
         // Edition details
         $license['editionDetails'] = CmsEdition::findOne($result->editionId);
 
+
+        $expiryDateStart = null;
+
+        // CMS license
         if (!empty($license['expiresOn'])) {
-            $cmsLicenseExpiryDate = $license['expiresOn'];
+            $expiryDateStart = $license['expiresOn'];
 
             // CMS renewal options
             $renewalPrice = $license['editionDetails']->renewalPrice;
-            $license['renewalOptions'] = $this->getRenewalOptions($cmsLicenseExpiryDate, $renewalPrice);
+
+
+            $license['renewalOptions'] = $this->getRenewalOptions($expiryDateStart, $renewalPrice);
+        } else {
+            // Determine the first plugin that will need to be renewed to use its expiry date as a starting point
+            if (in_array('pluginLicenses', $include, false)) {
+                $pluginLicensesResults = Module::getInstance()->getPluginLicenseManager()->getLicensesByCmsLicenseId($result->id);
+
+                $expiryDateStart = null;
+
+                foreach ($pluginLicensesResults as $key => $pluginLicensesResult) {
+                    $pluginLicense = $pluginLicensesResult->getAttributes(['expiresOn']);
+
+                    if (!$expiryDateStart) {
+                        $expiryDateStart = $pluginLicense['expiresOn'];
+                    } else {
+                        $expiryDateStart = min($expiryDateStart, $pluginLicense['expiresOn']);
+                    }
+                }
+
+                $license['renewalOptions'] = $this->getRenewalOptions($expiryDateStart, 0);
+            }
         }
 
-        // Plugin Licenses
+        // Plugin licenses
         if (in_array('pluginLicenses', $include, false)) {
             $pluginLicensesResults = Module::getInstance()->getPluginLicenseManager()->getLicensesByCmsLicenseId($result->id);
             $pluginLicenses = [];
@@ -574,13 +599,13 @@ class CmsLicenseManager extends Component
                 $pluginLicenses[] = $pluginLicense;
 
                 // Plugin renewal options
-                if (isset($cmsLicenseExpiryDate)) {
+                if (isset($expiryDateStart)) {
                     $pluginHandle = $pluginLicense['edition']->getPlugin()->handle;
                     $pluginRenewalPrice = $pluginLicense['edition']->renewalPrice;
                     $pluginExpiryDate = $pluginLicense['expiresOn'];
 
                     if ($pluginExpiryDate) {
-                        $license['pluginRenewalOptions'][$pluginHandle] = $this->getRenewalOptions($pluginExpiryDate, $pluginRenewalPrice, $cmsLicenseExpiryDate);
+                        $license['pluginRenewalOptions'][$pluginHandle] = $this->getRenewalOptions($pluginExpiryDate, $pluginRenewalPrice, $expiryDateStart);
                     }
                 }
             }

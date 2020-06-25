@@ -4,7 +4,7 @@
             <input
                     type="checkbox"
                     :value="1"
-                    :disabled="(itemKey === 0 || !renewableLicense.key) ? true : false"
+                    :disabled="(renewableLicense.type === 'cms-renewal' || !renewableLicense.key) ? true : false"
                     :checked="renewableLicense.key ? isChecked : false"
                     @input="$emit('checkLicense', $event)" />
         </td>
