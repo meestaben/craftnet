@@ -6,7 +6,10 @@
                     :value="1"
                     :disabled="(renewableLicense.type === 'cms-renewal' || !renewableLicense.key) ? true : false"
                     :checked="renewableLicense.key ? isChecked : false"
-                    @input="$emit('checkLicense', $event)" />
+                    @input="$emit('checkLicense', {
+                        $event: $event,
+                        key: itemKey,
+                    })" />
         </td>
         <td :class="{'text-grey': !renewableLicense.key}">
             {{ renewableLicense.description }}
