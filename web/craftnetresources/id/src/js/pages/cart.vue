@@ -90,7 +90,7 @@
                                     </td>
                                     <td class="text-right">
                                         <strong class="block text-xl">
-                                            {{ item.lineItem.price|currency }}
+                                            {{ item.lineItem.subtotal|currency }}
                                         </strong>
                                         <a @click="removeFromCart(itemKey)">Remove</a>
                                     </td>
