@@ -17,6 +17,10 @@
                         <template v-if="license.pluginLicenses.length > 0">
                             <p class="text-secondary mb-4">Plugin licenses attached to this Craft CMS license.</p>
                             <plugin-licenses-table :licenses="license.pluginLicenses" :exclude-cms-license-column="true" :exclude-notes-column="true" :auto-renew-switch="true"></plugin-licenses-table>
+
+                            <template v-if="!(license.expirable && license.expiresOn)">
+                                <btn @click="showRenewLicensesModal('cms')">Renew your plugin licenses…</btn>
+                            </template>
                         </template>
                         <template v-else>
                             <p class="text-secondary mb-4">No plugin licenses are attached to this Craft CMS license.</p>
@@ -42,6 +46,7 @@
 </template>
 
 <script>
+    import {mapActions} from 'vuex'
     import cmsLicensesApi from '../../../api/cms-licenses'
     import CmsLicenseDetails from '../../../components/licenses/CmsLicenseDetails'
     import PluginLicensesTable from '../../../components/licenses/PluginLicensesTable'
@@ -62,6 +67,10 @@
         },
 
         methods: {
+            ...mapActions({
+                showRenewLicensesModal: 'app/showRenewLicensesModal',
+            }),
+
             releaseCmsLicense() {
                 if (!window.confirm("Are you sure you want to release this license?")) {
                     return false
