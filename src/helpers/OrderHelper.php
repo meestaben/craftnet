@@ -147,7 +147,7 @@ abstract class OrderHelper
         } else {
             $renewalPrice = $renewal->getPrice();
         }
-        $lineItem->price = $renewalPrice * $paidRenewalYears;
+        $lineItem->salePrice = $lineItem->price = $renewalPrice * $paidRenewalYears;
 
         // update the expiration date on the line item
         $expiryDate->setTimezone(new \DateTimeZone('UTC'));
