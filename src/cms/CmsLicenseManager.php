@@ -565,7 +565,9 @@ class CmsLicenseManager extends Component
                     }
                 }
 
-                $license['renewalOptions'] = $this->getRenewalOptions($expiryDateStart, 0);
+                if ($expiryDateStart) {
+                    $license['renewalOptions'] = $this->getRenewalOptions($expiryDateStart, 0);
+                }
             }
         }
 
@@ -573,7 +575,7 @@ class CmsLicenseManager extends Component
         if (in_array('pluginLicenses', $include, false)) {
             $pluginLicensesResults = Module::getInstance()->getPluginLicenseManager()->getLicensesByCmsLicenseId($result->id);
             $pluginLicenses = [];
-            $license['pluginRenewalOptions'] = [];
+            $pluginRenewalOptions = [];
 
             foreach ($pluginLicensesResults as $key => $pluginLicensesResult) {
                 if ($pluginLicensesResult->ownerId === $owner->id) {
@@ -605,9 +607,13 @@ class CmsLicenseManager extends Component
                     $pluginExpiryDate = $pluginLicense['expiresOn'];
 
                     if ($pluginExpiryDate) {
-                        $license['pluginRenewalOptions'][$pluginHandle] = $this->getRenewalOptions($pluginExpiryDate, $pluginRenewalPrice, $expiryDateStart);
+                        $pluginRenewalOptions[$pluginHandle] = $this->getRenewalOptions($pluginExpiryDate, $pluginRenewalPrice, $expiryDateStart);
                     }
                 }
+            }
+
+            if (count($pluginRenewalOptions) > 0) {
+                $license['pluginRenewalOptions'] = $pluginRenewalOptions;
             }
 
             $license['pluginLicenses'] = $pluginLicenses;

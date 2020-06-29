@@ -55,8 +55,7 @@
                     </td>
                     <td>
                         <template v-if="autoRenewSwitch">
-
-                            <template v-if="!!license.key">
+                            <template v-if="!!license.key && license.expiresOn">
                                 <lightswitch
                                         :id="'auto-renew-'+license.id"
                                         @change="savePluginLicenseAutoRenew(license, $event)"
@@ -71,7 +70,6 @@
                                         :disabled="true"
                                 />
                             </template>
-
                         </template>
                         <template v-else>
                             <badge v-if="license.autoRenew == 1" type="success">Enabled</badge>
