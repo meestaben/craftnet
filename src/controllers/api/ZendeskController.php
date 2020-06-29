@@ -4,6 +4,7 @@ namespace craftnet\controllers\api;
 
 use Craft;
 use craft\helpers\Json;
+use craftnet\controllers\id\DeveloperSupportController;
 use craftnet\errors\ValidationException;
 use craftnet\events\ZendeskEvent;
 use craftnet\helpers\Zendesk;
@@ -31,7 +32,17 @@ class ZendeskController extends BaseApiController
         $email = mb_strtolower($payload->email);
         $plan = Zendesk::plan($email);
 
-        $tags = array_filter(explode(' ', $payload->tags));
+        $tags = array_filter(explode(' ', $payload->tags), function($tag) {
+            return (
+                $tag &&
+                !in_array($tag, [
+                    DeveloperSupportController::PLAN_BASIC,
+                    DeveloperSupportController::PLAN_PRO,
+                    DeveloperSupportController::PLAN_PREMIUM,
+                ], true)
+            );
+        });
+
         $tags[] = $plan;
 
         $this->trigger(self::EVENT_UPDATE_TICKET, new ZendeskEvent([
