@@ -13,13 +13,18 @@ abstract class OrderHelper
      * Converts an expiry date string to a DateTime object.
      *
      * @param string $expiryDate
+     * @param \DateTime|null $anchorDate
      * @return \DateTime
      */
-    public static function expiryStr2Obj(string $expiryDate): \DateTime
+    public static function expiryStr2Obj(string $expiryDate, \DateTime $anchorDate = null): \DateTime
     {
         if (preg_match('/^(\d+)y$/', $expiryDate, $matches)) {
-            return (new \DateTime('now', new \DateTimeZone('UTC')))
-                ->modify("+{$matches[1]} years");
+            if ($anchorDate === null) {
+                $anchorDate = new \DateTime('now', new \DateTimeZone('UTC'));
+            } else {
+                $anchorDate = clone $anchorDate;
+            }
+            return $anchorDate->modify("+{$matches[1]} years");
         }
 
         return DateTimeHelper::toDateTime($expiryDate, false, false);
