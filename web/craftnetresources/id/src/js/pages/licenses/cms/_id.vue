@@ -18,7 +18,7 @@
                             <p class="text-secondary mb-4">Plugin licenses attached to this Craft CMS license.</p>
                             <plugin-licenses-table :licenses="license.pluginLicenses" :exclude-cms-license-column="true" :exclude-notes-column="true" :auto-renew-switch="true"></plugin-licenses-table>
 
-                            <template v-if="!(license.expirable && license.expiresOn)">
+                            <template v-if="license.pluginRenewalOptions && !(license.expirable && license.expiresOn)">
                                 <btn @click="showRenewLicensesModal('cms')">Renew your plugin licenses…</btn>
                             </template>
                         </template>
