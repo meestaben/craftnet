@@ -115,7 +115,6 @@ inner join commerce_orders o on li."orderId" = o.id
 inner join $joinTable l_li on l_li."lineItemId" = li.id
 where l_li."licenseId" = $licenseId
   and o."orderStatusId" = 3
---   and li."purchasableId" = {$lineItem['purchasableId']}
   and li."orderId" < {$lineItem['orderId']}
 order by li."orderId" desc
 limit 1
