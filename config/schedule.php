@@ -22,3 +22,11 @@ $schedule->command('craftnet/packages/update-deps --queue')
 $schedule->command('craftnet/plugins/update-install-counts')
     ->daily()
     ->withoutOverlapping();
+
+$schedule->exec('/var/app/current/scripts/backup_db.sh')
+    ->dailyAt('03:00')
+    ->withoutOverlapping();
+
+$schedule->exec('/var/app/current/scripts/sync_backups_to_s3.sh')
+    ->dailyAt('03:30')
+    ->withoutOverlapping();
