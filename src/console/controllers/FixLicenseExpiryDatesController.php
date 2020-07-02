@@ -152,8 +152,8 @@ SQL;
                         $newExpiryDate = (clone $prevExpiryDate)->modify('+1 year');
                     }
 
-                    $this->stdout('        - Previous expiry date: ' . $prevExpiryDate->format('Y-m-m') . PHP_EOL);
-                    $this->stdout('        - Requested expiry date: ' . $requestedExpiryDate->format('Y-m-m') . PHP_EOL);
+                    $this->stdout('        - Previous expiry date: ' . $prevExpiryDate->format('Y-m-d') . PHP_EOL);
+                    $this->stdout('        - Requested expiry date: ' . $requestedExpiryDate->format('Y-m-d') . PHP_EOL);
 
                     if ($requestedExpiryDate->format('Y-m-d') === $newExpiryDate->format('Y-m-d')) {
                         $this->stdout('        ✔ No action needed' . PHP_EOL . PHP_EOL, Console::FG_GREEN);
