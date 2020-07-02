@@ -181,8 +181,14 @@ class PluginLicensesController extends Controller
                     $license->cmsLicenseId = $cmsLicenseId ?: null;
                 }
 
-                if (($autoRenew = Craft::$app->getRequest()->getParam('autoRenew', false)) !== false) {
-                    $license->autoRenew = $autoRenew ? true : false;
+                // Did they change the auto renew setting?
+                $autoRenew = (bool)Craft::$app->getRequest()->getParam('autoRenew');
+                if ($autoRenew != $license->autoRenew) {
+                    $license->autoRenew = $autoRenew;
+                    // If they've already received a reminder about the auto renewal, then update the locked price
+                    if ($autoRenew && $license->reminded) {
+                        $license->renewalPrice = $license->getEdition()->getRenewal()->getPrice();
+                    }
                 }
 
                 if ($manager->saveLicense($license)) {
