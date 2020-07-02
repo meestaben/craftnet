@@ -39,5 +39,5 @@ Purchase Date: {{ order.datePaid|date('medium') }}
 You can access your licenses from your [Craft ID](https://id.craftcms.com) account.
 
 If you made this purchase with a different email address than the one tied to your
-Craft ID account, use the [Claim licenses by email address](https://id.craftcms.com/account/licenses/claim)
+Craft ID account, use the [Claim licenses by email address](https://id.craftcms.com/licenses/claim)
 tool to access the licenses and order history.
