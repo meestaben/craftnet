@@ -305,7 +305,7 @@ abstract class BaseApiController extends Controller
                     }
 
                     $cmsLicense->lastStatus = $cmsLicenseStatus;
-
+                    Craft::error("lastStatus for ".$cmsLicense->getDomain()." is ".$cmsLicenseStatus);
                     // update the license
                     $cmsLicense->lastActivityOn = new \DateTime('now', new \DateTimeZone('UTC'));
                     if ($this->cmsVersion !== null) {
