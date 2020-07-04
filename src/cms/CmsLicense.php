@@ -34,6 +34,7 @@ class CmsLicense extends License
     public $lastVersion;
     public $lastAllowedVersion;
     public $lastActivityOn;
+    public $lastStatus;
     public $lastRenewedOn;
     public $expiresOn;
     public $dateCreated;

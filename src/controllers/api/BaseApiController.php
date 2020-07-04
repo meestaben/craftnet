@@ -304,6 +304,8 @@ abstract class BaseApiController extends Controller
                         }
                     }
 
+                    $cmsLicense->lastStatus = $cmsLicenseStatus;
+
                     // update the license
                     $cmsLicense->lastActivityOn = new \DateTime('now', new \DateTimeZone('UTC'));
                     if ($this->cmsVersion !== null) {
@@ -411,11 +413,14 @@ abstract class BaseApiController extends Controller
 
                 $this->pluginLicenseStatuses[$pluginHandle] = $pluginLicenseStatus;
 
-                // update the license
                 $pluginLicense->lastActivityOn = new \DateTime('now', new \DateTimeZone('UTC'));
+                $pluginLicense->lastStatus = $pluginLicenseStatus;
+
                 if ($pluginVersion !== null) {
                     $pluginLicense->lastVersion = $pluginVersion;
                 }
+
+                // update the license
                 $pluginLicenseManager->saveLicense($pluginLicense, false);
 
                 // update the history
