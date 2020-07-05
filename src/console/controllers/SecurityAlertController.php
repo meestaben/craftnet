@@ -5,6 +5,7 @@ namespace craftnet\console\controllers;
 use Composer\Semver\Comparator;
 use Craft;
 use craft\elements\User;
+use craft\helpers\DateTimeHelper;
 use craftnet\Module;
 use craftnet\plugins\Plugin;
 use yii\console\Controller;
@@ -41,6 +42,14 @@ class SecurityAlertController extends Controller
         $fixedVersion = $this->prompt('What version fixed the issue?', [
             'required' => true,
         ]);
+
+        getRelease:
+        $release = $this->module->getPackageManager()->getRelease($plugin->packageName, $fixedVersion);
+
+        if (!$release) {
+            $this->stderr('Invalid version' . PHP_EOL, Console::FG_RED);
+            goto getRelease;
+        }
 
         $this->stdout('Looking for vulnerable licenses ... ');
 
@@ -79,6 +88,7 @@ class SecurityAlertController extends Controller
             $message = $mailer->composeFromKey(Module::MESSAGE_KEY_SECURITY_ALERT, [
                 'user' => $user,
                 'name' => $plugin->name,
+                'release' => $release,
                 'licenses' => $licenses,
             ])->setTo($user ?? reset($licenses)->email)->setPriority(1);
             if ($message->send()) {
@@ -92,6 +102,7 @@ class SecurityAlertController extends Controller
             $i++;
             $message = $mailer->composeFromKey(Module::MESSAGE_KEY_SECURITY_ALERT, [
                 'name' => $plugin->name,
+                'release' => $release,
                 'licenses' => $licenses,
             ])->setTo($email)->setPriority(1);
             $this->stdout("    - [$i/$uniques] Emailing {$email} about " . count($licenses) . ' licenses ... ');

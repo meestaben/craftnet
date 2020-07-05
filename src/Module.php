@@ -147,7 +147,7 @@ class Module extends \yii\base\Module
             $e->messages[] = new SystemMessage([
                 'key' => self::MESSAGE_KEY_SECURITY_ALERT,
                 'heading' => 'When a critical update is available:',
-                'subject' => 'Critical {{ name }} update available',
+                'subject' => 'Urgent: You must update {{ name }} now',
                 'body' => file_get_contents(__DIR__ . '/emails/security_alert.md'),
             ]);
         });
