@@ -14,7 +14,6 @@ return [
     'cloudwaysapps.com',
     'clover.show',
     'cnc.land',
-    'cogclient.com',
     'craft.dev',
     'craft2.dev',
     'craft3.dev',
