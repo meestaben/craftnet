@@ -2,15 +2,29 @@
 
 return [
     // Enable exception logging
-    'enabled' => true,
-    // Project API key
-    'serverApiKey' => getenv('BUGSNAG_API_KEY'),
+    'enabled'             => true,
+
+    // Project Server API key
+    'serverApiKey'        => getenv('BUGSNAG_API_KEY'),
+
+    // Project Browser API key
+    'browserApiKey'        => '',
+
     // Release stage
-    'releaseStage' => 'production',
+    'releaseStage'        => 'production',
+
+    // App version
+    'appVersion'          => '',
+
     // Release stages to log exceptions in
-    'notifyReleaseStages' => ['production'],
+    'notifyReleaseStages' => [ 'production' ],
+
     // Sensitive attributes to filter out, like 'password'
-    'filters' => [],
+    'filters'             => [],
+
     // Metadata to send with every request
-    'metaData' => [],
+    'metaData'            => [],
+
+    // Blacklist certain exception types like 404s
+    'blacklist'            => [],
 ];

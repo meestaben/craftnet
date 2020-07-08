@@ -89,6 +89,7 @@ return [
     'prod' => [
         'bootstrap' => [
             'dlq',
+            '\superbig\bugsnag\Bootstrap',
         ],
         'components' => [
             'redis' => [
