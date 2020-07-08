@@ -26,5 +26,16 @@ return [
     'metaData'            => [],
 
     // Blacklist certain exception types like 404s
-    'blacklist'            => [],
+    'blacklist'            => [
+        [
+            'label' => '404 errors',
+            'class' => function($exception) {
+                if ($exception instanceof \yii\web\NotFoundHttpException && $exception->statusCode === 404) {
+                    return false;
+                }
+
+                return true;
+            },
+        ],
+    ],
 ];
