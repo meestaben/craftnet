@@ -54,7 +54,7 @@ return [
         'GET     v1/plugin/<pluginId:\d+>/changelog' => 'craftnet/api/v1/plugin/changelog',
         'GET     v1/plugins' => 'craftnet/api/v1/plugins',
         'GET     v1/plugins/<pluginHandle:{handle}>' => 'craftnet/api/v1/plugins/get-plugin',
-        'GET     v1/package/<packageName:{handle}/{handle}>' => 'craftnet/api/v1/package/get',
+        'GET     v1/package/<packageName:[\w\-]+/[\w\-]+>' => 'craftnet/api/v1/package/get',
         'POST    v1/support' => 'craftnet/api/v1/support/create',
         'GET     v1/updates' => 'craftnet/api/v1/updates',
         'POST    v1/updates' => 'craftnet/api/v1/updates/old',
