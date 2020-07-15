@@ -25,6 +25,7 @@ use craftnet\plugins\PluginEdition;
 use craftnet\plugins\PluginLicense;
 use JsonSchema\Validator;
 use stdClass;
+use superbig\bugsnag\Bugsnag;
 use yii\base\Exception;
 use yii\base\InvalidArgumentException;
 use yii\base\Model;
@@ -641,6 +642,9 @@ EOL;
                         ->setHtmlBody(Markdown::process($body, 'gfm'))
                         ->setTo(explode(',', getenv('API_ERROR_RECIPIENTS')))
                         ->send();
+
+                    // Log it to bugsnag
+                    Bugsnag::$plugin->bugsnagService->handleException($logException);
                 } catch (\Throwable $e) {
                     // Just log and move on.
                     Craft::error('There was a problem sending the API error email: ' . $e->getMessage(), __METHOD__);
