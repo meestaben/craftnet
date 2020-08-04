@@ -121,7 +121,7 @@ class GitHub extends BaseVcs
 
         // Get the changelog contents if this is Craft or a plugin
         if ($this->package->name === 'craftcms/cms') {
-            $changelogPath = 'CHANGELOG-v3.md';
+            $changelogPath = 'CHANGELOG.md';
         } else if ($plugin = $this->package->getPlugin()) {
             $changelogPath = $plugin->changelogPath;
         } else {
