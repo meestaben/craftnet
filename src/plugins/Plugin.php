@@ -1044,7 +1044,7 @@ EOD;
             Craft::$app->getMailer()->compose()
                 ->setSubject($emailSubject)
                 ->setTextBody($emailBody)
-                ->setHtmlBody(Markdown::process($emailBody))
+                ->setHtmlBody(Markdown::process(htmlentities($emailBody)))
                 ->setTo($this->getDeveloper())
                 ->send();
         }
