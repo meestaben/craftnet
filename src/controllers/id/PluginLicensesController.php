@@ -176,7 +176,7 @@ class PluginLicensesController extends Controller
             if ($user && $license->ownerId === $user->id) {
                 $notes = Craft::$app->getRequest()->getParam('notes');
 
-                if($notes) {
+                if($notes !== null) {
                     $license->notes = Craft::$app->getRequest()->getParam('notes');
                 }
 
@@ -186,16 +186,13 @@ class PluginLicensesController extends Controller
                 }
 
                 // Did they change the auto renew setting?
-                $autoRenew = Craft::$app->getRequest()->getParam('autoRenew');
+                $autoRenew = Craft::$app->getRequest()->getParam('autoRenew', $license->autoRenew);
 
-                if ($autoRenew !== null) {
-                    $autoRenew = (bool)$autoRenew;
-                    if ($autoRenew != $license->autoRenew) {
-                        $license->autoRenew = $autoRenew;
-                        // If they've already received a reminder about the auto renewal, then update the locked price
-                        if ($autoRenew && $license->reminded) {
-                            $license->renewalPrice = $license->getEdition()->getRenewal()->getPrice();
-                        }
+                if ($autoRenew != $license->autoRenew) {
+                    $license->autoRenew = $autoRenew;
+                    // If they've already received a reminder about the auto renewal, then update the locked price
+                    if ($autoRenew && $license->reminded) {
+                        $license->renewalPrice = $license->getEdition()->getRenewal()->getPrice();
                     }
                 }
 
