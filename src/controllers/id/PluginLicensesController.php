@@ -174,7 +174,11 @@ class PluginLicensesController extends Controller
 
         try {
             if ($user && $license->ownerId === $user->id) {
-                $license->notes = Craft::$app->getRequest()->getParam('notes');
+                $notes = Craft::$app->getRequest()->getParam('notes');
+
+                if($notes !== null) {
+                    $license->notes = Craft::$app->getRequest()->getParam('notes');
+                }
 
                 $oldCmsLicenseId = $license->cmsLicenseId;
                 if (($cmsLicenseId = Craft::$app->getRequest()->getParam('cmsLicenseId', false)) !== false) {
@@ -182,7 +186,8 @@ class PluginLicensesController extends Controller
                 }
 
                 // Did they change the auto renew setting?
-                $autoRenew = (bool)Craft::$app->getRequest()->getParam('autoRenew');
+                $autoRenew = Craft::$app->getRequest()->getParam('autoRenew', $license->autoRenew);
+
                 if ($autoRenew != $license->autoRenew) {
                     $license->autoRenew = $autoRenew;
                     // If they've already received a reminder about the auto renewal, then update the locked price

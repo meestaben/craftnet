@@ -9,7 +9,7 @@ export default {
     },
 
     disconnect() {
-        return axios.post(window.craftIdUrl + '/stripe/disconnect', {
+        return axios.post(window.craftIdUrl + '/stripe/disconnect', {}, {
             headers: {
                 'X-CSRF-Token':  Craft.csrfTokenValue,
             }
