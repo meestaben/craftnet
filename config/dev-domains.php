@@ -65,6 +65,7 @@ return [
     'mystagingsite.org',
     'mystagingsite.us',
     'nanoapp.io',
+    'neeadev.org',
     'nerderylabs.com',
     'newism.dev',
     'newism.rocks',
