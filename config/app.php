@@ -31,6 +31,7 @@ return [
                             'staging',
                             'test',
                             'testing',
+                            'uat',
                         ]
                     ],
                     'invoiceManager' => [
