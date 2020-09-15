@@ -14,7 +14,7 @@
     "humanize-duration": "^3.15.0",
     "limax": "^1.7.0",
     "mobile-detect": "^1.4.3",
-    "vue": "^2.5.17",
+    "vue": "^2.6.12",
     "vue-clickaway": "^2.2.2",
     "vue-moment": "^4.0.0",
     "vue-router": "^3.0.1",
