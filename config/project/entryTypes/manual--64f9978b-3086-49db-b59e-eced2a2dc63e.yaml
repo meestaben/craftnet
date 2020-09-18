@@ -1,0 +1,29 @@
+fieldLayouts:
+  b952f167-b2a9-4e8a-92fc-fdf454920324:
+    tabs:
+      -
+        elements:
+          -
+            instructions: null
+            label: Title
+            type: craft\fieldlayoutelements\EntryTitleField
+          -
+            fieldUid: fdc2e766-f2a8-4ee0-9ad8-9b7d64b8d86b
+            required: false
+            type: craft\fieldlayoutelements\CustomField
+          -
+            fieldUid: 3729338a-bc60-4be2-9fc4-0e63b4a62d4a
+            required: false
+            type: craft\fieldlayoutelements\CustomField
+          -
+            fieldUid: 05fb56bd-4689-45e9-9445-a535cfa2460c
+            required: true
+            type: craft\fieldlayoutelements\CustomField
+        name: Settings
+        sortOrder: 1
+handle: manual
+hasTitleField: true
+name: 'Manual Selection'
+section: 149763f1-bd8b-4d8e-a8f0-8ce1b0c6d593
+sortOrder: 1
+titleFormat: ''

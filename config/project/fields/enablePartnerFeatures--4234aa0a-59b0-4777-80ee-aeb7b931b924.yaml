@@ -1,0 +1,11 @@
+contentColumnType: boolean
+fieldGroup: add7f1c8-5c4a-4d23-9398-8a9472f169e8
+handle: enablePartnerFeatures
+instructions: 'Enables partner fields in a user’s Craft ID account.'
+name: 'Enable Partner Features'
+searchable: true
+settings:
+  default: null
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\Lightswitch

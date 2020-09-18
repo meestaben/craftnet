@@ -1,0 +1,35 @@
+fieldLayouts:
+  1a87d433-2ba9-4da1-b279-2fd70eb3fbfc:
+    tabs:
+      -
+        fields:
+          dd2601c5-8443-448c-980a-c9a1ee040ee9:
+            required: false
+            sortOrder: 1
+          fdc2e766-f2a8-4ee0-9ad8-9b7d64b8d86b:
+            required: false
+            sortOrder: 2
+        name: Content
+        sortOrder: 1
+handle: pluginCategories
+name: 'Plugin Categories'
+siteSettings:
+  2a835d29-b3e4-4ef5-bf62-ad7285b4a4dd:
+    hasUrls: false
+    template: null
+    uriFormat: null
+  2f57d7c9-711e-4173-a5b4-df89fb34e085:
+    hasUrls: false
+    template: null
+    uriFormat: null
+  8928c23a-7002-467d-af97-333694b8dad8:
+    hasUrls: false
+    template: null
+    uriFormat: null
+  dfc27822-23dd-49e2-ac3a-66a436674cf0:
+    hasUrls: false
+    template: null
+    uriFormat: null
+structure:
+  maxLevels: 1
+  uid: 421bb5e6-a177-40c3-8d22-6e133ee070a4

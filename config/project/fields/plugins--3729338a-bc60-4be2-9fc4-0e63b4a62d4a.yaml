@@ -1,0 +1,17 @@
+contentColumnType: string
+fieldGroup: a773b9fb-cbc5-423a-977f-8210c987176c
+handle: plugins
+instructions: ''
+name: Plugins
+searchable: true
+settings:
+  limit: ''
+  localizeRelations: ''
+  selectionLabel: ''
+  source: null
+  sources: '*'
+  targetSiteId: null
+  viewMode: null
+translationKeyFormat: null
+translationMethod: site
+type: craftnet\fields\Plugins

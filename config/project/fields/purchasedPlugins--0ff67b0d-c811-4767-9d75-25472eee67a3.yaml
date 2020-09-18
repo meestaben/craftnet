@@ -1,0 +1,18 @@
+contentColumnType: string
+fieldGroup: add7f1c8-5c4a-4d23-9398-8a9472f169e8
+handle: purchasedPlugins
+instructions: ''
+name: 'Purchased Plugins'
+searchable: true
+settings:
+  limit: ''
+  localizeRelations: ''
+  selectionLabel: ''
+  source: null
+  sources:
+    - 'section:1'
+  targetSiteId: null
+  viewMode: null
+translationKeyFormat: null
+translationMethod: site
+type: craft\fields\Entries

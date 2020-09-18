@@ -1,0 +1,15 @@
+contentColumnType: text
+fieldGroup: 4987fb8d-cf45-4b60-a94f-51c591336558
+handle: notes
+instructions: ''
+name: Notes
+searchable: true
+settings:
+  charLimit: ''
+  columnType: text
+  initialRows: '4'
+  multiline: '1'
+  placeholder: ''
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\PlainText

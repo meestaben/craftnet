@@ -1,0 +1,21 @@
+fieldLayouts:
+  6e8f865c-4018-4fc3-9096-23907596957e:
+    tabs:
+      -
+        elements:
+          -
+            instructions: null
+            label: Title
+            type: craft\fieldlayoutelements\EntryTitleField
+          -
+            fieldUid: fdc2e766-f2a8-4ee0-9ad8-9b7d64b8d86b
+            required: false
+            type: craft\fieldlayoutelements\CustomField
+        name: Content
+        sortOrder: 1
+handle: index
+hasTitleField: true
+name: Index
+section: b597a3a5-88d2-4446-9f93-a28351a1b666
+sortOrder: 1
+titleFormat: null

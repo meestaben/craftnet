@@ -1,0 +1,15 @@
+contentColumnType: text
+fieldGroup: b1a59dd4-5d0c-4d32-925c-8a2349747691
+handle: cardToken
+instructions: ''
+name: 'Card Token'
+searchable: true
+settings:
+  charLimit: ''
+  columnType: text
+  initialRows: '4'
+  multiline: ''
+  placeholder: ''
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\PlainText

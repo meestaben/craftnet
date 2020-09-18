@@ -1,0 +1,18 @@
+handle: icons
+hasUrls: true
+name: Icons
+settings:
+  autoFocalPoint: ''
+  bucket: $S3_PLUGIN_ICONS_BUCKET
+  bucketSelectionMode: manual
+  cfDistributionId: ETQ0JHTENMTPR
+  cfPrefix: ''
+  expires: '604800 seconds'
+  keyId: $AWS_ACCESS_KEY_ID
+  region: $S3_BUCKET_REGION
+  secret: $AWS_SECRET_ACCESS_KEY
+  storageClass: ''
+  subfolder: ''
+sortOrder: 2
+type: craft\awss3\Volume
+url: 'https://pluginicons.craft-cdn.com'

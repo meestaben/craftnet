@@ -1,0 +1,8 @@
+baseUrl: 'https://composer.craftcms.com/'
+handle: composer
+hasUrls: true
+language: en-US
+name: Composer
+primary: false
+siteGroup: be77d03c-2f5a-45f6-8232-a906c3ce49f6
+sortOrder: 2

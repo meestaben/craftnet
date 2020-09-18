@@ -1,0 +1,14 @@
+contentColumnType: 'decimal(12,2)'
+fieldGroup: ec01a46c-7aae-4b10-95ce-6ae6648b9745
+handle: price
+instructions: ''
+name: Price
+searchable: true
+settings:
+  decimals: '2'
+  max: null
+  min: null
+  size: null
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\Number

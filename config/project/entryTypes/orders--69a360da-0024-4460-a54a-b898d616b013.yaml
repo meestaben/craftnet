@@ -1,0 +1,37 @@
+fieldLayouts:
+  2c4a99e6-3070-4528-8e60-deca9f7a3e55:
+    tabs:
+      -
+        elements:
+          -
+            instructions: null
+            label: null
+            type: craft\fieldlayoutelements\EntryTitleField
+          -
+            fieldUid: cc3f9ff0-2259-4ed0-bcfc-b19a91dc4d67
+            required: false
+            type: craft\fieldlayoutelements\CustomField
+          -
+            fieldUid: 8b796e49-612b-4477-9567-64c11f929737
+            required: false
+            type: craft\fieldlayoutelements\CustomField
+          -
+            fieldUid: 68465f6c-a70b-4b6b-a3ab-feaece178361
+            required: false
+            type: craft\fieldlayoutelements\CustomField
+          -
+            fieldUid: 7b80e1c3-fc1b-447d-a346-872ec9b0b853
+            required: false
+            type: craft\fieldlayoutelements\CustomField
+          -
+            fieldUid: ecbbfebe-c824-4e29-b927-a3bcc10c9e24
+            required: false
+            type: craft\fieldlayoutelements\CustomField
+        name: Order
+        sortOrder: 1
+handle: orders
+hasTitleField: false
+name: Orders
+section: cc57a07c-7225-4ed5-8db2-31898436abb2
+sortOrder: 1
+titleFormat: 'Order {id}'

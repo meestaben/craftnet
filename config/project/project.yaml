@@ -1,0 +1,83 @@
+dateModified: 1600470967
+email:
+  fromEmail: support@pixelandtonic.com
+  fromName: 'Pixel & Tonic'
+  template: ''
+  transportSettings:
+    token: 99b7719e-a9e2-4888-9ed4-047d0b0a3e75
+  transportType: craftcms\postmark\Adapter
+plugins:
+  aws-s3:
+    enabled: true
+    licenseKey: null
+    schemaVersion: '1.2'
+    settings: null
+  bugsnag:
+    edition: standard
+    enabled: true
+    schemaVersion: 2.0.0
+  commerce:
+    edition: pro
+    enabled: true
+    licenseKey: 7ZITUCA7F4T45Q1U3101J07W
+    schemaVersion: 3.2.6
+    settings:
+      activeCartDuration: PT1H
+      allowEmptyCartOnCheckout: true
+      autoSetNewCartAddresses: true
+      cartVariable: cart
+      defaultView: commerce/orders
+      dimensionUnits: mm
+      emailSenderAddress: ''
+      emailSenderAddressPlaceholder: null
+      emailSenderName: ''
+      emailSenderNamePlaceholder: null
+      gatewayPostRedirectTemplate: ''
+      mergeLastCartOnLogin: true
+      minimumTotalPriceStrategy: default
+      orderPdfFilenameFormat: 'Order-{shortNumber|upper}'
+      orderPdfPath: _pdf/order.html
+      orderReferenceFormat: '{{number[:7]}}'
+      paymentCurrency: null
+      pdfAllowRemoteImages: false
+      pdfPaperOrientation: portrait
+      pdfPaperSize: letter
+      purgeInactiveCarts: true
+      purgeInactiveCartsDuration: P3M
+      requireBillingAddressAtCheckout: false
+      requireShippingAddressAtCheckout: false
+      requireShippingMethodSelectionAtCheckout: false
+      updateBillingDetailsUrl: ''
+      useBillingAddressForTax: false
+      validateBusinessTaxIdAsVatId: false
+      weightUnits: g
+  commerce-stripe:
+    enabled: true
+    licenseKey: null
+    schemaVersion: 2.2.0
+    settings: null
+  mix:
+    enabled: true
+    licenseKey: null
+    schemaVersion: 1.0.0
+    settings: null
+  postmark:
+    enabled: true
+    licenseKey: null
+    schemaVersion: 2.0.1
+  twigpack:
+    enabled: true
+    licenseKey: null
+    schemaVersion: 1.0.0
+    settings: null
+  webhooks:
+    enabled: true
+    licenseKey: null
+    schemaVersion: 2.3.0
+    settings: null
+system:
+  edition: pro
+  live: true
+  name: Craftnet
+  schemaVersion: 3.5.13
+  timeZone: UTC

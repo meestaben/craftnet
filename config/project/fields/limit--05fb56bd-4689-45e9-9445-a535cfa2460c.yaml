@@ -1,0 +1,15 @@
+contentColumnType: integer(10)
+fieldGroup: a773b9fb-cbc5-423a-977f-8210c987176c
+handle: limit
+instructions: ''
+name: Limit
+searchable: true
+settings:
+  decimals: 0
+  defaultValue: null
+  max: null
+  min: null
+  size: null
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\Number

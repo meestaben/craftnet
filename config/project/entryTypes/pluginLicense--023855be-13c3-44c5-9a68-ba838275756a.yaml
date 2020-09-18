@@ -1,0 +1,37 @@
+fieldLayouts:
+  2efd489f-ca1a-488d-ac0b-2223cbba6899:
+    tabs:
+      -
+        elements:
+          -
+            instructions: null
+            label: null
+            type: craft\fieldlayoutelements\EntryTitleField
+          -
+            fieldUid: 01fcd9d2-40bb-4f54-a225-7c9b674c3db9
+            required: true
+            type: craft\fieldlayoutelements\CustomField
+          -
+            fieldUid: 69c15f3c-6ae1-4906-879f-495ab5c76102
+            required: false
+            type: craft\fieldlayoutelements\CustomField
+          -
+            fieldUid: 4a4fdb04-6086-4fbd-b79f-1d99cefc9a31
+            required: false
+            type: craft\fieldlayoutelements\CustomField
+          -
+            fieldUid: 8965f5ae-4c8e-4529-bfc5-e7345e40d7ce
+            required: false
+            type: craft\fieldlayoutelements\CustomField
+          -
+            fieldUid: 1f6eaf1e-6f42-4dc2-86cb-62fd3665751a
+            required: false
+            type: craft\fieldlayoutelements\CustomField
+        name: License
+        sortOrder: 1
+handle: pluginLicense
+hasTitleField: false
+name: 'Plugin License'
+section: bf872170-c29f-4188-9225-90e97869758b
+sortOrder: 1
+titleFormat: 'Plugin License'

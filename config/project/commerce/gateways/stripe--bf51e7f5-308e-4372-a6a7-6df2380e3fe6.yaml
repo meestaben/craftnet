@@ -1,0 +1,11 @@
+handle: stripe
+isFrontendEnabled: true
+name: Stripe
+paymentType: purchase
+settings:
+  apiKey: 6dRlr82j88AXpwJrVkj3Qj5U1BfUpLwC
+  publishableKey: pk_J2nJpozDxit0V6wYuT8xSvCKArONs
+  sendReceiptEmail: ''
+  signingSecret: whsec_rDAvctyCNlAp6nL8k5l1cDxUVZbykxCB
+sortOrder: 99
+type: craft\commerce\stripe\gateways\PaymentIntents

@@ -1,0 +1,25 @@
+contentColumnType: string
+fieldGroup: ec01a46c-7aae-4b10-95ce-6ae6648b9745
+handle: screenshots
+instructions: ''
+name: Screenshots
+searchable: true
+settings:
+  allowedKinds: null
+  defaultUploadLocationSource: 'volume:495fa280-74b9-49af-8737-986532450386'
+  defaultUploadLocationSubpath: ''
+  limit: ''
+  localizeRelations: ''
+  restrictFiles: ''
+  selectionLabel: ''
+  singleUploadLocationSource: 'volume:238dc7f2-e863-4b8f-96fa-805a3324dc5d'
+  singleUploadLocationSubpath: ''
+  source: null
+  sources:
+    - 'volume:495fa280-74b9-49af-8737-986532450386'
+  targetSiteId: null
+  useSingleFolder: ''
+  viewMode: list
+translationKeyFormat: null
+translationMethod: site
+type: craft\fields\Assets

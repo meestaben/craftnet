@@ -1,0 +1,18 @@
+handle: screenshots
+hasUrls: true
+name: Screenshots
+settings:
+  autoFocalPoint: ''
+  bucket: $S3_PLUGIN_SCREENSHOTS_BUCKET
+  bucketSelectionMode: manual
+  cfDistributionId: E2SAV3S77HIZ5G
+  cfPrefix: ''
+  expires: '604800 seconds'
+  keyId: $AWS_ACCESS_KEY_ID
+  region: $S3_BUCKET_REGION
+  secret: $AWS_SECRET_ACCESS_KEY
+  storageClass: ''
+  subfolder: ''
+sortOrder: 3
+type: craft\awss3\Volume
+url: 'https://pluginscreenshots.craft-cdn.com'

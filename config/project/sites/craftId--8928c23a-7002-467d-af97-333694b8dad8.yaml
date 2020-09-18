@@ -1,0 +1,8 @@
+baseUrl: 'https://id.craftcms.com/'
+handle: craftId
+hasUrls: true
+language: en-US
+name: 'Craft ID'
+primary: true
+siteGroup: be77d03c-2f5a-45f6-8232-a906c3ce49f6
+sortOrder: 1

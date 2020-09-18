@@ -1,0 +1,18 @@
+contentColumnType: string
+fieldGroup: 4987fb8d-cf45-4b60-a94f-51c591336558
+handle: craftLicense
+instructions: ''
+name: 'Craft License'
+searchable: true
+settings:
+  limit: ''
+  localizeRelations: ''
+  selectionLabel: ''
+  source: null
+  sources:
+    - 'section:bf872170-c29f-4188-9225-90e97869758b'
+  targetSiteId: null
+  viewMode: null
+translationKeyFormat: null
+translationMethod: site
+type: craft\fields\Entries

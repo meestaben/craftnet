@@ -7,7 +7,7 @@ use craft\commerce\elements\Order;
 use craft\commerce\events\PdfEvent;
 use craft\commerce\models\Discount;
 use craft\commerce\services\OrderAdjustments;
-use craft\commerce\services\Pdf;
+use craft\commerce\services\Pdfs;
 use craft\commerce\services\Purchasables;
 use craft\elements\Asset;
 use craft\elements\db\UserQuery;
@@ -159,7 +159,7 @@ class Module extends \yii\base\Module
         });
 
         // provide custom order receipt PDF generation
-        Event::on(Pdf::class, Pdf::EVENT_BEFORE_RENDER_PDF, function(PdfEvent $e) {
+        Event::on(Pdfs::class, Pdfs::EVENT_BEFORE_RENDER_PDF, function(PdfEvent $e) {
             $e->pdf = (new PdfRenderer())->render($e->order);
         });
 

@@ -1,0 +1,25 @@
+fieldLayouts:
+  394a5ca3-9f9c-48e7-9e49-b271809bcfc3:
+    tabs:
+      -
+        elements:
+          -
+            instructions: null
+            label: Title
+            type: craft\fieldlayoutelements\EntryTitleField
+          -
+            fieldUid: fdc2e766-f2a8-4ee0-9ad8-9b7d64b8d86b
+            required: false
+            type: craft\fieldlayoutelements\CustomField
+          -
+            fieldUid: 05fb56bd-4689-45e9-9445-a535cfa2460c
+            required: false
+            type: craft\fieldlayoutelements\CustomField
+        name: Settings
+        sortOrder: 1
+handle: dynamic
+hasTitleField: true
+name: Dynamic
+section: 149763f1-bd8b-4d8e-a8f0-8ce1b0c6d593
+sortOrder: 2
+titleFormat: ''

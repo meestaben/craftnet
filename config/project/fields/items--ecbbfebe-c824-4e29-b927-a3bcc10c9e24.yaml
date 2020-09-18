@@ -1,0 +1,18 @@
+contentColumnType: string
+fieldGroup: b1a59dd4-5d0c-4d32-925c-8a2349747691
+handle: items
+instructions: ''
+name: Items
+searchable: true
+settings:
+  limit: ''
+  localizeRelations: ''
+  selectionLabel: ''
+  source: null
+  sources:
+    - 'section:1'
+  targetSiteId: null
+  viewMode: null
+translationKeyFormat: null
+translationMethod: site
+type: craft\fields\Entries

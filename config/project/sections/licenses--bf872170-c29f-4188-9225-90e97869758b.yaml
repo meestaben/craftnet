@@ -1,0 +1,15 @@
+enableVersioning: true
+handle: licenses
+name: Licenses
+previewTargets:
+  -
+    label: 'Primary entry page'
+    urlFormat: '{url}'
+propagationMethod: all
+siteSettings:
+  8928c23a-7002-467d-af97-333694b8dad8:
+    enabledByDefault: true
+    hasUrls: true
+    template: licenses/_entry
+    uriFormat: 'licenses/{slug}'
+type: channel

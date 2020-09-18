@@ -1,0 +1,33 @@
+contentColumnType: string
+fieldGroup: 4987fb8d-cf45-4b60-a94f-51c591336558
+handle: craftEdition
+instructions: ''
+name: 'Craft Edition'
+searchable: true
+settings:
+  options:
+    -
+      __assoc__:
+        -
+          - label
+          - Client
+        -
+          - value
+          - client
+        -
+          - default
+          - ''
+    -
+      __assoc__:
+        -
+          - label
+          - Pro
+        -
+          - value
+          - pro
+        -
+          - default
+          - ''
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\Dropdown

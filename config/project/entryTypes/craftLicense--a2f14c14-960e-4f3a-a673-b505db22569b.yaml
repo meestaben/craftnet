@@ -1,0 +1,33 @@
+fieldLayouts:
+  f828ecf2-5a90-4e48-b6a9-87ccf414c157:
+    tabs:
+      -
+        elements:
+          -
+            instructions: null
+            label: null
+            type: craft\fieldlayoutelements\EntryTitleField
+          -
+            fieldUid: 63801519-f6aa-468d-9ce9-1a0c289e5ddb
+            required: false
+            type: craft\fieldlayoutelements\CustomField
+          -
+            fieldUid: 4a4fdb04-6086-4fbd-b79f-1d99cefc9a31
+            required: false
+            type: craft\fieldlayoutelements\CustomField
+          -
+            fieldUid: 8965f5ae-4c8e-4529-bfc5-e7345e40d7ce
+            required: false
+            type: craft\fieldlayoutelements\CustomField
+          -
+            fieldUid: 1f6eaf1e-6f42-4dc2-86cb-62fd3665751a
+            required: false
+            type: craft\fieldlayoutelements\CustomField
+        name: License
+        sortOrder: 1
+handle: craftLicense
+hasTitleField: false
+name: 'Craft License'
+section: bf872170-c29f-4188-9225-90e97869758b
+sortOrder: 2
+titleFormat: 'Craft License'

@@ -1,0 +1,15 @@
+contentColumnType: text
+fieldGroup: add7f1c8-5c4a-4d23-9398-8a9472f169e8
+handle: businessAddressLine2
+instructions: ''
+name: 'Business Address Line 2'
+searchable: true
+settings:
+  charLimit: ''
+  columnType: text
+  initialRows: '4'
+  multiline: ''
+  placeholder: ''
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\PlainText

@@ -1,0 +1,18 @@
+enableVersioning: true
+handle: featuredPlugins
+name: 'Featured Plugins'
+previewTargets:
+  -
+    label: 'Primary entry page'
+    urlFormat: '{url}'
+propagationMethod: all
+siteSettings:
+  8928c23a-7002-467d-af97-333694b8dad8:
+    enabledByDefault: true
+    hasUrls: true
+    template: featured-plugins/_entry
+    uriFormat: 'featured-plugins/{slug}'
+structure:
+  maxLevels: 1
+  uid: 447477c9-a98d-4440-b8df-089a29106b4a
+type: structure

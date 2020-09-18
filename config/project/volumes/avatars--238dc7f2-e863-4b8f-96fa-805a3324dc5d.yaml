@@ -1,0 +1,18 @@
+handle: avatars
+hasUrls: true
+name: Avatars
+settings:
+  autoFocalPoint: ''
+  bucket: $S3_AVATARS_BUCKET
+  bucketSelectionMode: manual
+  cfDistributionId: E3VRZ99IN52E8S
+  cfPrefix: ''
+  expires: '604800 seconds'
+  keyId: $AWS_ACCESS_KEY_ID
+  region: $S3_BUCKET_REGION
+  secret: $AWS_SECRET_ACCESS_KEY
+  storageClass: ''
+  subfolder: ''
+sortOrder: 1
+type: craft\awss3\Volume
+url: 'https://avatars.craft-cdn.com/'

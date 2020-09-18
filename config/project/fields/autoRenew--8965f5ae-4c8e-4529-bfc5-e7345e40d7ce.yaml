@@ -1,0 +1,11 @@
+contentColumnType: boolean
+fieldGroup: 4987fb8d-cf45-4b60-a94f-51c591336558
+handle: autoRenew
+instructions: ''
+name: 'Auto Renew'
+searchable: true
+settings:
+  default: '1'
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\Lightswitch

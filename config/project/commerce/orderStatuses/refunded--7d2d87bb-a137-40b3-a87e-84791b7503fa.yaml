@@ -1,0 +1,5 @@
+color: blue
+default: false
+handle: refunded
+name: Refunded
+sortOrder: 2

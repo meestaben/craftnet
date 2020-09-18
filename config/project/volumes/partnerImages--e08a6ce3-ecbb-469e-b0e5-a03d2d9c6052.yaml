@@ -1,0 +1,18 @@
+handle: partnerImages
+hasUrls: true
+name: 'Partner Images'
+settings:
+  autoFocalPoint: ''
+  bucket: $S3_PARTNER_RESOURCES_BUCKET
+  bucketSelectionMode: manual
+  cfDistributionId: ''
+  cfPrefix: ''
+  expires: '604800 seconds'
+  keyId: $AWS_ACCESS_KEY_ID
+  region: $S3_BUCKET_REGION
+  secret: $AWS_SECRET_ACCESS_KEY
+  storageClass: ''
+  subfolder: images
+sortOrder: 4
+type: craft\awss3\Volume
+url: 'https://s3-us-west-2.amazonaws.com/partner-resources.craftcms/'
