@@ -223,7 +223,7 @@ class CmsLicensesController extends BaseController
 
                 // Did they change the auto renew setting?
                 $autoRenew = Craft::$app->getRequest()->getParam('autoRenew', $license->autoRenew);
-                
+
                 if ($autoRenew != $license->autoRenew) {
                     $license->autoRenew = $autoRenew;
                     // If they've already received a reminder about the auto renewal, then update the locked price
@@ -236,7 +236,6 @@ class CmsLicensesController extends BaseController
                     throw new Exception("Couldn't save license.");
                 }
 
-                /** @noinspection PhpUndefinedVariableInspection */
                 if ($domain !== null && $license->domain !== $oldDomain) {
                     $note = $license->domain ? "tied to domain {$license->domain}" : "untied from domain {$oldDomain}";
                     $manager->addHistory($license->id, "{$note} by {$user->email}");

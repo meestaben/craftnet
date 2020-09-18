@@ -46,7 +46,6 @@ class Packagist extends BaseVcs
         $data = Json::decode((string)$response->getBody());
 
         if ($cacheDuration !== false) {
-            /** @noinspection PhpUndefinedVariableInspection */
             $cacheService->set($cacheKey, $data, $cacheDuration);
         }
 
