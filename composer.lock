@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "29df09fff97efa1e4d927bac433b8f35",
+    "content-hash": "6bb80183ec89e8bab808fd93b90e646b",
     "packages": [
         {
             "name": "adam-paterson/oauth2-stripe",
@@ -840,16 +840,16 @@
         },
         {
             "name": "craftcms/commerce",
-            "version": "3.2.6",
+            "version": "dev-develop",
             "source": {
                 "type": "git",
                 "url": "https://github.com/craftcms/commerce.git",
-                "reference": "4918ff9198eefe7db03dac72bfa18776446b49a9"
+                "reference": "6ea1e5e611502e3e24c0e95890f7f61d231d3ee1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/craftcms/commerce/zipball/4918ff9198eefe7db03dac72bfa18776446b49a9",
-                "reference": "4918ff9198eefe7db03dac72bfa18776446b49a9",
+                "url": "https://api.github.com/repos/craftcms/commerce/zipball/6ea1e5e611502e3e24c0e95890f7f61d231d3ee1",
+                "reference": "6ea1e5e611502e3e24c0e95890f7f61d231d3ee1",
                 "shasum": ""
             },
             "require": {
@@ -895,7 +895,7 @@
                 "craftcms",
                 "yii2"
             ],
-            "time": "2020-09-14T02:24:49+00:00"
+            "time": "2020-09-19T05:25:49+00:00"
         },
         {
             "name": "craftcms/commerce-stripe",
@@ -8726,9 +8726,18 @@
             "time": "2020-07-14T17:54:18+00:00"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "alias": "3.2.6",
+            "alias_normalized": "3.2.6.0",
+            "version": "dev-develop",
+            "package": "craftcms/commerce"
+        }
+    ],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "craftcms/commerce": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
