@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6bb80183ec89e8bab808fd93b90e646b",
+    "content-hash": "817efe44ee2ae99ef17d36675ec9b36e",
     "packages": [
         {
             "name": "adam-paterson/oauth2-stripe",
@@ -844,12 +844,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/craftcms/commerce.git",
-                "reference": "6ea1e5e611502e3e24c0e95890f7f61d231d3ee1"
+                "reference": "e823806d6a5ab26c948ccd65c1d8266bcb59b137"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/craftcms/commerce/zipball/6ea1e5e611502e3e24c0e95890f7f61d231d3ee1",
-                "reference": "6ea1e5e611502e3e24c0e95890f7f61d231d3ee1",
+                "url": "https://api.github.com/repos/craftcms/commerce/zipball/e823806d6a5ab26c948ccd65c1d8266bcb59b137",
+                "reference": "e823806d6a5ab26c948ccd65c1d8266bcb59b137",
                 "shasum": ""
             },
             "require": {
@@ -895,7 +895,7 @@
                 "craftcms",
                 "yii2"
             ],
-            "time": "2020-09-19T05:25:49+00:00"
+            "time": "2020-09-19T05:44:41+00:00"
         },
         {
             "name": "craftcms/commerce-stripe",
