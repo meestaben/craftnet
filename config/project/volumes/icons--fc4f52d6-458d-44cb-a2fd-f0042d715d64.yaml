@@ -1,18 +1,50 @@
+fieldLayouts:
+  87d607e6-5a47-4c6b-aaaa-d3ecb62c6e78:
+    tabs:
+      -
+        elements:
+          -
+            autocapitalize: true
+            autocomplete: false
+            autocorrect: true
+            class: null
+            disabled: false
+            id: null
+            instructions: null
+            label: null
+            max: null
+            min: null
+            name: null
+            orientation: null
+            placeholder: null
+            readonly: false
+            requirable: false
+            size: null
+            step: null
+            tip: null
+            title: null
+            type: craft\fieldlayoutelements\TitleField
+            warning: null
+            width: 100
+        name: Content
+        sortOrder: 1
 handle: icons
 hasUrls: true
 name: Icons
 settings:
+  addSubfolderToRootUrl: '1'
   autoFocalPoint: ''
   bucket: $S3_PLUGIN_ICONS_BUCKET
   bucketSelectionMode: manual
-  cfDistributionId: ETQ0JHTENMTPR
+  cfDistributionId: $S3_PLUGIN_ICONS_CF_DIST_ID
   cfPrefix: ''
   expires: '604800 seconds'
   keyId: $AWS_ACCESS_KEY_ID
+  makeUploadsPublic: '1'
   region: $S3_BUCKET_REGION
   secret: $AWS_SECRET_ACCESS_KEY
   storageClass: ''
   subfolder: ''
 sortOrder: 2
 type: craft\awss3\Volume
-url: 'https://pluginicons.craft-cdn.com'
+url: $S3_PLUGIN_ICONS_URL
