@@ -1,0 +1,45 @@
+contentColumnType: string
+fieldGroup: add7f1c8-5c4a-4d23-9398-8a9472f169e8
+handle: supportPlan
+instructions: ''
+name: 'Support Plan'
+searchable: false
+settings:
+  optgroups: true
+  options:
+    -
+      __assoc__:
+        -
+          - label
+          - Basic
+        -
+          - value
+          - basic
+        -
+          - default
+          - '1'
+    -
+      __assoc__:
+        -
+          - label
+          - Pro
+        -
+          - value
+          - pro
+        -
+          - default
+          - ''
+    -
+      __assoc__:
+        -
+          - label
+          - Premium
+        -
+          - value
+          - premium
+        -
+          - default
+          - ''
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\Dropdown
