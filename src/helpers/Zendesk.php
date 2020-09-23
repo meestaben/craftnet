@@ -40,9 +40,10 @@ abstract class Zendesk
 
         if ($user) {
             // Are we manually setting their support plan?
+            $supportPlan = (string)$user->supportPlan;
             if (
-                $user->supportPlan &&
-                $user->supportPlan !== DeveloperSupportController::PLAN_BASIC &&
+                $supportPlan &&
+                $supportPlan !== DeveloperSupportController::PLAN_BASIC &&
                 (!$user->supportPlanExpiryDate || $user->supportPlanExpiryDate > new \DateTime())
             ) {
                 return $user->supportPlan;
