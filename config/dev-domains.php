@@ -4,6 +4,7 @@ return [
     '288dev.com',
     'aanpqa.com',
     'ai-qa.com',
+    'astuteo.dev',
     'azure.com',
     'berts.space',
     'buildwithcraft.com',
