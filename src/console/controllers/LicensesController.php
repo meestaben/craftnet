@@ -283,7 +283,8 @@ class LicensesController extends Controller
             ]);
 
             // Save the cart so it gets an ID
-            if (!Craft::$app->getElements()->saveElement($order)) {
+            $elementsService = Craft::$app->getElements();
+            if (!$elementsService->saveElement($order)) {
                 throw new \Exception('Could not save the cart: ' . implode(', ', $order->getErrorSummary(true)));
             }
 
@@ -301,6 +302,11 @@ class LicensesController extends Controller
 
             // Recalculate the order
             $order->recalculate();
+
+            // Resave the order
+            if (!$elementsService->saveElement($order)) {
+                throw new \Exception('Could not save the cart: ' . implode(', ', $order->getErrorSummary(true)));
+            }
 
             // Pay for it
             /** @var StripeGateway $gateway */
