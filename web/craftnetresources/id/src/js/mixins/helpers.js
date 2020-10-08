@@ -134,12 +134,17 @@ export default {
             if (license.pluginLicenses.length > 0) {
                 // Renewable plugin licenses
                 const renewablePluginLicenses = license.pluginLicenses.filter(pluginLicense => {
-                    // Plugin licenses with no `expiresOn` are not renewable
+                    // Ignore the plugin licenses that don’t have a renewal option
+                    if (!license.pluginRenewalOptions[pluginLicense.key]) {
+                        return false
+                    }
+
+                    // Ignore the plugin licenses are not renewable
                     if (!pluginLicense.expiresOn) {
                         return false
                     }
 
-                    // Ignore the plugin license if it expires after the CMS license
+                    // Ignore the plugin licenses that expire after the CMS license
                     if (!pluginLicense.expired) {
                         const pluginExpiresOn = VueApp.$moment(pluginLicense.expiresOn.date)
                         const expiryDateObject = VueApp.$moment(expiryDate)
@@ -154,8 +159,8 @@ export default {
 
                 // Add renewable plugin licenses to the `renewableLicenses` array
                 renewablePluginLicenses.forEach(function(renewablePluginLicense) {
-                    const pluginHandle = renewablePluginLicense.plugin.handle
-                    const pluginRenewalOptions = license.pluginRenewalOptions[pluginHandle]
+                    const pluginRenewalOptionKey = renewablePluginLicense.key
+                    const pluginRenewalOptions = license.pluginRenewalOptions[pluginRenewalOptionKey]
                     const pluginRenewalOption = pluginRenewalOptions.find(r => r.expiryDate === expiryDate)
                     const amount = pluginRenewalOption.amount
 
