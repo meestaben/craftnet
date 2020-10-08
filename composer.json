@@ -13,7 +13,7 @@
     "league/oauth2-server": "^6.0",
     "adam-paterson/oauth2-stripe": "^2.0.0",
     "stevenmaguire/oauth2-bitbucket": "^2.0",
-    "craftcms/commerce": "^3.2.6",
+    "craftcms/commerce": "dev-develop#e823806d6a5ab26c948ccd65c1d8266bcb59b137 as 3.2.6",
     "craftcms/commerce-stripe": "^2.3.0",
     "layershifter/tld-extract": "^1.2",
     "ddeboer/vatin": "^2.1",

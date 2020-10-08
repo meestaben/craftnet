@@ -1,18 +1,50 @@
+fieldLayouts:
+  5e063d81-9ac9-48ef-ad23-3301bfb8c89f:
+    tabs:
+      -
+        elements:
+          -
+            autocapitalize: true
+            autocomplete: false
+            autocorrect: true
+            class: null
+            disabled: false
+            id: null
+            instructions: null
+            label: null
+            max: null
+            min: null
+            name: null
+            orientation: null
+            placeholder: null
+            readonly: false
+            requirable: false
+            size: null
+            step: null
+            tip: null
+            title: null
+            type: craft\fieldlayoutelements\TitleField
+            warning: null
+            width: 100
+        name: Content
+        sortOrder: 1
 handle: partnerImages
 hasUrls: true
 name: 'Partner Images'
 settings:
+  addSubfolderToRootUrl: '1'
   autoFocalPoint: ''
   bucket: $S3_PARTNER_RESOURCES_BUCKET
   bucketSelectionMode: manual
-  cfDistributionId: ''
+  cfDistributionId: $S3_PARTNER_RESOURCES_CF_DIST_ID
   cfPrefix: ''
   expires: '604800 seconds'
   keyId: $AWS_ACCESS_KEY_ID
+  makeUploadsPublic: '1'
   region: $S3_BUCKET_REGION
   secret: $AWS_SECRET_ACCESS_KEY
   storageClass: ''
   subfolder: images
 sortOrder: 4
 type: craft\awss3\Volume
-url: 'https://s3-us-west-2.amazonaws.com/partner-resources.craftcms/'
+url: $S3_PARTNER_RESOURCES_URL

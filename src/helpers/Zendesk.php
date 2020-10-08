@@ -34,18 +34,26 @@ abstract class Zendesk
      */
     public static function plan(string $email): string
     {
-        $userId = User::find()
-            ->select(['elements.id'])
+        $user = User::find()
             ->andWhere(new Expression('lower([[email]]) = :email', [':email' => $email]))
-            ->asArray()
-            ->scalar();
+            ->one();
 
-        if ($userId) {
-            if (self::checkPlan($userId, DeveloperSupportController::PLAN_PREMIUM)) {
+        if ($user) {
+            // Are we manually setting their support plan?
+            $supportPlan = (string)$user->supportPlan;
+            if (
+                $supportPlan &&
+                $supportPlan !== DeveloperSupportController::PLAN_BASIC &&
+                (!$user->supportPlanExpiryDate || $user->supportPlanExpiryDate > new \DateTime())
+            ) {
+                return $user->supportPlan;
+            }
+
+            if (self::checkPlan($user->id, DeveloperSupportController::PLAN_PREMIUM)) {
                 return DeveloperSupportController::PLAN_PREMIUM;
             }
 
-            if (self::checkPlan($userId, DeveloperSupportController::PLAN_PRO)) {
+            if (self::checkPlan($user->id, DeveloperSupportController::PLAN_PRO)) {
                 return DeveloperSupportController::PLAN_PRO;
             }
         }

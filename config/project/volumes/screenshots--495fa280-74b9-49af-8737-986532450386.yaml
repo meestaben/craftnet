@@ -1,18 +1,50 @@
+fieldLayouts:
+  ab0d2e58-eef4-483e-8d6d-8c737f635c83:
+    tabs:
+      -
+        elements:
+          -
+            autocapitalize: true
+            autocomplete: false
+            autocorrect: true
+            class: null
+            disabled: false
+            id: null
+            instructions: null
+            label: null
+            max: null
+            min: null
+            name: null
+            orientation: null
+            placeholder: null
+            readonly: false
+            requirable: false
+            size: null
+            step: null
+            tip: null
+            title: null
+            type: craft\fieldlayoutelements\TitleField
+            warning: null
+            width: 100
+        name: Content
+        sortOrder: 1
 handle: screenshots
 hasUrls: true
 name: Screenshots
 settings:
+  addSubfolderToRootUrl: '1'
   autoFocalPoint: ''
   bucket: $S3_PLUGIN_SCREENSHOTS_BUCKET
   bucketSelectionMode: manual
-  cfDistributionId: E2SAV3S77HIZ5G
+  cfDistributionId: $S3_PLUGIN_SCREENSHOTS_CF_DIST_ID
   cfPrefix: ''
   expires: '604800 seconds'
   keyId: $AWS_ACCESS_KEY_ID
+  makeUploadsPublic: '1'
   region: $S3_BUCKET_REGION
   secret: $AWS_SECRET_ACCESS_KEY
   storageClass: ''
   subfolder: ''
 sortOrder: 3
 type: craft\awss3\Volume
-url: 'https://pluginscreenshots.craft-cdn.com'
+url: $S3_PLUGIN_SCREENSHOTS_URL
