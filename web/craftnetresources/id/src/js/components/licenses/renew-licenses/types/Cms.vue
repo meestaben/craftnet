@@ -87,24 +87,31 @@
 
                     const renewableLicenses = this.getRenewableLicenses(this.license, i, this.cartItems)
 
+
                     // plugin amounts
                     renewableLicenses.forEach((renewableLicense) => {
                         // only keep checked licenses
                         if (this.checkedLicenses[this.getRenewableLicenseKey(renewableLicense)]) {
-                            let pluginHandle = null
-
                             // extract plugin handle from the plugin licenses
-                            this.license.pluginLicenses.forEach(pluginLicense => {
-                                if (pluginLicense.key === renewableLicense.key) {
-                                    pluginHandle = pluginLicense.plugin.handle
 
-                                    // find plugin renewal options matching this plugin handle
-                                    const option = pluginRenewalOptions[pluginHandle][i]
+                            if (renewableLicense.type === 'plugin-renewal') {
+                                this.license.pluginLicenses.forEach(pluginLicense => {
+                                    if (!pluginLicense.expiresOn) {
+                                        // Stop there if the plugin doesn’t expire
+                                        return
+                                    }
 
-                                    // add plugin option amount
-                                    currentAmount += option.amount
-                                }
-                            })
+                                    if (pluginLicense.key === renewableLicense.key) {
+                                        const pluginRenewalOptionKey = pluginLicense.key
+
+                                        // find plugin renewal options matching this plugin handle
+                                        const option = pluginRenewalOptions[pluginRenewalOptionKey][i]
+
+                                        // add plugin option amount
+                                        currentAmount += option.amount
+                                    }
+                                })
+                            }
                         }
                     })
 
@@ -174,13 +181,14 @@
                 let checkedLicenses = {}
 
                 this.renewableLicenses.forEach(function(renewableLicense) {
+                    let renewableLicenseKey = this.getRenewableLicenseKey(renewableLicense)
                     let value = 0
 
-                    if (this.checkedLicenses[this.getRenewableLicenseKey(renewableLicense)] === 1) {
+                    if (this.checkedLicenses[renewableLicenseKey] === 1) {
                         value = 1
                     }
 
-                    checkedLicenses[this.getRenewableLicenseKey(renewableLicense)] = value
+                    checkedLicenses[renewableLicenseKey] = value
                 }.bind(this))
 
                 this.checkedLicenses = checkedLicenses
@@ -211,7 +219,7 @@
                     if (renewableLicense.type === 'cms-renewal') {
                         value = 1
                     } else {
-                        value = $event.target.checked ? 1 : 0
+                        value = renewableLicense.key && $event.target.checked ? 1 : 0
                     }
 
                     checkedLicenses[this.getRenewableLicenseKey(renewableLicense)] = value
@@ -261,7 +269,7 @@
             },
 
             getRenewableLicenseKey(renewableLicense) {
-                return renewableLicense.type + renewableLicense.key
+                return renewableLicense.type + '-' + renewableLicense.key
             }
         },
 

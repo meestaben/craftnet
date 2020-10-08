@@ -602,13 +602,14 @@ class CmsLicenseManager extends Component
                 $pluginLicenses[] = $pluginLicense;
 
                 // Plugin renewal options
-                if (isset($expiryDateStart)) {
+                if ($pluginLicensesResult->ownerId === $owner->id && isset($expiryDateStart)) {
                     $pluginHandle = $pluginLicense['edition']->getPlugin()->handle;
                     $pluginRenewalPrice = $pluginLicense['edition']->renewalPrice;
                     $pluginExpiryDate = $pluginLicense['expiresOn'];
 
                     if ($pluginExpiryDate) {
-                        $pluginRenewalOptions[$pluginHandle] = $this->getRenewalOptions($pluginExpiryDate, $pluginRenewalPrice, $expiryDateStart);
+                        $pluginRenewalOptionsKey = $pluginLicense['key'];
+                        $pluginRenewalOptions[$pluginRenewalOptionsKey] = $this->getRenewalOptions($pluginExpiryDate, $pluginRenewalPrice, $expiryDateStart);
                     }
                 }
             }
