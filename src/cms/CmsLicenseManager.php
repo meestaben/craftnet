@@ -614,10 +614,7 @@ class CmsLicenseManager extends Component
                 }
             }
 
-            if (count($pluginRenewalOptions) > 0) {
-                $license['pluginRenewalOptions'] = $pluginRenewalOptions;
-            }
-
+            $license['pluginRenewalOptions'] = $pluginRenewalOptions;
             $license['pluginLicenses'] = $pluginLicenses;
         }
 
