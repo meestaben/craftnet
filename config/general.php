@@ -83,6 +83,7 @@ return [
         'defaultCookieDomain' => '.craftcms.test',
         'baseCpUrl' => 'https://id.craftcms.test/',
         'disabledPlugins' => ['webhooks'],
+        'enableBasicHttpAuth' => true,
     ],
     'next' => [
         'devMode' => true,
