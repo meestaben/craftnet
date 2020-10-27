@@ -105,6 +105,7 @@ class JsonDumper extends Component
                 'packageId' => array_keys($packages),
                 'valid' => true,
             ])
+            ->orderBy(['time' => SORT_DESC])
             ->indexBy('id')
             ->all();
 
