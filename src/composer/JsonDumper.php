@@ -120,7 +120,9 @@ class JsonDumper extends Component
             $depsByVersion[$dep['versionId']][] = $dep;
         }
 
-        $providers = [];
+        $v1PackageData = [];
+        $v2PackageData = [];
+        $v2ProviderData = [];
 
         foreach ($versions as $version) {
             $package = $packages[$version['packageId']];
@@ -189,49 +191,81 @@ class JsonDumper extends Component
             }
             $data['uid'] = (int)$version['id'];
 
-            $providers[$name]['packages'][$name][$version['version']] = $data;
+            // Composer 1 allows multiple packages to be listed in the same file (main package + any provider packages),
+            // but Composer 2 does not.
+            $v1PackageData[$name][$name][$data['version']] = $data;
+            $v2PackageData[$name][] = $data;
 
+            // Does this package provide any other packages?
             if (!empty($data['provide'])) {
                 foreach (array_keys($data['provide']) as $provideName) {
-                    $providers[$provideName]['packages'][$name][$version['version']] = $data;
+                    // Add it to the provided package’s Composer 1 data
+                    $v1PackageData[$provideName][$name][$data['version']] = $data;
+
+                    // Add it to the provided package’s providers-api file
+                    // e.g. https://packagist.org/providers/monolog/monolog.json
+                    $v2ProviderData[$provideName][] = [
+                        'name' => $name,
+                        'description' => $data['description'],
+                        'type' => $data['type'],
+                    ];
                 }
             }
         }
 
         // Create the JSON files
-        $oldPaths = [];
-        $indexData = [];
+        $v1OldPaths = [];
+        $v1ProviderData = [];
 
-        foreach ($providers as $name => $providerData) {
-            $providerHash = $this->_writeJsonFile($providerData, "p/{$name}/%hash%.json", $oldPaths);
-            $indexData['providers'][$name] = ['sha256' => $providerHash];
+        foreach ($v1PackageData as $name => $data) {
+            $providerHash = $this->_writeHashedJsonFile("p/$name/%hash%.json", [
+                'packages' => $data,
+            ], $v1OldPaths);
+            $v1ProviderData[$name] = ['sha256' => $providerHash];
         }
 
-        $indexPath = 'p/provider/%hash%.json';
-        $indexHash = $this->_writeJsonFile($indexData, $indexPath, $oldPaths);
+        $v1IndexPath = 'p/provider/%hash%.json';
+        $v1IndexHash = $this->_writeHashedJsonFile($v1IndexPath, [
+            'providers' => $v1ProviderData,
+        ], $v1OldPaths);
 
-        $rootData = [
+        foreach ($v2PackageData as $name => $data) {
+            $this->_writeJsonFile("p2/$name.json", [
+                'packages' => [
+                    $name => $data,
+                ],
+            ]);
+            $this->_writeJsonFile("p2/$name~dev.json", [
+                'packages' => [
+                    $name => [],
+                ],
+            ]);
+        }
+
+        foreach ($v2ProviderData as $name => $data) {
+            $this->_writeJsonFile("providers/$name.json", [
+                'providers' => $data,
+            ]);
+        }
+
+        Craft::info("Writing JSON file to packages.json", __METHOD__);
+        $this->_writeJsonFile('packages.json', [
             'packages' => [],
-            'provider-includes' => [
-                $indexPath => ['sha256' => $indexHash],
-            ],
             'providers-url' => '/p/%package%/%hash%.json',
-        ];
-
-        Craft::info("Writing JSON file to {$this->composerWebroot}/packages.json", __METHOD__);
-        FileHelper::writeToFile($this->composerWebroot . '/packages.json', Json::encode($rootData));
-
-        if ($this->cfDistributionId) {
-            $this->_invalidateCloudFrontPath('/packages.json');
-        }
+            'metadata-url' => '/p2/%package%.json',
+            'providers-api' => '/providers/%package%.json',
+            'provider-includes' => [
+                $v1IndexPath => ['sha256' => $v1IndexHash],
+            ],
+        ]);
 
         if ($isConsole) {
             Console::output('done');
         }
 
-        if (!empty($oldPaths)) {
+        if (!empty($v1OldPaths)) {
             Craft::$app->getQueue()->delay(900)->push(new DeletePaths([
-                'paths' => $oldPaths,
+                'paths' => $v1OldPaths,
             ]));
         }
     }
@@ -309,26 +343,26 @@ class JsonDumper extends Component
     /**
      * Writes a new JSON file and returns its hash.
      *
-     * @param array $data The data to write
      * @param string $path The path to save the content (can contain a %hash% tag)
+     * @param array $data The data to write
      * @param array $oldPaths Array of existing files that should be deleted
      *
      * @return string
      */
-    private function _writeJsonFile(array $data, string $path, &$oldPaths): string
+    private function _writeHashedJsonFile(string $path, array $data, &$oldPaths): string
     {
         $content = Json::encode($data);
         $hash = hash('sha256', $content);
-        $relativePath = '/' . str_replace('%hash%', $hash, $path);
-        $path = $this->composerWebroot . $relativePath;
+        $path = str_replace('%hash%', $hash, $path);
+        $fullPath = "$this->composerWebroot/$path";
 
         // If nothing's changed, we're done
-        if (file_exists($path)) {
+        if (file_exists($fullPath)) {
             return $hash;
         }
 
         // Mark any existing files in there for deletion
-        $dir = dirname($path);
+        $dir = dirname($fullPath);
         if (is_dir($dir) && ($handle = opendir($dir))) {
             while (($file = readdir($handle)) !== false) {
                 if ($file === '.' || $file === '..') {
@@ -339,14 +373,42 @@ class JsonDumper extends Component
             closedir($handle);
         }
 
-        Craft::info('Writing JSON file to ' . $path, __METHOD__);
+        Craft::info("Writing JSON file to $path", __METHOD__);
         try {
-            // Write the new file
-            FileHelper::writeToFile($path, $content);
+            FileHelper::writeToFile($fullPath, $content);
         } catch (\Throwable $throwable) {
             Craft::error($throwable->getMessage(), __METHOD__);
         }
 
         return $hash;
+    }
+
+    /**
+     * Writes a JSON file.
+     *
+     * @param string $path The path relative to the webroot
+     * @param array $data The data to be JSON-encoded and saved
+     */
+    private function _writeJsonFile(string $path, array $data)
+    {
+        $fullPath = "$this->composerWebroot/$path";
+        $content = Json::encode($data);
+
+        // Don't overwrite it if nothing is changing
+        $exists = file_exists($fullPath);
+        if ($exists && sha1($content) === sha1_file($fullPath)) {
+            return;
+        }
+
+        Craft::info("Writing JSON file to $path", __METHOD__);
+        try {
+            FileHelper::writeToFile($fullPath, $content);
+        } catch (\Throwable $throwable) {
+            Craft::error($throwable->getMessage(), __METHOD__);
+        }
+
+        if ($exists && $this->cfDistributionId) {
+            $this->_invalidateCloudFrontPath("/$path");
+        }
     }
 }
