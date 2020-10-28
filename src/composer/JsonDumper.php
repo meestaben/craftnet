@@ -15,6 +15,7 @@ use craft\helpers\FileHelper;
 use craft\helpers\Json;
 use craftnet\composer\jobs\DeletePaths;
 use craftnet\composer\jobs\DumpJson;
+use craftnet\Module;
 use yii\base\Component;
 
 /**
@@ -105,9 +106,11 @@ class JsonDumper extends Component
                 'packageId' => array_keys($packages),
                 'valid' => true,
             ])
-            ->orderBy(['id' => SORT_DESC])
             ->indexBy('id')
             ->all();
+
+        // Sort by version DESC
+        Module::getInstance()->getPackageManager()->sortVersions($versions, SORT_DESC);
 
         $deps = (new Query())
             ->select(['versionId', 'name', 'constraints'])

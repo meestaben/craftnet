@@ -182,7 +182,7 @@ class PackageManager extends Component
         }
 
         if ($sort) {
-            $this->_sortVersions($versions);
+            $this->sortVersions($versions);
         }
 
         return $versions;
@@ -242,7 +242,7 @@ class PackageManager extends Component
         });
 
         if ($sort) {
-            $this->_sortVersions($versions);
+            $this->sortVersions($versions);
         }
 
         return $versions;
@@ -276,7 +276,7 @@ class PackageManager extends Component
         });
 
         if ($sort) {
-            $this->_sortVersions($versions);
+            $this->sortVersions($versions);
         }
 
         return $versions;
@@ -307,7 +307,7 @@ class PackageManager extends Component
         }
 
         // Sort them oldest-to-newest
-        $this->_sortVersions($releases);
+        $this->sortVersions($releases);
 
         return $releases;
     }
@@ -333,7 +333,7 @@ class PackageManager extends Component
         }
 
         // Sort them oldest-to-newest
-        $this->_sortVersions($releases);
+        $this->sortVersions($releases);
 
         return $releases;
     }
@@ -368,19 +368,24 @@ class PackageManager extends Component
     /**
      * Sorts a given list of versions.
      *
-     * @param string[]|PackageRelease[] &$versions
+     * @param string[]|PackageRelease[]|array[] &$versions
      * @param int $dir The sort direction (SORT_ASC = oldest -> newest; SORT_DESC = newest -> oldest)
      */
-    private function _sortVersions(array &$versions, int $dir = SORT_ASC)
+    public function sortVersions(array &$versions, int $dir = SORT_ASC)
     {
         $vp = new VersionParser();
 
         usort($versions, function($a, $b) use ($vp, $dir): int {
             if ($a instanceof PackageRelease) {
                 $a = $a->version;
+            } else if (is_array($a) && isset($a['version'])) {
+                $a = $a['version'];
             }
+
             if ($b instanceof PackageRelease) {
                 $b = $b->version;
+            } else if (is_array($b) && isset($b['version'])) {
+                $b = $b['version'];
             }
 
             $a = $vp->normalize($a);
@@ -879,7 +884,7 @@ class PackageManager extends Component
                 }
 
                 // Sort by newest => oldest
-                $this->_sortVersions($newVersions, SORT_DESC);
+                $this->sortVersions($newVersions, SORT_DESC);
 
                 foreach ($newVersions as $normalizedVersion) {
                     $version = $vcsVersionInfo[$normalizedVersion]['version'];
