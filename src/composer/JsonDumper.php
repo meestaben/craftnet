@@ -207,11 +207,13 @@ class JsonDumper extends Component
 
                     // Add it to the provided package’s providers-api file
                     // e.g. https://packagist.org/providers/monolog/monolog.json
-                    $v2ProviderData[$provideName][] = [
-                        'name' => $name,
-                        'description' => $data['description'],
-                        'type' => $data['type'],
-                    ];
+                    if (!isset($v2ProviderData[$provideName][$name])) {
+                        $v2ProviderData[$provideName][$name] = [
+                            'name' => $name,
+                            'description' => $data['description'],
+                            'type' => $data['type'],
+                        ];
+                    }
                 }
             }
         }
@@ -247,7 +249,7 @@ class JsonDumper extends Component
 
         foreach ($v2ProviderData as $name => $data) {
             $this->_writeJsonFile("providers/$name.json", [
-                'providers' => $data,
+                'providers' => array_values($data),
             ]);
         }
 
