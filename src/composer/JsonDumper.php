@@ -65,7 +65,8 @@ class JsonDumper extends Component
         Craft::info('Dumping JSON.', __METHOD__);
 
         if ($isConsole) {
-            Console::stdout('Dumping JSON ... ');
+            Console::stdout('Dumping JSON ...' . PHP_EOL);
+            Console::stdout('> Fetching package versions ... ');
         }
 
         // Fetch all the data
@@ -116,6 +117,11 @@ class JsonDumper extends Component
             ->select(['versionId', 'name', 'constraints'])
             ->from(['craftnet_packagedeps'])
             ->all();
+
+        if ($isConsole) {
+            Console::stdout('done' . PHP_EOL, Console::FG_GREEN);
+            Console::stdout('> Preparing data ... ');
+        }
 
         // Assemble the data
         $depsByVersion = [];
@@ -218,6 +224,10 @@ class JsonDumper extends Component
             }
         }
 
+        if ($isConsole) {
+            Console::stdout('done' . PHP_EOL, Console::FG_GREEN);
+        }
+
         // Create the JSON files
         $v1OldPaths = [];
         $v1ProviderData = [];
@@ -225,32 +235,32 @@ class JsonDumper extends Component
         foreach ($v1PackageData as $name => $data) {
             $providerHash = $this->_writeHashedJsonFile("p/$name/%hash%.json", [
                 'packages' => $data,
-            ], $v1OldPaths);
+            ], $v1OldPaths, $isConsole);
             $v1ProviderData[$name] = ['sha256' => $providerHash];
         }
 
         $v1IndexPath = 'p/provider/%hash%.json';
         $v1IndexHash = $this->_writeHashedJsonFile($v1IndexPath, [
             'providers' => $v1ProviderData,
-        ], $v1OldPaths);
+        ], $v1OldPaths, $isConsole);
 
         foreach ($v2PackageData as $name => $data) {
             $this->_writeJsonFile("p2/$name.json", [
                 'packages' => [
                     $name => $data,
                 ],
-            ]);
+            ], $isConsole);
             $this->_writeJsonFile("p2/$name~dev.json", [
                 'packages' => [
                     $name => [],
                 ],
-            ]);
+            ], $isConsole);
         }
 
         foreach ($v2ProviderData as $name => $data) {
             $this->_writeJsonFile("providers/$name.json", [
                 'providers' => array_values($data),
-            ]);
+            ], $isConsole);
         }
 
         Craft::info("Writing JSON file to packages.json", __METHOD__);
@@ -262,10 +272,10 @@ class JsonDumper extends Component
             'provider-includes' => [
                 $v1IndexPath => ['sha256' => $v1IndexHash],
             ],
-        ]);
+        ], $isConsole);
 
         if ($isConsole) {
-            Console::output('done');
+            Console::stdout('Finished dumping JSON' . PHP_EOL, Console::FG_GREEN);
         }
 
         if (!empty($v1OldPaths)) {
@@ -351,10 +361,11 @@ class JsonDumper extends Component
      * @param string $path The path to save the content (can contain a %hash% tag)
      * @param array $data The data to write
      * @param array $oldPaths Array of existing files that should be deleted
+     * @param bool $isConsole Whether this is a console request
      *
      * @return string
      */
-    private function _writeHashedJsonFile(string $path, array $data, &$oldPaths): string
+    private function _writeHashedJsonFile(string $path, array $data, &$oldPaths, bool $isConsole): string
     {
         $content = Json::encode($data);
         $hash = hash('sha256', $content);
@@ -378,12 +389,7 @@ class JsonDumper extends Component
             closedir($handle);
         }
 
-        Craft::info("Writing JSON file to $path", __METHOD__);
-        try {
-            FileHelper::writeToFile($fullPath, $content);
-        } catch (\Throwable $throwable) {
-            Craft::error($throwable->getMessage(), __METHOD__);
-        }
+        $this->_writeFile($path, $content, $isConsole);
 
         return $hash;
     }
@@ -393,8 +399,9 @@ class JsonDumper extends Component
      *
      * @param string $path The path relative to the webroot
      * @param array $data The data to be JSON-encoded and saved
+     * @param bool $isConsole Whether this is a console request
      */
-    private function _writeJsonFile(string $path, array $data)
+    private function _writeJsonFile(string $path, array $data, bool $isConsole)
     {
         $fullPath = "$this->composerWebroot/$path";
         $content = Json::encode($data);
@@ -405,15 +412,41 @@ class JsonDumper extends Component
             return;
         }
 
-        Craft::info("Writing JSON file to $path", __METHOD__);
-        try {
-            FileHelper::writeToFile($fullPath, $content);
-        } catch (\Throwable $throwable) {
-            Craft::error($throwable->getMessage(), __METHOD__);
-        }
+        $this->_writeFile($path, $content, $isConsole);
 
         if ($exists && $this->cfDistributionId) {
             $this->_invalidateCloudFrontPath("/$path");
+        }
+    }
+
+    /**
+     * Writes a file
+     *
+     * @param string $path
+     * @param string $content
+     * @param bool $isConsole
+     */
+    private function _writeFile(string $path, string $content, bool $isConsole)
+    {
+        $fullPath = "$this->composerWebroot/$path";
+
+        Craft::info("Writing JSON file to $path", __METHOD__);
+        if ($isConsole) {
+            Console::stdout("> Writing ");
+            Console::stdout($path, Console::FG_CYAN);
+            Console::stdout(' ... ');
+        }
+
+        try {
+            FileHelper::writeToFile($fullPath, $content);
+            if ($isConsole) {
+                Console::stdout('done' . PHP_EOL, Console::FG_GREEN);
+            }
+        } catch (\Throwable $e) {
+            Craft::error($e->getMessage(), __METHOD__);
+            if ($isConsole) {
+                Console::stdout("error: {$e->getMessage()}" . PHP_EOL, Console::FG_RED);
+            }
         }
     }
 }
