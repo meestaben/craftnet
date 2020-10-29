@@ -244,6 +244,17 @@ class JsonDumper extends Component
             'providers' => $v1ProviderData,
         ], $v1OldPaths, $isConsole);
 
+        Craft::info("Writing JSON file to packages.json", __METHOD__);
+        $this->_writeJsonFile('packages.json', [
+            'packages' => [],
+            'providers-url' => '/p/%package%/%hash%.json',
+            'metadata-url' => '/p2/%package%.json',
+            'providers-api' => '/providers/%package%.json',
+            'provider-includes' => [
+                $v1IndexPath => ['sha256' => $v1IndexHash],
+            ],
+        ], $isConsole);
+
         foreach ($v2PackageData as $name => $data) {
             $this->_writeJsonFile("p2/$name.json", [
                 'packages' => [
@@ -262,17 +273,6 @@ class JsonDumper extends Component
                 'providers' => array_values($data),
             ], $isConsole);
         }
-
-        Craft::info("Writing JSON file to packages.json", __METHOD__);
-        $this->_writeJsonFile('packages.json', [
-            'packages' => [],
-            'providers-url' => '/p/%package%/%hash%.json',
-            'metadata-url' => '/p2/%package%.json',
-            'providers-api' => '/providers/%package%.json',
-            'provider-includes' => [
-                $v1IndexPath => ['sha256' => $v1IndexHash],
-            ],
-        ], $isConsole);
 
         if ($isConsole) {
             Console::stdout('Finished dumping JSON' . PHP_EOL, Console::FG_GREEN);
