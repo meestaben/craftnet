@@ -7,6 +7,7 @@ use Aws\CloudFront\Exception\CloudFrontException;
 use Aws\Credentials\Credentials;
 use Aws\Handler\GuzzleV6\GuzzleHandler;
 use Aws\Sts\StsClient;
+use Composer\Util\MetadataMinifier;
 use Craft;
 use craft\db\Query;
 use craft\helpers\Console;
@@ -258,8 +259,9 @@ class JsonDumper extends Component
         foreach ($v2PackageData as $name => $data) {
             $this->_writeJsonFile("p2/$name.json", [
                 'packages' => [
-                    $name => $data,
+                    $name => MetadataMinifier::minify($data),
                 ],
+                'minified' => 'composer/2.0',
             ], $isConsole);
             $this->_writeJsonFile("p2/$name~dev.json", [
                 'packages' => [
