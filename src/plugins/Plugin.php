@@ -216,7 +216,7 @@ class Plugin extends Element
             'handle',
             'license',
             'shortDescription',
-            'description',
+            'longDescription',
             'keywords',
         ];
     }
