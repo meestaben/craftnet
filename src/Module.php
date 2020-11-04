@@ -9,10 +9,13 @@ use craft\commerce\models\Discount;
 use craft\commerce\services\OrderAdjustments;
 use craft\commerce\services\Pdfs;
 use craft\commerce\services\Purchasables;
+use craft\console\Controller as ConsoleController;
+use craft\console\controllers\ResaveController;
 use craft\elements\Asset;
 use craft\elements\db\UserQuery;
 use craft\elements\User;
 use craft\events\DefineBehaviorsEvent;
+use craft\events\DefineConsoleActionsEvent;
 use craft\events\DeleteElementEvent;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterCpNavItemsEvent;
@@ -174,6 +177,7 @@ class Module extends \yii\base\Module
         $request = Craft::$app->getRequest();
         if ($request->getIsConsoleRequest()) {
             $this->controllerNamespace = 'craftnet\\console\\controllers';
+            $this->_initConsoleRequset();
         } else {
             $this->controllerNamespace = 'craftnet\\controllers';
 
@@ -241,6 +245,21 @@ class Module extends \yii\base\Module
     public function getSaleManager(): SaleManager
     {
         return $this->get('saleManager');
+    }
+
+    private function _initConsoleRequset()
+    {
+        Event::on(ResaveController::class, ConsoleController::EVENT_DEFINE_ACTIONS, function(DefineConsoleActionsEvent $e) {
+            $e->actions['plugins'] = [
+                'action' => function(): int {
+                    /** @var ResaveController $controller */
+                    $controller = Craft::$app->controller;
+                    return $controller->saveElements(Plugin::find());
+                },
+                'options' => [],
+                'helpSummary' => 'Re-saves Plugin Store plugins.',
+            ];
+        });
     }
 
     private function _initCpRequest()
