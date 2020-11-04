@@ -5,9 +5,11 @@ namespace craftnet\controllers\api\v1;
 use Composer\Semver\Comparator;
 use Composer\Semver\VersionParser;
 use Craft;
+use craft\db\Query;
 use craft\helpers\ArrayHelper;
 use craft\models\Update;
 use craftnet\ChangelogParser;
+use craftnet\composer\PackageRelease;
 use craftnet\controllers\api\BaseApiController;
 use craftnet\errors\ValidationException;
 use craftnet\plugins\Plugin;
@@ -65,10 +67,11 @@ class UpdatesController extends BaseApiController
     /**
      * Retrieves available system updates.
      *
+     * @param string|null $maxVersions The max versions to retrieve
      * @return Response
      * @throws \Throwable
      */
-    public function actionGet(): Response
+    public function actionGet(string $maxVersions = null): Response
     {
         if ($this->cmsVersion === null) {
             throw new BadRequestHttpException('Unable to determine the current Craft version.');
@@ -80,9 +83,17 @@ class UpdatesController extends BaseApiController
             Comparator::notEqualTo($this->cmsVersion, '3.2.0-alpha.1')
         );
 
+        $maxVersionsArr = [];
+        if ($maxVersions) {
+            foreach (explode(',', $maxVersions) as $pair) {
+                [$name, $version] = explode(':', $pair);
+                $maxVersionsArr[$name] = $version;
+            }
+        }
+
         return $this->asJson([
-            'cms' => $this->_getCmsUpdateInfo($includePackageName),
-            'plugins' => $this->_getPluginUpdateInfo($includePackageName),
+            'cms' => $this->_getCmsUpdateInfo($includePackageName, $maxVersionsArr['cms'] ?? null),
+            'plugins' => $this->_getPluginUpdateInfo($includePackageName, $maxVersionsArr),
         ]);
     }
 
@@ -90,29 +101,37 @@ class UpdatesController extends BaseApiController
      * Returns CMS update info.
      *
      * @param bool $includePackageName
+     * @param string|null $maxVersion
      * @return array
      */
-    private function _getCmsUpdateInfo(bool $includePackageName): array
+    private function _getCmsUpdateInfo(bool $includePackageName, string $maxVersion = null): array
     {
-        if (
-            version_compare($this->cmsVersion, '3.0.0-alpha.1', '>') &&
-            version_compare($this->cmsVersion, '3.0.41.1', '<')
-        ) {
-            // Treat 3.0.41.1 as a breakpoint for 3.0 releases
-            $toVersion = '3.0.41.1';
-        } else if (
-            version_compare($this->cmsVersion, '3.1.20', '>=') &&
-            version_compare($this->cmsVersion, '3.1.34.3', '<')
-        ) {
-            // Treat 3.1.34 as a breakpoint for 3.1.20+ releases (where project-config/rebuild was added)
-            $toVersion = '3.1.34.3';
-        } else {
-            $toVersion = null;
+        $constraints = [];
+        $breakpoint = false;
+
+        if ($maxVersion) {
+            $constraints[] = "<=$maxVersion";
         }
 
+        if (version_compare($this->cmsVersion, '3.0.0-alpha.1', '>=')) {
+            if (version_compare($this->cmsVersion, '3.0.41.1', '<')) {
+                // Treat ~3.0.41.1 as a breakpoint for 3.0 releases
+                $constraints[] = '~3.0.41.1';
+                $breakpoint = true;
+            } else if (version_compare($this->cmsVersion, '3.1.20', '>=') && version_compare($this->cmsVersion, '3.1.34.3', '<')) {
+                // Treat ~3.1.34.3 as a breakpoint for ~3.1.20 releases (where project-config/rebuild was added)
+                $constraints[] = '~3.1.34.3';
+                $breakpoint = true;
+            }
+        }
+
+        $constraint = $constraints ? implode(' ', $constraints) : null;
+        /** @var array $releases */
+        /** @var PackageRelease|null $latest */
+        [$releases, $latest] = $this->_releases('craftcms/cms', $this->cmsVersion, $constraint);
         $info = [
-            'status' => $toVersion ? Update::STATUS_BREAKPOINT : Update::STATUS_ELIGIBLE,
-            'releases' => $this->_releases('craftcms/cms', $this->cmsVersion, $toVersion),
+            'status' => $breakpoint ? Update::STATUS_BREAKPOINT : Update::STATUS_ELIGIBLE,
+            'releases' => $releases,
         ];
 
         if (!empty($this->cmsLicenses)) {
@@ -123,6 +142,15 @@ class UpdatesController extends BaseApiController
                 $info['renewalPrice'] = $cmsLicense->getEdition()->renewalPrice;
                 $info['renewalCurrency'] = 'USD';
             }
+        }
+
+        // Update::$phpConstraint wasn't added until 3.5.15
+        if ($latest !== null && version_compare($this->cmsVersion, '3.5.15', '>=')) {
+            $info['phpConstraint'] = (new Query())
+                ->select(['constraints'])
+                ->from(['craftnet_packagedeps'])
+                ->where(['versionId' => $latest->id, 'name' => 'php'])
+                ->scalar() ?: null;
         }
 
         if ($includePackageName) {
@@ -137,9 +165,10 @@ class UpdatesController extends BaseApiController
      * Returns plugin update info.
      *
      * @param bool $includePackageName
+     * @param string[] $maxVersions
      * @return array
      */
-    private function _getPluginUpdateInfo(bool $includePackageName): array
+    private function _getPluginUpdateInfo(bool $includePackageName, array $maxVersions): array
     {
         $updateInfo = [];
 
@@ -152,9 +181,19 @@ class UpdatesController extends BaseApiController
                 ->asArray()
                 ->scalar();
 
+            if ($toVersion) {
+                $constraints = ["<=$toVersion"];
+                if (isset($maxVersions[$handle])) {
+                    $constraints[] = "<={$maxVersions[$handle]}";
+                }
+                [$releases] = $this->_releases($plugin->packageName, $this->pluginVersions[$handle], implode(' ', $constraints));
+            } else {
+                $releases = [];
+            }
+
             $info = [
                 'status' => Update::STATUS_ELIGIBLE,
-                'releases' => $toVersion ? $this->_releases($plugin->packageName, $this->pluginVersions[$handle], $toVersion) : [],
+                'releases' => $releases,
             ];
 
             if (isset($this->pluginLicenses[$handle])) {
@@ -183,23 +222,18 @@ class UpdatesController extends BaseApiController
      *
      * @param string $name The package name
      * @param string $fromVersion The version that is already installed
-     * @param string|null $toVersion The version that is available to be installed (if null the latest version will be assumed)
+     * @param string|null $constraint The version constraint
      * @return array
      */
-    private function _releases(string $name, string $fromVersion, string $toVersion = null): array
+    private function _releases(string $name, string $fromVersion, string $constraint = null): array
     {
         $packageManager = $this->module->getPackageManager();
         $minStability = VersionParser::parseStability($fromVersion);
-
-        if ($toVersion !== null) {
-            $versions = $packageManager->getVersionsBetween($name, $fromVersion, $toVersion, $minStability);
-        } else {
-            $versions = $packageManager->getVersionsAfter($name, $fromVersion, $minStability);
-        }
+        $versions = $packageManager->getVersionsAfter($name, $fromVersion, $minStability, $constraint);
 
         // Are they already at the latest?
         if (empty($versions)) {
-            return [];
+            return [[], null];
         }
 
         // Sort descending
@@ -217,7 +251,8 @@ class UpdatesController extends BaseApiController
 
         // Get the latest release's changelog
         $toVersion = reset($versions);
-        $changelog = $packageManager->getRelease($name, $toVersion)->changelog ?? null;
+        $latest = $packageManager->getRelease($name, $toVersion);
+        $changelog = $latest->changelog ?? null;
 
         if ($changelog) {
             $changelogReleases = (new ChangelogParser())->parse($changelog, $fromVersion);
@@ -231,6 +266,6 @@ class UpdatesController extends BaseApiController
         }
 
         // Drop the version keys and convert objects to arrays
-        return ArrayHelper::toArray(array_values($releaseInfo));
+        return [ArrayHelper::toArray(array_values($releaseInfo)), $latest];
     }
 }
