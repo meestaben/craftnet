@@ -227,9 +227,15 @@ class UpdatesController extends BaseApiController
      */
     private function _releases(string $name, string $fromVersion, string $constraint = null): array
     {
+        // Ignore if a dev version is currently installed
+        $stability = VersionParser::parseStability($fromVersion);
+
+        if ($stability === 'dev') {
+            return [[], null];
+        }
+
         $packageManager = $this->module->getPackageManager();
-        $minStability = VersionParser::parseStability($fromVersion);
-        $versions = $packageManager->getVersionsAfter($name, $fromVersion, $minStability, $constraint);
+        $versions = $packageManager->getVersionsAfter($name, $fromVersion, $stability, $constraint);
 
         // Are they already at the latest?
         if (empty($versions)) {
