@@ -38,6 +38,7 @@ return [
     'fusionarydev.com',
     'fusiondgdev.com',
     'gbdev.co',
+    'gcx.dev',
     'ghdev.xyz',
     'gw-staging.com',
     'happycogdev.com',
