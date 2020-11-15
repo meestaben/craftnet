@@ -83,6 +83,7 @@ return [
     'preview.dev',
     'preview-it.com',
     'psclients.net',
+    'putyourlightson.dev',
     'rantsports.org',
     'runcloud.site',
     'sandboxdsm.com',
