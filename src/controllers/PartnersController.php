@@ -76,8 +76,7 @@ class PartnersController extends Controller
         $this->requirePostRequest();
         $this->requireAcceptsJson();
 
-        $request = Craft::$app->getRequest();
-        $partnerId = $request->getBodyParam('id');
+        $partnerId = $this->request->getBodyParam('id');
 
         /** @var User|UserBehavior $user */
         $user = Craft::$app->getUser()->getIdentity();
@@ -87,10 +86,10 @@ class PartnersController extends Controller
             throw new ForbiddenHttpException();
         }
 
-        switch ($request->getBodyParam('scenario')) {
+        switch ($this->request->getBodyParam('scenario')) {
             case Partner::SCENARIO_BASE_INFO:
                 $partner->setScenario(Partner::SCENARIO_BASE_INFO);
-                PartnerService::getInstance()->mergeRequestParams($partner, $request, [
+                PartnerService::getInstance()->mergeRequestParams($partner, $this->request, [
                     'logoAssetId',
                     'businessName',
                     'primaryContactName',
@@ -117,14 +116,14 @@ class PartnersController extends Controller
 
             case Partner::SCENARIO_LOCATIONS:
                 $partner->setScenario(Partner::SCENARIO_LOCATIONS);
-                PartnerService::getInstance()->mergeRequestParams($partner, $request, [
+                PartnerService::getInstance()->mergeRequestParams($partner, $this->request, [
                     'locations',
                 ]);
                 break;
 
             case Partner::SCENARIO_PROJECTS:
                 $partner->setScenario(Partner::SCENARIO_PROJECTS);
-                PartnerService::getInstance()->mergeRequestParams($partner, $request, [
+                PartnerService::getInstance()->mergeRequestParams($partner, $this->request, [
                     'projects',
                 ]);
                 break;
@@ -241,8 +240,7 @@ class PartnersController extends Controller
      */
     public function actionSave()
     {
-        $request = Craft::$app->getRequest();
-        $partnerId = $request->getBodyParam('partnerId');
+        $partnerId = $this->request->getBodyParam('partnerId');
         $isNew = $partnerId === null;
 
         // Get existing or new Partner
@@ -256,7 +254,7 @@ class PartnersController extends Controller
             $partner = new Partner();
         }
 
-        PartnerService::getInstance()->mergeRequestParams($partner, $request, [
+        PartnerService::getInstance()->mergeRequestParams($partner, $this->request, [
                 'enabled',
                 'ownerId',
                 'logoAssetId',
@@ -289,7 +287,7 @@ class PartnersController extends Controller
         }
 
         if (!Craft::$app->getElements()->saveElement($partner)) {
-            if ($request->getAcceptsJson()) {
+            if ($this->request->getAcceptsJson()) {
                 return $this->asJson([
                     'errors' => $partner->getErrors(),
                 ]);
@@ -316,8 +314,7 @@ class PartnersController extends Controller
      */
     public function actionDelete()
     {
-        $request = Craft::$app->getRequest();
-        $partnerId = $request->getBodyParam('partnerId');
+        $partnerId = $this->request->getBodyParam('partnerId');
         $partner = Partner::find()->id($partnerId)->status(null)->one();
 
         if (!$partner) {
@@ -337,12 +334,10 @@ class PartnersController extends Controller
 
     public function actionSaveHistory()
     {
-        $request = Craft::$app->getRequest();
-
         $params = [
-            'id' => $request->getBodyParam('id'),
-            'message' => $request->getBodyParam('message'),
-            'partnerId' => $request->getBodyParam('partnerId'),
+            'id' => $this->request->getBodyParam('id'),
+            'message' => $this->request->getBodyParam('message'),
+            'partnerId' => $this->request->getBodyParam('partnerId'),
             'authorId' => Craft::$app->getUser()->id,
         ];
 

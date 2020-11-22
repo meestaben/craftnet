@@ -36,7 +36,7 @@ class StripeController extends BaseController
             'scope' => 'read_write'
         ];
 
-        Craft::$app->getSession()->set('stripe.referrer', Craft::$app->getRequest()->getReferrer());
+        Craft::$app->getSession()->set('stripe.referrer', $this->request->getReferrer());
         $authorizationUrl = $provider->getAuthorizationUrl($options);
 
         return $this->redirect($authorizationUrl);
@@ -52,7 +52,7 @@ class StripeController extends BaseController
         /** @var User|UserBehavior $user */
         $user = Craft::$app->getUser()->getIdentity();
         $provider = $this->_getStripeProvider();
-        $code = Craft::$app->getRequest()->getParam('code');
+        $code = $this->request->getParam('code');
 
         $accessToken = $provider->getAccessToken('authorization_code', [
             'code' => $code
@@ -137,7 +137,6 @@ class StripeController extends BaseController
         $order = null;
 
         $plugin = Commerce::getInstance();
-        $request = Craft::$app->getRequest();
         $paymentSources = $plugin->getPaymentSources();
 
         // Are we paying anonymously?
@@ -163,7 +162,7 @@ class StripeController extends BaseController
 
         // Get the payment method' gateway adapter's expected form model
         $paymentForm = $gateway->getPaymentFormModel();
-        $paymentForm->setAttributes($request->getBodyParams(), false);
+        $paymentForm->setAttributes($this->request->getBodyParams(), false);
         $description = 'Default Source';
 
         $error = '';

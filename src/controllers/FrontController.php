@@ -179,10 +179,9 @@ class FrontController extends Controller
      */
     public function actionGetLicenseInfo(): Response
     {
-        $request = Craft::$app->getRequest();
-        $domain = $request->getParam('domain', '');
-        $email = $request->getParam('email', '');
-        $key = $request->getParam('key', '');
+        $domain = $this->request->getParam('domain', '');
+        $email = $this->request->getParam('email', '');
+        $key = $this->request->getParam('key', '');
         $key = trim(preg_replace('/\s+/', '', $key));
 
         $licenses = (new Query())
@@ -213,7 +212,7 @@ class FrontController extends Controller
      */
     public function actionScrubConversation(): Response
     {
-        $conversationId = Craft::$app->getRequest()->getRequiredBodyParam('conversationId');
+        $conversationId = $this->request->getRequiredBodyParam('conversationId');
         $token = getenv('FRONT_TOKEN');
 
         // request conversation details

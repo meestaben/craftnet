@@ -26,7 +26,7 @@ class PluginsController extends BaseApiController
     {
         $pluginQuery = $this->_getPluginQuery();
 
-        $ids = Craft::$app->getRequest()->getParam('ids');
+        $ids = $this->request->getParam('ids');
         $ids = explode(',', $ids);
 
         if ($ids) {

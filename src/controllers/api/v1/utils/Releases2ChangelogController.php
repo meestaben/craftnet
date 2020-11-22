@@ -30,7 +30,7 @@ class Releases2ChangelogController extends BaseApiController
         $this->requirePostRequest();
         $changelog = "# Changelog\n";
 
-        $releases = (array)Json::decode(Craft::$app->getRequest()->getRawBody());
+        $releases = (array)Json::decode($this->request->getRawBody());
 
         // Filter out any releases w/out a version
         $releases = array_filter($releases, function($release) {
@@ -106,7 +106,7 @@ class Releases2ChangelogController extends BaseApiController
             }
         }
 
-        Craft::$app->getResponse()->setDownloadHeaders('CHANGELOG.md', 'text/markdown', true);
+        $this->response->setDownloadHeaders('CHANGELOG.md', 'text/markdown', true);
         return $this->asRaw($changelog);
     }
 }

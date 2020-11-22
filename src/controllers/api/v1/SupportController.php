@@ -31,9 +31,8 @@ class SupportController extends BaseApiController
     public function actionCreate(): Response
     {
         Craft::error('Support - Made it to create.', __METHOD__);
-        $request = Craft::$app->getRequest();
-        $requestHeaders = $request->getHeaders();
-        $body = $request->getRequiredBodyParam('message');
+        $requestHeaders = $this->request->getHeaders();
+        $body = $this->request->getRequiredBodyParam('message');
         /** @var CmsLicense $cmsLicense */
         $cmsLicense = reset($this->cmsLicenses) ?: null;
         $customFields = [];
@@ -119,13 +118,13 @@ class SupportController extends BaseApiController
             }
         }
 
-        $email = mb_strtolower($request->getRequiredBodyParam('email'));
+        $email = mb_strtolower($this->request->getRequiredBodyParam('email'));
         $plan = Zendesk::plan($email);
         $tags = [getenv('ZENDESK_TAG'), $plan];
 
         $response = Zendesk::client()->tickets()->create([
             'requester' => [
-                'name' => $request->getRequiredBodyParam('name'),
+                'name' => $this->request->getRequiredBodyParam('name'),
                 'email' => $email,
             ],
             'subject' => getenv('ZENDESK_SUBJECT'),

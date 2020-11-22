@@ -29,7 +29,7 @@ class UpdatesController extends BaseApiController
         if ($id === 'old') {
             try {
                 $payload = $this->getPayload('updates-request-old');
-                $headers = Craft::$app->getRequest()->getHeaders();
+                $headers = $this->request->getHeaders();
                 $scheme = $payload->request->port === 443 ? 'https' : 'http';
                 $port = !in_array($payload->request->port, [80, 443]) ? ":{$payload->request->port}" : '';
                 $headers->set('X-Craft-Host', "{$scheme}://{$payload->request->hostname}{$port}");

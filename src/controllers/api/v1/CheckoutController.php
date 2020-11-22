@@ -28,11 +28,11 @@ class CheckoutController extends BaseApiController
      */
     public function actionIndex(): Response
     {
-        $userId = Craft::$app->getRequest()->getParam('craftId');
-        $identity = Craft::$app->getRequest()->getParam('identity');
-        $cardToken = Craft::$app->getRequest()->getParam('cardToken');
-        $replaceCard = Craft::$app->getRequest()->getParam('replaceCard');
-        $cartItems = Craft::$app->getRequest()->getParam('cartItems');
+        $userId = $this->request->getParam('craftId');
+        $identity = $this->request->getParam('identity');
+        $cardToken = $this->request->getParam('cardToken');
+        $replaceCard = $this->request->getParam('replaceCard');
+        $cartItems = $this->request->getParam('cartItems');
 
         $entry = new Entry();
         $entry->sectionId = 4;

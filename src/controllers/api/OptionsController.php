@@ -20,12 +20,11 @@ class OptionsController extends BaseApiController
     public function actionIndex(): Response
     {
         // https://stackoverflow.com/a/12320736/1688568
-        $response = Craft::$app->getResponse();
-        $response->getHeaders()
+        $this->response->getHeaders()
             //->set('Access-Control-Max-Age', 3628800)
-            ->set('Access-Control-Allow-Methods', Craft::$app->getRequest()->getHeaders()->get('Access-Control-Request-Method'))
+            ->set('Access-Control-Allow-Methods', $this->request->getHeaders()->get('Access-Control-Request-Method'))
             ->set('Access-Control-Allow-Headers', 'Content-Type,x-craft-host,x-craft-plugin-licenses,x-craft-user-ip,x-craft-system,x-craft-license,x-craft-platform,x-craft-user-email,authorization')
             ->set('Access-Control-Max-Age', '31536000');
-        return $response;
+        return $this->response;
     }
 }

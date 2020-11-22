@@ -122,7 +122,7 @@ class PluginsController extends Controller
         }
 
         if ($icon) {
-            if (Craft::$app->getRequest()->getIsCpRequest()) {
+            if ($this->request->getIsCpRequest()) {
                 $iconHtml = Craft::$app->getView()->renderTemplate('_elements/element', [
                     'element' => $icon
                 ]);
@@ -235,11 +235,10 @@ JS;
      */
     public function actionSave()
     {
-        $request = Craft::$app->getRequest();
-        $isCpRequest = $request->getIsCpRequest();
+        $isCpRequest = $this->request->getIsCpRequest();
         $newPlugin = false;
 
-        if ($pluginId = $request->getBodyParam('pluginId')) {
+        if ($pluginId = $this->request->getBodyParam('pluginId')) {
             $plugin = Plugin::find()->id($pluginId)->status(null)->one();
             if ($plugin === null) {
                 throw new NotFoundHttpException('Invalid plugin ID: ' . $pluginId);
@@ -257,11 +256,11 @@ JS;
         // ---------------------------------------------------------------------
 
         if ($isCpRequest) {
-            if ($request->getBodyParam('approve', false)) {
+            if ($this->request->getBodyParam('approve', false)) {
                 $plugin->approve();
-            } else if ($request->getBodyParam('reject', false)) {
+            } else if ($this->request->getBodyParam('reject', false)) {
                 $plugin->reject();
-            } else if (($enabled = $request->getBodyParam('enabled')) !== null) {
+            } else if (($enabled = $this->request->getBodyParam('enabled')) !== null) {
                 $plugin->enabled = (bool)$enabled;
             }
         }
@@ -270,8 +269,8 @@ JS;
         // ---------------------------------------------------------------------
 
         // Only plugin managers are able to change developer for a plugin
-        if (Craft::$app->getUser()->checkPermission('craftnet:managePlugins') && isset($request->getBodyParam('developerId')[0])) {
-            $plugin->developerId = $request->getBodyParam('developerId')[0];
+        if (Craft::$app->getUser()->checkPermission('craftnet:managePlugins') && isset($this->request->getBodyParam('developerId')[0])) {
+            $plugin->developerId = $this->request->getBodyParam('developerId')[0];
         } else if (!$plugin->developerId) {
             $plugin->developerId = Craft::$app->getUser()->getId();
         }
@@ -282,32 +281,32 @@ JS;
         $newName = false;
         $newHandle = false;
 
-        if ($plugin->name != ($plugin->name = $request->getBodyParam('name'))) {
+        if ($plugin->name != ($plugin->name = $this->request->getBodyParam('name'))) {
             $newName = true;
         }
 
-        if ($plugin->handle != ($plugin->handle = $request->getBodyParam('handle'))) {
+        if ($plugin->handle != ($plugin->handle = $this->request->getBodyParam('handle'))) {
             $newHandle = true;
         }
 
         // Basic plugin info
         // ---------------------------------------------------------------------
 
-        $plugin->iconId = $request->getBodyParam('iconId')[0] ?? null;
-        $plugin->packageName = $request->getBodyParam('packageName');
-        $plugin->repository = $request->getBodyParam('repository');
-        $plugin->license = $request->getBodyParam('license');
-        $plugin->shortDescription = $request->getBodyParam('shortDescription');
-        $plugin->longDescription = $request->getBodyParam('longDescription');
-        $plugin->documentationUrl = $request->getBodyParam('documentationUrl');
-        $plugin->changelogPath = $request->getBodyParam('changelogPath') ?: null;
-        $plugin->devComments = $request->getBodyParam('devComments') ?: null;
-        $plugin->keywords = $request->getBodyParam('keywords');
+        $plugin->iconId = $this->request->getBodyParam('iconId')[0] ?? null;
+        $plugin->packageName = $this->request->getBodyParam('packageName');
+        $plugin->repository = $this->request->getBodyParam('repository');
+        $plugin->license = $this->request->getBodyParam('license');
+        $plugin->shortDescription = $this->request->getBodyParam('shortDescription');
+        $plugin->longDescription = $this->request->getBodyParam('longDescription');
+        $plugin->documentationUrl = $this->request->getBodyParam('documentationUrl');
+        $plugin->changelogPath = $this->request->getBodyParam('changelogPath') ?: null;
+        $plugin->devComments = $this->request->getBodyParam('devComments') ?: null;
+        $plugin->keywords = $this->request->getBodyParam('keywords');
 
         // Categories
         // ---------------------------------------------------------------------
 
-        if (!empty($categoryIds = $request->getBodyParam('categoryIds'))) {
+        if (!empty($categoryIds = $this->request->getBodyParam('categoryIds'))) {
             $categories = Category::find()->id($categoryIds)->fixedOrder()->all();
         } else {
             $categories = [];
@@ -326,7 +325,7 @@ JS;
         $maxUpload = min($iniMaxUpload, $configMaxUpload);
         $maxUploadM = round($maxUpload / 1000 / 1000);
 
-        if (empty($screenshotIds = $request->getBodyParam('screenshotIds'))) {
+        if (empty($screenshotIds = $this->request->getBodyParam('screenshotIds'))) {
             $screenshotIds = [];
         }
 
@@ -499,7 +498,7 @@ JS;
             }
         }
 
-        foreach ($request->getBodyParam('editions', []) as $editionId => $editionInfo) {
+        foreach ($this->request->getBodyParam('editions', []) as $editionId => $editionInfo) {
             if ($isCpRequest) {
                 $edition = $currentEditions[$editionId] ?? new PluginEdition();
                 $edition->setScenario(PluginEdition::SCENARIO_CP);
@@ -526,7 +525,7 @@ JS;
 
         // Validate without clearing existing errors
         if (!$plugin->validate(null, false)) {
-            if ($request->getAcceptsJson()) {
+            if ($this->request->getAcceptsJson()) {
                 return $this->asJson([
                     'errors' => $plugin->getErrors(),
                 ]);
@@ -590,7 +589,7 @@ JS;
         // Now add our webhook if we don't have one yet
         $this->module->getPackageManager()->createWebhook($plugin->packageName, false);
 
-        if ($request->getAcceptsJson()) {
+        if ($this->request->getAcceptsJson()) {
             $return = [];
 
             $return['success'] = true;
@@ -637,8 +636,7 @@ JS;
      */
     public function actionDelete()
     {
-        $request = Craft::$app->getRequest();
-        $pluginId = $request->getBodyParam('pluginId');
+        $pluginId = $this->request->getBodyParam('pluginId');
         $plugin = Plugin::find()->id($pluginId)->status(null)->one();
 
         if (!$plugin) {
@@ -684,8 +682,7 @@ JS;
      */
     public function actionSubmit()
     {
-        $request = Craft::$app->getRequest();
-        $pluginId = $request->getBodyParam('pluginId');
+        $pluginId = $this->request->getBodyParam('pluginId');
         $plugin = Plugin::find()->id($pluginId)->status(null)->one();
 
         if (!$plugin) {
@@ -698,7 +695,7 @@ JS;
 
         if ($plugin->enabled) {
             // Pretend we did
-            if ($request->getAcceptsJson()) {
+            if ($this->request->getAcceptsJson()) {
                 return $this->asJson(['success' => true]);
             }
             return $this->redirectToPostedUrl($plugin);
@@ -710,7 +707,7 @@ JS;
         // Save plugin
 
         if (!Craft::$app->getElements()->saveElement($plugin)) {
-            if ($request->getAcceptsJson()) {
+            if ($this->request->getAcceptsJson()) {
                 return $this->asJson([
                     'errors' => $plugin->getErrors(),
                 ]);
@@ -736,7 +733,7 @@ JS;
 
         // Return
 
-        if ($request->getAcceptsJson()) {
+        if ($this->request->getAcceptsJson()) {
             return $this->asJson(['success' => true]);
         }
 

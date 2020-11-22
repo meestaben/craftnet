@@ -61,7 +61,7 @@ class DeveloperSupportController extends Controller
      */
     public function actionCancelSubscription(): Response
     {
-        $subscriptionUid = Craft::$app->getRequest()->getRequiredBodyParam('subscription');
+        $subscriptionUid = $this->request->getRequiredBodyParam('subscription');
         $subscription = Subscription::find()->userId($this->_user->id)->uid($subscriptionUid)->one();
 
         if ($subscription) {
@@ -82,7 +82,7 @@ class DeveloperSupportController extends Controller
      */
     public function actionReactivateSubscription(): Response
     {
-        $subscriptionUid = Craft::$app->getRequest()->getRequiredBodyParam('subscription');
+        $subscriptionUid = $this->request->getRequiredBodyParam('subscription');
         $subscription = Subscription::find()->userId($this->_user->id)->uid($subscriptionUid)->one();
 
         // If re-activating Premium, cancel any pro subscriptions.
@@ -112,7 +112,7 @@ class DeveloperSupportController extends Controller
      */
     public function actionSubscribe(): Response
     {
-        $plan = Craft::$app->getRequest()->getRequiredBodyParam('plan');
+        $plan = $this->request->getRequiredBodyParam('plan');
 
         $commerce = Commerce::getInstance();
         $subscriptionService = $commerce->getSubscriptions();
@@ -174,7 +174,7 @@ class DeveloperSupportController extends Controller
      */
     public function actionSwitchPlan(): Response
     {
-        $plan = Craft::$app->getRequest()->getRequiredBodyParam('plan');
+        $plan = $this->request->getRequiredBodyParam('plan');
 
         $commerce = Commerce::getInstance();
         $subscriptionService = $commerce->getSubscriptions();

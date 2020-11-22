@@ -30,7 +30,7 @@ class CmsLicensesController extends BaseController
      */
     public function actionClaim(): Response
     {
-        $key = Craft::$app->getRequest()->getBodyParam('key');
+        $key = $this->request->getBodyParam('key');
         $licenseFile = UploadedFile::getInstanceByName('licenseFile');
 
         try {
@@ -67,11 +67,11 @@ class CmsLicensesController extends BaseController
     public function actionDownload(): Response
     {
         $user = Craft::$app->getUser()->getIdentity();
-        $licenseId = Craft::$app->getRequest()->getParam('id');
+        $licenseId = $this->request->getParam('id');
         $license = $this->module->getCmsLicenseManager()->getLicenseById($licenseId);
 
         if ($license->ownerId === $user->id) {
-            return Craft::$app->getResponse()->sendContentAsFile(chunk_split($license->key, 50), 'license.key');
+            return $this->response->sendContentAsFile(chunk_split($license->key, 50), 'license.key');
         }
 
         throw new ForbiddenHttpException('User is not authorized to perform this action');
@@ -104,7 +104,7 @@ class CmsLicensesController extends BaseController
     public function actionGetLicenseById(): Response
     {
         $user = Craft::$app->getUser()->getIdentity();
-        $id = Craft::$app->getRequest()->getRequiredParam('id');
+        $id = $this->request->getRequiredParam('id');
 
         try {
             $license = Module::getInstance()->getCmsLicenseManager()->getLicenseById($id);
@@ -130,12 +130,12 @@ class CmsLicensesController extends BaseController
     {
         $user = Craft::$app->getUser()->getIdentity();
 
-        $filter = Craft::$app->getRequest()->getParam('filter');
-        $perPage = Craft::$app->getRequest()->getParam('per_page', 10);
-        $page = (int)Craft::$app->getRequest()->getParam('page', 1);
-        $orderBy = Craft::$app->getRequest()->getParam('orderBy');
-        $ascending = (bool)Craft::$app->getRequest()->getParam('ascending');
-        $byColumn = Craft::$app->getRequest()->getParam('byColumn');
+        $filter = $this->request->getParam('filter');
+        $perPage = $this->request->getParam('per_page', 10);
+        $page = (int)$this->request->getParam('page', 1);
+        $orderBy = $this->request->getParam('orderBy');
+        $ascending = (bool)$this->request->getParam('ascending');
+        $byColumn = $this->request->getParam('byColumn');
 
         try {
             $licenses = Module::getInstance()->getCmsLicenseManager()->getLicensesByOwner($user, $filter, $perPage, $page, $orderBy, $ascending, $byColumn);
@@ -171,7 +171,7 @@ class CmsLicensesController extends BaseController
      */
     public function actionRelease(): Response
     {
-        $key = Craft::$app->getRequest()->getParam('key');
+        $key = $this->request->getParam('key');
         $user = Craft::$app->getUser()->getIdentity();
         $manager = $this->module->getCmsLicenseManager();
         $license = $manager->getLicenseByKey($key);
@@ -202,15 +202,15 @@ class CmsLicensesController extends BaseController
      */
     public function actionSave(): Response
     {
-        $key = Craft::$app->getRequest()->getParam('key');
+        $key = $this->request->getParam('key');
         $user = Craft::$app->getUser()->getIdentity();
         $manager = $this->module->getCmsLicenseManager();
         $license = $manager->getLicenseByKey($key);
 
         try {
             if ($user && $license->ownerId === $user->id) {
-                $domain = Craft::$app->getRequest()->getParam('domain');
-                $notes = Craft::$app->getRequest()->getParam('notes');
+                $domain = $this->request->getParam('domain');
+                $notes = $this->request->getParam('notes');
 
                 if ($domain !== null) {
                     $oldDomain = $license->domain;
@@ -222,7 +222,7 @@ class CmsLicensesController extends BaseController
                 }
 
                 // Did they change the auto renew setting?
-                $autoRenew = Craft::$app->getRequest()->getParam('autoRenew', $license->autoRenew);
+                $autoRenew = $this->request->getParam('autoRenew', $license->autoRenew);
 
                 if ($autoRenew != $license->autoRenew) {
                     $license->autoRenew = $autoRenew;

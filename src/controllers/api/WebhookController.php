@@ -49,13 +49,13 @@ class WebhookController extends BaseApiController
      */
     private function _validateSecret($secret)
     {
-        if (($header = Craft::$app->getRequest()->getHeaders()->get('X-Hub-Signature')) === null) {
+        if (($header = $this->request->getHeaders()->get('X-Hub-Signature')) === null) {
             throw new BadRequestHttpException('Invalid request body.');
         }
 
         [$algo, $hash] = explode('=', $header, 2);
 
-        $payloadHash = hash_hmac($algo, Craft::$app->getRequest()->getRawBody(), $secret);
+        $payloadHash = hash_hmac($algo, $this->request->getRawBody(), $secret);
 
         if (!hash_equals($payloadHash, $hash)) {
             Craft::error('Invalid secret from Github payload. Payload Hash: ' . $payloadHash . ' Hash: ' . $hash, __METHOD__);

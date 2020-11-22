@@ -70,9 +70,7 @@ abstract class BaseApiController extends Controller
     protected $checkCraftHeaders = true;
 
     /**
-     * The API request ID, if there is one.
-     *
-     * @var int|null
+     * @var int|null The API request ID, if there is one.
      */
     public $requestId;
 
@@ -82,65 +80,47 @@ abstract class BaseApiController extends Controller
     public $email;
 
     /**
-     * The installed Craft version.
-     *
-     * @var string|null
+     * @var string|null The installed Craft version.
      */
     public $cmsVersion;
 
     /**
-     * The installed Craft edition.
-     *
-     * @var string|null
+     * @var string|null The installed Craft edition.
      */
     public $cmsEdition;
 
     /**
-     * The installed plugins.
-     *
-     * @var Plugin[]
+     * @var Plugin[] The installed plugins.
      */
     public $plugins = [];
 
     /**
-     * The installed plugin versions.
-     *
-     * @var string[]
+     * @var string[] The installed plugin versions.
      */
     public $pluginVersions = [];
 
     /**
-     * The installed plugin editions.
-     *
-     * @var string[]
+     * @var string[] The installed plugin editions.
      */
     public $pluginEditions = [];
 
     /**
-     * The Craft license associated with this request.
-     *
-     * @var CmsLicense[]
+     * @var CmsLicense[] The Craft license associated with this request.
      */
     public $cmsLicenses = [];
 
     /**
-     * The plugin licenses associated with this request.
-     *
-     * @var PluginLicense[]
+     * @var PluginLicense[] The plugin licenses associated with this request.
      */
     public $pluginLicenses = [];
 
     /**
-     * The plugin editions the plugin licenses are set to.
-     *
-     * @var PluginEdition[]
+     * @var PluginEdition[] The plugin editions the plugin licenses are set to.
      */
     public $pluginLicenseEditions = [];
 
     /**
-     * The plugin license statuses.
-     *
-     * @var string[]
+     * @var string[] The plugin license statuses.
      */
     public $pluginLicenseStatuses = [];
 
@@ -188,9 +168,8 @@ abstract class BaseApiController extends Controller
      */
     public function runAction($id, $params = []): Response
     {
-        $request = Craft::$app->getRequest();
-        $requestHeaders = $request->getHeaders();
-        $response = Craft::$app->getResponse();
+        $requestHeaders = $this->request->getHeaders();
+        $response = $this->response;
         $responseHeaders = $response->getHeaders();
         $identity = $requestHeaders->get('X-Craft-User-Email') ?: 'anonymous';
         $db = Craft::$app->getDb();
@@ -510,11 +489,11 @@ abstract class BaseApiController extends Controller
         // log the request
         $db->createCommand()
             ->insert('apilog.requests', [
-                'method' => $request->getMethod(),
-                'uri' => $request->getUrl(),
-                'ip' => $request->getUserIP(),
+                'method' => $this->request->getMethod(),
+                'uri' => $this->request->getUrl(),
+                'ip' => $this->request->getUserIP(),
                 'action' => $this->getUniqueId() . '/' . $id,
-                'body' => $request->getRawBody(),
+                'body' => $this->request->getRawBody(),
                 'system' => $requestHeaders->get('X-Craft-System'),
                 'platform' => $requestHeaders->get('X-Craft-Platform'),
                 'host' => $requestHeaders->get('X-Craft-Host'),
@@ -563,9 +542,9 @@ abstract class BaseApiController extends Controller
             if ($sendErrorEmail) {
                 $body = <<<EOL
 - Request ID: {$this->requestId}
-- Method: {$request->getMethod()}
-- URI: {$request->getUrl()}
-- IP: {$request->getUserIP()}
+- Method: {$this->request->getMethod()}
+- URI: {$this->request->getUrl()}
+- IP: {$this->request->getUserIP()}
 - Action: {$this->getUniqueId()}
 - System: {$requestHeaders->get('X-Craft-System')}
 - Platform: {$requestHeaders->get('X-Craft-Platform')}
@@ -577,7 +556,7 @@ abstract class BaseApiController extends Controller
 Body:
 
 ```
-{$request->getRawBody()}
+{$this->request->getRawBody()}
 ```
 EOL;
             } else {
@@ -690,7 +669,7 @@ EOL;
      */
     protected function getPayload(string $schema = null)
     {
-        $body = Craft::$app->getRequest()->getRawBody();
+        $body = $this->request->getRawBody();
         try {
             $payload = (object)Json::decode($body, false);
         } catch (InvalidArgumentException $e) {
@@ -883,7 +862,7 @@ EOL;
         } catch (\InvalidArgumentException $e) {
         }
 
-        [$username, $password] = Craft::$app->getRequest()->getAuthCredentials();
+        [$username, $password] = $this->request->getAuthCredentials();
 
         if (!$username) {
             return null;
@@ -953,7 +932,7 @@ EOL;
         if ($license->domain !== null) {
             $note .= " for domain {$license->domain}";
         }
-        $this->module->getCmsLicenseManager()->addHistory($license->id, $note);
+        $manager->addHistory($license->id, $note);
 
         return $license;
     }

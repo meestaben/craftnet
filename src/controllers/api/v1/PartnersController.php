@@ -13,7 +13,7 @@ class PartnersController extends BaseApiController
 {
     public function init()
     {
-        $secret = \Craft::$app->getRequest()->getHeaders()->get('X-Partner-Secret');
+        $secret = \$this->request->getHeaders()->get('X-Partner-Secret');
         if ($secret !== getenv('PARTNER_SECRET')) {
             throw new BadRequestHttpException('Wrong secret');
         }

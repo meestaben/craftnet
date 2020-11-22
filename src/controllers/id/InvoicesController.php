@@ -28,11 +28,11 @@ class InvoicesController extends Controller
     {
         $user = Craft::$app->getUser()->getIdentity();
 
-        $filter = Craft::$app->getRequest()->getParam('filter');
-        $limit = Craft::$app->getRequest()->getParam('limit', 10);
-        $page = (int)Craft::$app->getRequest()->getParam('page', 1);
-        $orderBy = Craft::$app->getRequest()->getParam('orderBy');
-        $ascending = Craft::$app->getRequest()->getParam('ascending');
+        $filter = $this->request->getParam('filter');
+        $limit = $this->request->getParam('limit', 10);
+        $page = (int)$this->request->getParam('page', 1);
+        $orderBy = $this->request->getParam('orderBy');
+        $ascending = $this->request->getParam('ascending');
 
         try {
             $customer = Commerce::getInstance()->getCustomers()->getCustomerByUserId($user->id);
@@ -76,7 +76,7 @@ class InvoicesController extends Controller
     public function actionGetInvoiceByNumber(): Response
     {
         $user = Craft::$app->getUser()->getIdentity();
-        $number = Craft::$app->getRequest()->getRequiredParam('number');
+        $number = $this->request->getRequiredParam('number');
 
         try {
             $customer = Commerce::getInstance()->getCustomers()->getCustomerByUserId($user->id);

@@ -378,7 +378,7 @@ class PluginStoreController extends BaseApiController
      */
     public function actionPluginsByHandles(): Response
     {
-        $pluginHandles = Craft::$app->getRequest()->getParam('pluginHandles', '');
+        $pluginHandles = $this->request->getParam('pluginHandles', '');
 
         $cacheKey = __METHOD__ . $pluginHandles;
         $data = Cache::get($cacheKey);

@@ -33,13 +33,13 @@ class CmsLicensesController extends BaseApiController
     {
         $license = $this->createCmsLicense();
 
-        $responseHeaders = Craft::$app->getResponse()->getHeaders()
+        $responseHeaders = $this->response->getHeaders()
             ->set('X-Craft-License-Status', self::LICENSE_STATUS_VALID)
             ->set('X-Craft-License-Domain', $license->domain)
             ->set('X-Craft-License-Edition', $license->editionHandle);
 
         // was a host provided with the request?
-        if (Craft::$app->getRequest()->getHeaders()->has('X-Craft-Host')) {
+        if ($this->request->getHeaders()->has('X-Craft-Host')) {
             $responseHeaders->set('X-Craft-Allow-Trials', (string)($license->domain === null));
         }
 

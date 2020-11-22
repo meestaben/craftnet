@@ -79,7 +79,7 @@ class ZendeskController extends BaseApiController
      */
     private function _validateSecret()
     {
-        $secret = Craft::$app->getRequest()->getRequiredQueryParam('secret');
+        $secret = $this->request->getRequiredQueryParam('secret');
 
         if ($secret !== getenv('ZENDESK_SECRET')) {
             throw new BadRequestHttpException('Invalid request body.');

@@ -23,13 +23,11 @@ class CmsLicensesController extends Controller
             ->from(['l' => 'craftnet_cmslicenses'])
             ->orderBy(['dateCreated' => SORT_DESC]);
 
-        $request = Craft::$app->getRequest();
-
-        if ($edition = $request->getQueryParam('edition', 'pro')) {
+        if ($edition = $this->request->getQueryParam('edition', 'pro')) {
             $query->andWhere(['editionHandle' => $edition]);
         }
 
-        if ($search = $request->getQueryParam('search')) {
+        if ($search = $this->request->getQueryParam('search')) {
             $query->andWhere([
                 'or',
                 ['like', 'domain', $search],
@@ -38,7 +36,7 @@ class CmsLicensesController extends Controller
             ]);
         }
 
-        $filters = (array)$request->getQueryParam('filters', ['touched']);
+        $filters = (array)$this->request->getQueryParam('filters', ['touched']);
         $indexedFilters = array_flip($filters);
 
         if (isset($indexedFilters['touched'])) {
@@ -70,7 +68,7 @@ class CmsLicensesController extends Controller
         return $this->renderTemplate('craftnet/cmslicenses/_index', [
             'edition' => $edition,
             'search' => $search,
-            'showFilters' => (bool)$request->getQueryParam('show-filters'),
+            'showFilters' => (bool)$this->request->getQueryParam('show-filters'),
             'filters' => $filters,
             'licenses' => $licenses,
             'owners' => $owners,

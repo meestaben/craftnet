@@ -44,7 +44,7 @@ class ClaimLicensesController extends Controller
         $user = Craft::$app->getUser()->getIdentity();
 
         try {
-            $email = Craft::$app->getRequest()->getRequiredParam('email');
+            $email = $this->request->getRequiredParam('email');
 
             $user->getEmailVerifier()->sendVerificationEmail($email);
         } catch (InvalidArgumentException $e) {

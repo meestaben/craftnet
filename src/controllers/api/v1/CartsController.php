@@ -172,7 +172,7 @@ class CartsController extends BaseApiController
         $transaction = $db->beginTransaction();
         try {
             // update the IP
-            $cart->lastIp = Craft::$app->getRequest()->getUserIP();
+            $cart->lastIp = $this->request->getUserIP();
 
             // Remember the current customerId before determining the possible new one
             $customerId = $cart->customerId;

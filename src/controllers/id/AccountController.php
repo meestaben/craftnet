@@ -188,18 +188,18 @@ class AccountController extends Controller
         $this->requirePostRequest();
 
         $address = new Address();
-        $address->id = Craft::$app->getRequest()->getBodyParam('id');
-        $address->firstName = Craft::$app->getRequest()->getBodyParam('firstName');
-        $address->lastName = Craft::$app->getRequest()->getBodyParam('lastName');
-        $address->businessName = Craft::$app->getRequest()->getBodyParam('businessName');
-        $address->businessTaxId = Craft::$app->getRequest()->getBodyParam('businessTaxId');
-        $address->address1 = Craft::$app->getRequest()->getBodyParam('address1');
-        $address->address2 = Craft::$app->getRequest()->getBodyParam('address2');
-        $address->city = Craft::$app->getRequest()->getBodyParam('city');
-        $address->zipCode = Craft::$app->getRequest()->getBodyParam('zipCode');
+        $address->id = $this->request->getBodyParam('id');
+        $address->firstName = $this->request->getBodyParam('firstName');
+        $address->lastName = $this->request->getBodyParam('lastName');
+        $address->businessName = $this->request->getBodyParam('businessName');
+        $address->businessTaxId = $this->request->getBodyParam('businessTaxId');
+        $address->address1 = $this->request->getBodyParam('address1');
+        $address->address2 = $this->request->getBodyParam('address2');
+        $address->city = $this->request->getBodyParam('city');
+        $address->zipCode = $this->request->getBodyParam('zipCode');
 
-        $countryIso = Craft::$app->getRequest()->getBodyParam('country');
-        $stateAbbr = Craft::$app->getRequest()->getBodyParam('state');
+        $countryIso = $this->request->getBodyParam('country');
+        $stateAbbr = $this->request->getBodyParam('state');
 
         if ($countryIso) {
             $country = Commerce::getInstance()->getCountries()->getCountryByIso($countryIso);

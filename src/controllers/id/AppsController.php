@@ -78,8 +78,8 @@ class AppsController extends BaseController
         $appTypeConfig = $oauthService->getAppTypeConfig($appTypeHandle);
         $oauthProvider = $oauthService->getAppTypeOauthProvider($appTypeHandle);
 
-        $code = Craft::$app->getRequest()->getParam('code');
-        $state = Craft::$app->getRequest()->getParam('state');
+        $code = $this->request->getParam('code');
+        $state = $this->request->getParam('state');
 
         if (!$code || !$state) {
             Craft::$app->getSession()->remove('connectAppTypeHandle');
@@ -153,7 +153,7 @@ class AppsController extends BaseController
      */
     public function actionDisconnect(): Response
     {
-        $appTypeHandle = Craft::$app->getRequest()->getBodyParam('appTypeHandle');
+        $appTypeHandle = $this->request->getBodyParam('appTypeHandle');
         $appTypeConfig = Module::getInstance()->getOauth()->getAppTypeConfig($appTypeHandle);
 
         Module::getInstance()->getOauth()->deleteAccessToken(Craft::$app->getUser()->getIdentity()->id, $appTypeConfig['class']);

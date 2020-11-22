@@ -28,7 +28,7 @@ class PluginLicensesController extends Controller
      */
     public function actionClaim(): Response
     {
-        $key = Craft::$app->getRequest()->getParam('key');
+        $key = $this->request->getParam('key');
         $user = Craft::$app->getUser()->getIdentity();
 
         try {
@@ -48,7 +48,7 @@ class PluginLicensesController extends Controller
     public function actionGetLicenseById(): Response
     {
         $user = Craft::$app->getUser()->getIdentity();
-        $id = Craft::$app->getRequest()->getRequiredParam('id');
+        $id = $this->request->getRequiredParam('id');
 
         try {
             $license = Module::getInstance()->getPluginLicenseManager()->getLicenseById($id);
@@ -75,11 +75,11 @@ class PluginLicensesController extends Controller
     {
         $user = Craft::$app->getUser()->getIdentity();
 
-        $filter = Craft::$app->getRequest()->getParam('filter');
-        $perPage = Craft::$app->getRequest()->getParam('per_page', 10);
-        $page = (int)Craft::$app->getRequest()->getParam('page', 1);
-        $orderBy = Craft::$app->getRequest()->getParam('orderBy');
-        $ascending = (bool)Craft::$app->getRequest()->getParam('ascending');
+        $filter = $this->request->getParam('filter');
+        $perPage = $this->request->getParam('per_page', 10);
+        $page = (int)$this->request->getParam('page', 1);
+        $orderBy = $this->request->getParam('orderBy');
+        $ascending = (bool)$this->request->getParam('ascending');
 
         try {
             $licenses = Module::getInstance()->getPluginLicenseManager()->getLicensesByOwner($user, $filter, $perPage, $page, $orderBy, $ascending);
@@ -133,8 +133,8 @@ class PluginLicensesController extends Controller
      */
     public function actionRelease(): Response
     {
-        $pluginHandle = Craft::$app->getRequest()->getParam('handle');
-        $key = Craft::$app->getRequest()->getParam('key');
+        $pluginHandle = $this->request->getParam('handle');
+        $key = $this->request->getParam('key');
         $user = Craft::$app->getUser()->getIdentity();
         $manager = $this->module->getPluginLicenseManager();
         $license = $manager->getLicenseByKey($key, $pluginHandle);
@@ -166,27 +166,27 @@ class PluginLicensesController extends Controller
      */
     public function actionSave(): Response
     {
-        $pluginHandle = Craft::$app->getRequest()->getRequiredBodyParam('pluginHandle');
-        $key = Craft::$app->getRequest()->getRequiredBodyParam('key');
+        $pluginHandle = $this->request->getRequiredBodyParam('pluginHandle');
+        $key = $this->request->getRequiredBodyParam('key');
         $user = Craft::$app->getUser()->getIdentity();
         $manager = $this->module->getPluginLicenseManager();
         $license = $manager->getLicenseByKey($key, $pluginHandle);
 
         try {
             if ($user && $license->ownerId === $user->id) {
-                $notes = Craft::$app->getRequest()->getParam('notes');
+                $notes = $this->request->getParam('notes');
 
                 if($notes !== null) {
-                    $license->notes = Craft::$app->getRequest()->getParam('notes');
+                    $license->notes = $this->request->getParam('notes');
                 }
 
                 $oldCmsLicenseId = $license->cmsLicenseId;
-                if (($cmsLicenseId = Craft::$app->getRequest()->getParam('cmsLicenseId', false)) !== false) {
+                if (($cmsLicenseId = $this->request->getParam('cmsLicenseId', false)) !== false) {
                     $license->cmsLicenseId = $cmsLicenseId ?: null;
                 }
 
                 // Did they change the auto renew setting?
-                $autoRenew = Craft::$app->getRequest()->getParam('autoRenew', $license->autoRenew);
+                $autoRenew = $this->request->getParam('autoRenew', $license->autoRenew);
 
                 if ($autoRenew != $license->autoRenew) {
                     $license->autoRenew = $autoRenew;
