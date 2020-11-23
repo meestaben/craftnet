@@ -77,6 +77,11 @@ abstract class BaseApiController extends Controller
     public $requestId;
 
     /**
+     * @var string|null The user’s email
+     */
+    public $email;
+
+    /**
      * The installed Craft version.
      *
      * @var string|null
@@ -236,6 +241,15 @@ abstract class BaseApiController extends Controller
         $cmsLicense = null;
 
         try {
+            if ($this->checkCraftHeaders) {
+                if (($this->email = $requestHeaders->get('X-Craft-User-Email')) === null) {
+                    throw new BadRequestHttpException('Missing X-Craft-User-Email Header');
+                }
+                if ((new EmailValidator())->validate($this->email, $error) === false) {
+                    throw new BadRequestHttpException($error);
+                }
+            }
+
             $cmsLicenseKey = $this->checkCraftHeaders ? $requestHeaders->get('X-Craft-License') : null;
             if ($cmsLicenseKey === '__REQUEST__' || $cmsLicenseKey === '🙏') {
                 $cmsLicense = $this->cmsLicenses[] = $this->createCmsLicense();
@@ -913,26 +927,17 @@ EOL;
      * Creates a new CMS license.
      *
      * @return CmsLicense
-     * @throws BadRequestHttpException
      * @throws Exception
      */
     protected function createCmsLicense(): CmsLicense
     {
-        $headers = Craft::$app->getRequest()->getHeaders();
-        if (($email = $headers->get('X-Craft-User-Email')) === null) {
-            throw new BadRequestHttpException('Missing X-Craft-User-Email Header');
-        }
-        if ((new EmailValidator())->validate($email, $error) === false) {
-            throw new BadRequestHttpException($error);
-        }
-
         $license = new CmsLicense([
             'expirable' => true,
             'expired' => false,
             'autoRenew' => false,
             'editionHandle' => CmsLicenseManager::EDITION_SOLO,
-            'email' => $email,
-            'domain' => $headers->get('X-Craft-Host'),
+            'email' => $this->email,
+            'domain' => $this->request->getHeaders()->get('X-Craft-Host'),
             'key' => KeyHelper::generateCmsKey(),
             'lastEdition' => $this->cmsEdition,
             'lastVersion' => $this->cmsVersion,
@@ -944,7 +949,7 @@ EOL;
             throw new Exception('Could not create CMS license: ' . implode(', ', $license->getErrorSummary(true)));
         }
 
-        $note = "created by {$license->email}";
+        $note = "created by {$this->email}";
         if ($license->domain !== null) {
             $note .= " for domain {$license->domain}";
         }
