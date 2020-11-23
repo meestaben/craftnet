@@ -177,12 +177,12 @@ abstract class BaseApiController extends Controller
         // allow ajax requests to see the response headers
         $responseHeaders->set('access-control-expose-headers', implode(', ', [
             'x-craft-allow-trials',
-            'x-craft-license-status',
+            'x-craft-license',
             'x-craft-license-domain',
             'x-craft-license-edition',
-            'x-craft-plugin-license-statuses',
+            'x-craft-license-status',
             'x-craft-plugin-license-editions',
-            'x-craft-license',
+            'x-craft-plugin-license-statuses',
         ]));
 
         // was system info provided?
