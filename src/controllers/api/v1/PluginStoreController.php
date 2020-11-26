@@ -2,7 +2,6 @@
 
 namespace craftnet\controllers\api\v1;
 
-use Craft;
 use craft\db\Query;
 use craft\elements\Asset;
 use craft\elements\Category;
