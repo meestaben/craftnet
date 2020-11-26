@@ -173,6 +173,7 @@ abstract class BaseApiController extends Controller
         $responseHeaders = $response->getHeaders();
         $identity = $requestHeaders->get('X-Craft-User-Email') ?: 'anonymous';
         $db = Craft::$app->getDb();
+        $checkCraftHeaders = !$this->request->getIsOptions() && ($this->checkCraftHeaders || $this->request->getParam('processCraftHeaders'));
 
         // allow ajax requests to see the response headers
         $responseHeaders->set('access-control-expose-headers', implode(', ', [
@@ -186,7 +187,7 @@ abstract class BaseApiController extends Controller
         ]));
 
         // was system info provided?
-        if ($this->checkCraftHeaders && $requestHeaders->has('X-Craft-System')) {
+        if ($checkCraftHeaders && $requestHeaders->has('X-Craft-System')) {
             foreach (explode(',', $requestHeaders->get('X-Craft-System')) as $info) {
                 [$name, $installed] = array_pad(explode(':', $info, 2), 2, null);
                 if ($installed !== null) {
@@ -220,7 +221,7 @@ abstract class BaseApiController extends Controller
         $cmsLicense = null;
 
         try {
-            if ($this->checkCraftHeaders) {
+            if ($checkCraftHeaders) {
                 if (($this->email = $requestHeaders->get('X-Craft-User-Email')) === null) {
                     throw new BadRequestHttpException('Missing X-Craft-User-Email Header');
                 }
@@ -229,7 +230,7 @@ abstract class BaseApiController extends Controller
                 }
             }
 
-            $cmsLicenseKey = $this->checkCraftHeaders ? $requestHeaders->get('X-Craft-License') : null;
+            $cmsLicenseKey = $checkCraftHeaders ? $requestHeaders->get('X-Craft-License') : null;
             if ($cmsLicenseKey === '__REQUEST__' || $cmsLicenseKey === '🙏') {
                 $cmsLicense = $this->cmsLicenses[] = $this->createCmsLicense();
                 $responseHeaders
@@ -322,7 +323,7 @@ abstract class BaseApiController extends Controller
 
             // collect the plugin licenses & their editions
             $pluginLicenseManager = $this->module->getPluginLicenseManager();
-            $pluginLicenseKeys = $this->checkCraftHeaders ? $requestHeaders->get('X-Craft-Plugin-Licenses') : null;
+            $pluginLicenseKeys = $checkCraftHeaders ? $requestHeaders->get('X-Craft-Plugin-Licenses') : null;
 
             if ($pluginLicenseKeys !== null) {
                 foreach (explode(',', $pluginLicenseKeys) as $pluginLicenseInfo) {
