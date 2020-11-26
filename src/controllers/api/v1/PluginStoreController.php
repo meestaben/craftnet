@@ -2,6 +2,7 @@
 
 namespace craftnet\controllers\api\v1;
 
+use Composer\Semver\Semver;
 use craft\db\Query;
 use craft\elements\Asset;
 use craft\elements\Category;
@@ -180,9 +181,7 @@ class PluginStoreController extends BaseApiController
         $data = Cache::get($cacheKey);
 
         if (!$data) {
-            $plugin = $this->_createPluginQuery(false)
-                ->handle($handle)
-                ->one();
+            $plugin = $this->_plugin($handle);
 
             if (!$plugin) {
                 return $this->asErrorJson("Couldn't find plugin");
@@ -194,7 +193,8 @@ class PluginStoreController extends BaseApiController
 
         // Add the latest compatible version
         if ($this->cmsVersion) {
-            $cmsRelease = Module::getInstance()->getPackageManager()->getRelease('craftcms/cms', $this->cmsVersion);
+            $packageManager = Module::getInstance()->getPackageManager();
+            $cmsRelease = $packageManager->getRelease('craftcms/cms', $this->cmsVersion);
             if ($cmsRelease) {
                 $data['latestCompatibleVersion'] = (new Query)
                     ->select(['v.version'])
@@ -214,6 +214,24 @@ class PluginStoreController extends BaseApiController
                     ->scalar();
             } else {
                 $data['latestCompatibleVersion'] = null;
+
+                // Get the latest plugin release and manually check if it's compatible
+                if (
+                    (isset($plugin) || ($plugin = $this->_plugin($handle))) &&
+                    ($latestRelease = $packageManager->getRelease($plugin->packageName, $plugin->latestVersion))
+                ) {
+                    $cmsConstraints = (new Query())
+                        ->select(['constraints'])
+                        ->from(['craftnet_packagedeps'])
+                        ->where([
+                            'versionId' => $latestRelease->id,
+                            'name' => 'craftcms/cms',
+                        ])
+                        ->scalar();
+                    if ($cmsConstraints && Semver::satisfies($this->cmsVersion, $cmsConstraints)) {
+                        $data['latestCompatibleVersion'] = $plugin->latestVersion;
+                    }
+                }
             }
         }
 
@@ -467,6 +485,17 @@ class PluginStoreController extends BaseApiController
         $query = Plugin::find();
         $this->_preparePluginQuery($query, $withEagerLoading);
         return $query;
+    }
+
+    /**
+     * @param string $handle
+     * @return Plugin|null
+     */
+    private function _plugin(string $handle): ?Plugin
+    {
+        return $this->_createPluginQuery(false)
+            ->handle($handle)
+            ->one();
     }
 
     /**
