@@ -174,6 +174,7 @@ abstract class BaseApiController extends Controller
         $identity = $requestHeaders->get('X-Craft-User-Email') ?: 'anonymous';
         $db = Craft::$app->getDb();
         $checkCraftHeaders = !$this->request->getIsOptions() && ($this->checkCraftHeaders || $this->request->getParam('processCraftHeaders'));
+        $allowTrials = !App::env('NO_TRIALS');
 
         // allow ajax requests to see the response headers
         $responseHeaders->set('access-control-expose-headers', implode(', ', [
@@ -241,7 +242,7 @@ abstract class BaseApiController extends Controller
 
                 // was a host provided with the request?
                 if ($requestHeaders->has('X-Craft-Host')) {
-                    $responseHeaders->set('x-craft-allow-trials', (string)($cmsLicense->domain === null));
+                    $responseHeaders->set('x-craft-allow-trials', (string)($allowTrials && $cmsLicense->domain === null));
                 }
             } else if ($cmsLicenseKey !== null) {
                 try {
@@ -264,7 +265,7 @@ abstract class BaseApiController extends Controller
                             }
                         }
 
-                        $responseHeaders->set('x-craft-allow-trials', (string)($domain === null));
+                        $responseHeaders->set('x-craft-allow-trials', (string)($allowTrials && $domain === null));
                     }
 
                     // has Craft gone past its current allowed version?
