@@ -226,11 +226,11 @@ abstract class BaseApiController extends Controller
 
         try {
             if ($checkCraftHeaders) {
-                if (($this->email = $requestHeaders->get('X-Craft-User-Email')) === null) {
-                    throw new BadRequestHttpException('Missing X-Craft-User-Email Header');
-                }
-                if ((new EmailValidator())->validate($this->email, $error) === false) {
-                    throw new BadRequestHttpException($error);
+                $this->email = $requestHeaders->get('X-Craft-User-Email');
+                if ($this->email !== null) {
+                    if ((new EmailValidator())->validate($this->email, $error) === false) {
+                        throw new BadRequestHttpException($error);
+                    }
                 }
             }
 
@@ -964,6 +964,10 @@ EOL;
      */
     protected function createCmsLicense(): CmsLicense
     {
+        if ($this->email === null) {
+            throw new BadRequestHttpException('Missing X-Craft-User-Email Header');
+        }
+
         $license = new CmsLicense([
             'expirable' => true,
             'expired' => false,
@@ -1000,6 +1004,10 @@ EOL;
      */
     protected function createPluginLicense(Plugin $plugin): PluginLicense
     {
+        if ($this->email === null) {
+            throw new BadRequestHttpException('Missing X-Craft-User-Email Header');
+        }
+
         $license = new PluginLicense([
             'pluginId' => $plugin->id,
             'pluginHandle' => $plugin->handle,
