@@ -23,6 +23,7 @@ class PluginLicense extends License
     public $cmsLicenseId;
     public $pluginHandle;
     public $edition;
+    public $trial = false;
     public $expirable = true;
     public $expired = false;
     public $autoRenew = false;
@@ -48,7 +49,7 @@ class PluginLicense extends License
     public function rules()
     {
         return [
-            [['expirable', 'expired', 'plugin', 'edition', 'email', 'key'], 'required'],
+            [['trial', 'expirable', 'expired', 'plugin', 'email', 'key'], 'required'],
             [['id', 'pluginId', 'editionId', 'ownerId', 'cmsLicenseId'], 'number', 'integerOnly' => true, 'min' => 1],
             [['email'], 'email'],
         ];
@@ -188,10 +189,14 @@ class PluginLicense extends License
 
     /**
      * @inheritdoc
-     * @return PluginEdition
+     * @return PluginEdition|null
      */
-    public function getEdition(): EditionInterface
+    public function getEdition(): ?EditionInterface
     {
+        if (!$this->editionId) {
+            return null;
+        }
+
         return PluginEdition::find()
             ->id($this->editionId)
             ->anyStatus()

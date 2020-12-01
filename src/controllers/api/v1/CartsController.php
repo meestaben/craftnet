@@ -626,6 +626,22 @@ class CartsController extends BaseApiController
             return null;
         }
 
+        // get the Craft license if specified
+        if (!empty($item->cmsLicenseKey)) {
+            try {
+                $cmsLicense = $this->module->getCmsLicenseManager()->getLicenseByKey($item->cmsLicenseKey);
+            } catch (LicenseNotFoundException $e) {
+                $errors[] = [
+                    'param' => "{$paramPrefix}.cmsLicenseKey",
+                    'message' => $e->getMessage(),
+                    'code' => self::ERROR_CODE_MISSING,
+                ];
+                return null;
+            }
+        } else {
+            $cmsLicense = null;
+        }
+
         // get the license (if there is one)
         if (!empty($item->licenseKey)) {
             try {
@@ -640,7 +656,8 @@ class CartsController extends BaseApiController
             }
 
             // Make sure this is actually an upgrade
-            if ($edition->getPrice() <= $license->getEdition()->getPrice()) {
+            $licenseEdition = $license->getEdition();
+            if ($licenseEdition && $edition->getPrice() <= $licenseEdition->getPrice()) {
                 $errors[] = [
                     'param' => "{$paramPrefix}.edition",
                     'message' => "Invalid upgrade edition: {$item->edition}",
@@ -653,27 +670,14 @@ class CartsController extends BaseApiController
                 'licenseKey' => $license->key,
             ];
         } else {
-            // get the Craft license if specified
-            if (!empty($item->cmsLicenseKey)) {
-                try {
-                    $cmsLicense = $this->module->getCmsLicenseManager()->getLicenseByKey($item->cmsLicenseKey);
-                } catch (LicenseNotFoundException $e) {
-                    $errors[] = [
-                        'param' => "{$paramPrefix}.cmsLicenseKey",
-                        'message' => $e->getMessage(),
-                        'code' => self::ERROR_CODE_MISSING,
-                    ];
-                    return null;
-                }
-            } else {
-                $cmsLicense = null;
-            }
-
             // generate a license key now to ensure that the line item options are unique
             $options = [
                 'licenseKey' => 'new:' . KeyHelper::generatePluginKey(),
-                'cmsLicenseKey' => $cmsLicense->key ?? null,
             ];
+        }
+
+        if ($cmsLicense) {
+            $options['cmsLicenseKey'] = $cmsLicense->key;
         }
 
         if (isset($item->expiryDate)) {

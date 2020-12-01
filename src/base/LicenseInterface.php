@@ -94,9 +94,9 @@ interface LicenseInterface
     /**
      * Returns the edition associated with the license.
      *
-     * @return EditionInterface
+     * @return EditionInterface|null
      */
-    public function getEdition(): EditionInterface;
+    public function getEdition(): ?EditionInterface;
 
     /**
      * Returns the license’s edit URL in Craft ID

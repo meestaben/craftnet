@@ -516,6 +516,7 @@ class PluginEdition extends PluginPurchasable implements EditionInterface
 
         $license->editionId = $this->id;
         $license->edition = $this->handle;
+        $license->trial = false;
         $license->expired = false;
 
         // If this was bought with a coupon created before April 4, set the license to non-expirable

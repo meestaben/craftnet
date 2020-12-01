@@ -84,7 +84,7 @@ class PluginLicenseManager extends Component
         $date->add(new \DateInterval('P45D'));
 
         $results = $this->_createLicenseQuery()
-            ->where([
+            ->andWhere([
                 'and',
                 [
                     'l.ownerId' => $ownerId,
@@ -115,7 +115,7 @@ class PluginLicenseManager extends Component
         $results = $this->_createLicenseQuery()
             ->innerJoin('craftnet_pluginlicenses_lineitems l_li', '[[l_li.licenseId]] = [[l.id]]')
             ->innerJoin('commerce_lineitems li', '[[li.id]] = [[l_li.lineItemId]]')
-            ->where(['li.orderId' => $orderId])
+            ->andWhere(['li.orderId' => $orderId])
             ->all();
 
         $licenses = [];
@@ -135,7 +135,7 @@ class PluginLicenseManager extends Component
     public function getLicensesByCmsLicense(int $cmsLicenseId): array
     {
         $results = $this->_createLicenseQuery()
-            ->where(['l.cmsLicenseId' => $cmsLicenseId])
+            ->andWhere(['l.cmsLicenseId' => $cmsLicenseId])
             ->all();
 
         $licenses = [];
@@ -154,8 +154,8 @@ class PluginLicenseManager extends Component
      */
     public function getLicenseById(int $id): PluginLicense
     {
-        $result = $this->_createLicenseQuery()
-            ->where(['l.id' => $id])
+        $result = $this->_createLicenseQuery(false, true)
+            ->andWhere(['l.id' => $id])
             ->one();
 
         if ($result === null) {
@@ -183,8 +183,8 @@ class PluginLicenseManager extends Component
             throw new LicenseNotFoundException($key);
         }
 
-        $query = $this->_createLicenseQuery($anyStatus)
-            ->where(['l.key' => $key]);
+        $query = $this->_createLicenseQuery($anyStatus, true)
+            ->andWhere(['l.key' => $key]);
 
         if ($handle !== null) {
             $query
@@ -215,7 +215,7 @@ class PluginLicenseManager extends Component
     public function getLicensesByCmsLicenseId(int $cmsLicenseId): array
     {
         $results = $this->_createLicenseQuery()
-            ->where(['cmsLicenseId' => $cmsLicenseId])
+            ->andWhere(['cmsLicenseId' => $cmsLicenseId])
             ->orderBy(['l.pluginHandle' => SORT_ASC])
             ->all();
 
@@ -240,7 +240,7 @@ class PluginLicenseManager extends Component
     {
         $query = $this->_createLicenseQuery()
             ->innerJoin('craftnet_plugins p', '[[p.id]] = [[l.pluginId]]')
-            ->where(['p.developerId' => $developerId]);
+            ->andWhere(['p.developerId' => $developerId]);
 
         $total = $query->count();
         $results = $query
@@ -266,7 +266,7 @@ class PluginLicenseManager extends Component
     {
         $query = $this->_createLicenseQuery()
             ->innerJoin('craftnet_plugins p', '[[p.id]] = [[l.pluginId]]')
-            ->where(['l.pluginId' => $pluginId]);
+            ->andWhere(['l.pluginId' => $pluginId]);
 
         $results = $query
             ->orderBy(['l.dateCreated' => SORT_ASC])
@@ -290,7 +290,8 @@ class PluginLicenseManager extends Component
         $rangeEnd = (new \DateTime('midnight', new \DateTimeZone('UTC')))->modify('+30 days');
 
         $results = $this->_createLicenseQuery()
-            ->where([
+            ->andWhere([
+                'trial' => false,
                 'expirable' => true,
                 'reminded' => false,
             ])
@@ -315,7 +316,7 @@ class PluginLicenseManager extends Component
     {
         $tomorrow = (new \DateTime('midnight', new \DateTimeZone('UTC')))->modify('+1 days');
         $results = $this->_createLicenseQuery()
-            ->where([
+            ->andWhere([
                 'expirable' => true,
                 'expired' => false,
             ])
@@ -360,7 +361,7 @@ class PluginLicenseManager extends Component
             }
         }
 
-        if (!$license->editionId) {
+        if (!$license->editionId && !$license->trial) {
             $license->editionId = (int)PluginEdition::find()
                 ->select('elements.id')
                 ->pluginId($license->pluginId)
@@ -372,7 +373,13 @@ class PluginLicenseManager extends Component
             }
         }
 
-        if ($license->expirable) {
+        if ($license->trial) {
+            $license->expirable = true;
+            $license->expired = false;
+            $license->autoRenew = false;
+            $license->reminded = false;
+            $license->renewalPrice = null;
+        } else if ($license->expirable) {
             if (!$license->renewalPrice) {
                 $license->renewalPrice = $license->getEdition()->getRenewal()->getPrice();
             }
@@ -387,6 +394,7 @@ class PluginLicenseManager extends Component
             'cmsLicenseId' => $license->cmsLicenseId,
             'pluginHandle' => $license->pluginHandle,
             'edition' => $license->edition,
+            'trial' => $license->trial,
             'expirable' => $license->expirable,
             'expired' => $license->expired,
             'autoRenew' => $license->autoRenew,
@@ -473,9 +481,7 @@ class PluginLicenseManager extends Component
         $key = $this->normalizeKey($key);
 
         $result = $this->_createLicenseQuery()
-            ->where([
-                'l.key' => $key,
-            ])
+            ->andWhere(['l.key' => $key])
             ->one();
 
         if ($result === null) {
@@ -585,8 +591,8 @@ class PluginLicenseManager extends Component
         // History
         $license['history'] = $this->getHistory($result->id);
 
-        // Edition deteails
-        $license['edition'] = PluginEdition::findOne($result->editionId);
+        // Edition details
+        $license['edition'] = $result->editionId ? PluginEdition::findOne($result->editionId) : null;
 
         if (!empty($license['expiresOn'])) {
             // Expiry date options
@@ -693,7 +699,7 @@ class PluginLicenseManager extends Component
         $dateFormatted = $date->format('Y-m-d');
 
         $licenseQuery = $this->_createLicenseQuery()
-            ->where(['l.ownerId' => $owner->id])
+            ->andWhere(['l.ownerId' => $owner->id])
             ->andWhere(['l.expired' => false])
             ->andWhere(['l.autoRenew' => false])
             ->andWhere(['not', ['l.expiresOn' => null]])
@@ -707,9 +713,10 @@ class PluginLicenseManager extends Component
 
     /**
      * @param bool $anyStatus whether to include licenses for disabled editions
+     * @param bool $includeTrials whether to include trial licenses
      * @return Query
      */
-    private function _createLicenseQuery(bool $anyStatus = false): Query
+    private function _createLicenseQuery(bool $anyStatus = false, bool $includeTrials = false): Query
     {
         $query = (new Query())
             ->select([
@@ -720,6 +727,7 @@ class PluginLicenseManager extends Component
                 'l.cmsLicenseId',
                 'l.pluginHandle',
                 'l.edition',
+                'l.trial',
                 'l.expirable',
                 'l.expired',
                 'l.autoRenew',
@@ -744,7 +752,12 @@ class PluginLicenseManager extends Component
         if (!$anyStatus) {
             $query
                 ->innerJoin('elements pl_el', ['and', '[[pl_el.id]] = [[l.pluginId]]', ['pl_el.enabled' => true]])
-                ->innerJoin('elements ed_el', ['and', '[[ed_el.id]] = [[l.editionId]]', ['ed_el.enabled' => true]]);
+                ->leftJoin('elements ed_el', ['and', '[[ed_el.id]] = [[l.editionId]]', ['ed_el.enabled' => true]])
+                ->where(['or', ['l.trial' => true], ['ed_el.id' => null]]);
+        }
+
+        if (!$includeTrials) {
+            $query->andWhere(['l.trial' => false]);
         }
 
         return $query;
@@ -758,7 +771,7 @@ class PluginLicenseManager extends Component
     private function _createLicenseQueryForOwner(User $owner, string $searchQuery = null)
     {
         $query = $this->_createLicenseQuery()
-            ->where(['l.ownerId' => $owner->id]);
+            ->andWhere(['l.ownerId' => $owner->id]);
 
         if ($searchQuery) {
             $query->andWhere([

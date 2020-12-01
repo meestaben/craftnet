@@ -80,42 +80,44 @@ class OrderAdjuster implements AdjusterInterface
         if (strpos($options['licenseKey'], 'new:') !== 0) {
             $license = $edition->getLicenseByKey($options['licenseKey']);
             $oldEdition = $license->getEdition();
-            $upgradeDiscount = min($oldEdition->getPrice(), $edition->getPrice());
-            $upgradeSnapshot = [
-                'type' => 'upgradeDiscount',
-                'oldEdition' => $oldEdition->getHandle(),
-                'oldEditionPrice' => $oldEdition->getPrice(),
-                'editionUpgradeDiscount' => $upgradeDiscount,
-            ];
+            if ($oldEdition) {
+                $upgradeDiscount = min($oldEdition->getPrice(), $edition->getPrice());
+                $upgradeSnapshot = [
+                    'type' => 'upgradeDiscount',
+                    'oldEdition' => $oldEdition->getHandle(),
+                    'oldEditionPrice' => $oldEdition->getPrice(),
+                    'editionUpgradeDiscount' => $upgradeDiscount,
+                ];
 
-            // Was the old expiration date over a year away?
-            if ($license->getIsExpirable() && ($oldExpiryDate = $license->getExpiryDate()) !== null) {
-                $upgradeSnapshot['oldExpiryDate'] = $oldExpiryDate->format(\DateTime::ATOM);
+                // Was the old expiration date over a year away?
+                if ($license->getIsExpirable() && ($oldExpiryDate = $license->getExpiryDate()) !== null) {
+                    $upgradeSnapshot['oldExpiryDate'] = $oldExpiryDate->format(\DateTime::ATOM);
 
-                if ($oldExpiryDate > $nextYear) {
-                    $oldRenewal = $oldEdition->getRenewal();
-                    $renewalUpgradeDiscount = min($oldRenewal->getPrice(), $renewal->getPrice());
+                    if ($oldExpiryDate > $nextYear) {
+                        $oldRenewal = $oldEdition->getRenewal();
+                        $renewalUpgradeDiscount = min($oldRenewal->getPrice(), $renewal->getPrice());
 
-                    if ($renewalUpgradeDiscount > 0) {
-                        $oldPaidRenewalYears = OrderHelper::dateDiffInYears($nextYear, $oldExpiryDate);
-                        $updatesUpgradeDiscount = round($renewalUpgradeDiscount * $oldPaidRenewalYears, 2);
-                        $upgradeSnapshot['oldRenewalPrice'] = $oldRenewal->getPrice();
-                        $upgradeSnapshot['oldPaidRenewalYears'] = $oldPaidRenewalYears;
-                        $upgradeSnapshot['updatesUpgradeDiscount'] = $updatesUpgradeDiscount;
-                        $upgradeDiscount += $updatesUpgradeDiscount;
+                        if ($renewalUpgradeDiscount > 0) {
+                            $oldPaidRenewalYears = OrderHelper::dateDiffInYears($nextYear, $oldExpiryDate);
+                            $updatesUpgradeDiscount = round($renewalUpgradeDiscount * $oldPaidRenewalYears, 2);
+                            $upgradeSnapshot['oldRenewalPrice'] = $oldRenewal->getPrice();
+                            $upgradeSnapshot['oldPaidRenewalYears'] = $oldPaidRenewalYears;
+                            $upgradeSnapshot['updatesUpgradeDiscount'] = $updatesUpgradeDiscount;
+                            $upgradeDiscount += $updatesUpgradeDiscount;
+                        }
                     }
                 }
-            }
 
-            if ($upgradeDiscount > 0) {
-                $adjustments[] = new OrderAdjustment([
-                    'order' => $order,
-                    'lineItem' => $lineItem,
-                    'type' => Discount::ADJUSTMENT_TYPE,
-                    'name' => 'Upgrade discount',
-                    'amount' => -$upgradeDiscount,
-                    'sourceSnapshot' => $upgradeSnapshot,
-                ]);
+                if ($upgradeDiscount > 0) {
+                    $adjustments[] = new OrderAdjustment([
+                        'order' => $order,
+                        'lineItem' => $lineItem,
+                        'type' => Discount::ADJUSTMENT_TYPE,
+                        'name' => 'Upgrade discount',
+                        'amount' => -$upgradeDiscount,
+                        'sourceSnapshot' => $upgradeSnapshot,
+                    ]);
+                }
             }
         }
     }

@@ -6,6 +6,7 @@ use Composer\Semver\Comparator;
 use Craft;
 use craft\elements\User;
 use craft\errors\InvalidPluginException;
+use craft\helpers\App;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Db;
 use craft\helpers\HtmlPurifier;
@@ -53,6 +54,7 @@ abstract class BaseApiController extends Controller
     const LICENSE_STATUS_INVALID = 'invalid';
     const LICENSE_STATUS_MISMATCHED = 'mismatched';
     const LICENSE_STATUS_ASTRAY = 'astray';
+    const LICENSE_STATUS_TRIAL = 'trial';
 
     /**
      * @inheritdoc
@@ -185,6 +187,7 @@ abstract class BaseApiController extends Controller
             'x-craft-license-status',
             'x-craft-plugin-license-editions',
             'x-craft-plugin-license-statuses',
+            'x-craft-plugin-licenses',
         ]));
 
         // was system info provided?
@@ -327,48 +330,73 @@ abstract class BaseApiController extends Controller
             $pluginLicenseKeys = $checkCraftHeaders ? $requestHeaders->get('X-Craft-Plugin-Licenses') : null;
 
             if ($pluginLicenseKeys !== null) {
+                $newPluginLicenses = [];
+
                 foreach (explode(',', $pluginLicenseKeys) as $pluginLicenseInfo) {
                     [$pluginHandle, $pluginLicenseKey] = explode(':', $pluginLicenseInfo);
-                    try {
-                        $pluginLicense = $pluginLicenseManager->getLicenseByKey($pluginLicenseKey, $pluginHandle, true);
-                        // Ignore it if for a disabled edition
-                        /** @var PluginEdition $pluginEdition */
-                        $pluginEdition = $pluginLicense->getEdition();
-                        if ($pluginEdition->enabled) {
-                            $this->pluginLicenses[$pluginHandle] = $pluginLicense;
-                            $this->pluginLicenseEditions[$pluginHandle] = $pluginLicense->getEdition();
-                        }
-                    } catch (LicenseNotFoundException $e) {
-                        $this->pluginLicenseStatuses[$pluginHandle] = self::LICENSE_STATUS_INVALID;
-                        $e = null;
-                    } catch (InvalidPluginException $e) {
-                        // Just ignore it
-                        $e = null;
+                    $pluginLicense = null;
+                    switch ($pluginLicenseKey) {
+                        case '__REQUEST__':
+                            if (isset($this->plugins[$pluginHandle])) {
+                                // Only oblige if they are running a commercial edition
+                                $edition = $this->installedPluginEdition($pluginHandle);
+                                if ($edition->price != 0) {
+                                    $pluginLicense = $this->createPluginLicense($this->plugins[$pluginHandle]);
+                                    $newPluginLicenses[] = "$pluginHandle:$pluginLicense->key";
+                                }
+                            }
+                            break;
+                        case '__INVALID__':
+                            break;
+                        default:
+                            try {
+                                $pluginLicense = $pluginLicenseManager->getLicenseByKey($pluginLicenseKey, $pluginHandle, true);
+                            } catch (LicenseNotFoundException $e) {
+                                $this->pluginLicenseStatuses[$pluginHandle] = self::LICENSE_STATUS_INVALID;
+                                $e = null;
+                            } catch (InvalidPluginException $e) {
+                                // Just ignore it
+                                $e = null;
+                            }
                     }
+
+                    if ($pluginLicense) {
+                        $pluginEdition = $pluginLicense->getEdition();
+                        if (
+                            $pluginLicense->trial ||
+                            ($pluginEdition && $pluginEdition->enabled)
+                        ) {
+                            $this->pluginLicenses[$pluginHandle] = $pluginLicense;
+                            if ($pluginEdition && $pluginEdition->enabled) {
+                                $this->pluginLicenseEditions[$pluginHandle] = $pluginEdition;
+                            }
+                        }
+                    }
+                }
+
+                if (!empty($newPluginLicenses)) {
+                    $responseHeaders->set('x-craft-plugin-licenses', implode(',', $newPluginLicenses));
                 }
             }
 
             // set the plugin license statuses
-            foreach ($this->plugins as $pluginHandle => $plugin) {
+            foreach (array_keys($this->plugins) as $pluginHandle) {
                 // ignore if they're using an invalid license key
                 if (isset($this->pluginLicenseStatuses[$pluginHandle]) && $this->pluginLicenseStatuses[$pluginHandle] === self::LICENSE_STATUS_INVALID) {
                     continue;
                 }
 
                 // no license key yet?
-                if (!isset($this->pluginLicenses[$pluginHandle])) {
+                if (!isset($this->pluginLicenses[$pluginHandle]) || $this->pluginLicenses[$pluginHandle]->trial) {
                     // should there be?
-                    $edition = $plugin->getEditions()[0];
-                    if (isset($this->pluginEditions[$pluginHandle])) {
-                        try {
-                            $edition = $plugin->getEdition($this->pluginEditions[$pluginHandle]);
-                        } catch (InvalidArgumentException $e) {
-                            // just assume the first
-                            $e = null;
-                        }
-                    }
+                    $edition = $this->installedPluginEdition($pluginHandle);
                     if ($edition->price != 0) {
-                        $this->pluginLicenseStatuses[$pluginHandle] = self::LICENSE_STATUS_INVALID;
+                        // Craft 3.6 added the 'trial' status, which applies regardless of whether there is a license key
+                        if (!$this->cmsVersion || version_compare($this->cmsVersion, '3.6.0', '>=')) {
+                            $this->pluginLicenseStatuses[$pluginHandle] = self::LICENSE_STATUS_TRIAL;
+                        } else {
+                            $this->pluginLicenseStatuses[$pluginHandle] = self::LICENSE_STATUS_INVALID;
+                        }
                     }
                     continue;
                 }
@@ -905,6 +933,30 @@ EOL;
     }
 
     /**
+     * Returns the installed edition for the given plugin.
+     *
+     * @param string $pluginHandle
+     * @return PluginEdition
+     */
+    protected function installedPluginEdition(string $pluginHandle): PluginEdition
+    {
+        if (!isset($this->plugins[$pluginHandle])) {
+            throw new InvalidArgumentException("Invalid installed plugin handle: $pluginHandle");
+        }
+
+        $plugin = $this->plugins[$pluginHandle];
+        if (isset($this->pluginEditions[$pluginHandle])) {
+            try {
+                return $plugin->getEdition($this->pluginEditions[$pluginHandle]);
+            } catch (InvalidArgumentException $e) {
+            }
+        }
+
+        // just assume the first
+        return $plugin->getEditions()[0];
+    }
+
+    /**
      * Creates a new CMS license.
      *
      * @return CmsLicense
@@ -935,6 +987,35 @@ EOL;
             $note .= " for domain {$license->domain}";
         }
         $manager->addHistory($license->id, $note);
+
+        return $license;
+    }
+
+    /**
+     * Creates a new plugin license.
+     *
+     * @param Plugin $plugin
+     * @return PluginLicense
+     * @throws Exception
+     */
+    protected function createPluginLicense(Plugin $plugin): PluginLicense
+    {
+        $license = new PluginLicense([
+            'pluginId' => $plugin->id,
+            'pluginHandle' => $plugin->handle,
+            'trial' => true,
+            'email' => $this->email,
+            'key' => KeyHelper::generatePluginKey(),
+            'lastVersion' => $this->pluginVersions[$plugin->handle],
+            'lastActivityOn' => new \DateTime('now', new \DateTimeZone('UTC')),
+        ]);
+
+        $manager = $this->module->getPluginLicenseManager();
+        if (!$manager->saveLicense($license)) {
+            throw new Exception('Could not create plugin license: ' . implode(', ', $license->getErrorSummary(true)));
+        }
+
+        $manager->addHistory($license->id, "created by $this->email");
 
         return $license;
     }
