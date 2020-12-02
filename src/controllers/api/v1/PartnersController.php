@@ -13,11 +13,11 @@ class PartnersController extends BaseApiController
 {
     public function init()
     {
+        parent::init();
         $secret = $this->request->getHeaders()->get('X-Partner-Secret');
         if ($secret !== getenv('PARTNER_SECRET')) {
             throw new BadRequestHttpException('Wrong secret');
         }
-        parent::init();
     }
 
     public function actionList(): Response
