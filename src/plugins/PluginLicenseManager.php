@@ -753,11 +753,11 @@ class PluginLicenseManager extends Component
             $query
                 ->innerJoin('elements pl_el', ['and', '[[pl_el.id]] = [[l.pluginId]]', ['pl_el.enabled' => true]])
                 ->leftJoin('elements ed_el', ['and', '[[ed_el.id]] = [[l.editionId]]', ['ed_el.enabled' => true]])
-                ->where([
+                ->andWhere(array_filter([
                     'or',
                     ['not', ['ed_el.id' => null]],
-                    ['l.trial' => true],
-                ]);
+                    $includeTrials ? ['l.trial' => true] : false,
+                ]));
         }
 
         if (!$includeTrials) {
