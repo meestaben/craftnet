@@ -747,7 +747,14 @@ class PluginLicenseManager extends Component
                 'l.dateUpdated',
                 'l.uid',
             ])
-            ->from(['craftnet_pluginlicenses l']);
+            ->from(['craftnet_pluginlicenses l'])
+            // exclude licenses for plugin editions that are now free
+            ->leftJoin('craftnet_plugineditions e', ['and', '[[e.id]] = [[l.editionId]]', ['not', ['e.price' => 0]]])
+            ->where(array_filter([
+                'or',
+                ['not', ['e.id' => null]],
+                $includeTrials ? ['l.trial' => true] : false,
+            ]));
 
         if (!$anyStatus) {
             $query
