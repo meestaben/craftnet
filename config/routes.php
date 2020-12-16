@@ -92,6 +92,10 @@ return [
     ],
     'plugins' => [
         '/' => 'craftnet/plugins/index/index',
+        'new.atom' => 'craftnet/plugins/feeds/new',
+        'releases.atom' => 'craftnet/plugins/feeds/releases',
+        'critical.atom' => 'craftnet/plugins/feeds/critical',
+        '<handle:[\w\-]+>.atom' => 'craftnet/plugins/feeds/plugin',
         '<url:(.*)>' => 'craftnet/plugins/index/index',
     ],
 ];

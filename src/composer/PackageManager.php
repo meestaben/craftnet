@@ -126,7 +126,7 @@ class PackageManager extends Component
      */
     public function getRelease(string $name, string $version): ?PackageRelease
     {
-        $result = $this->_createReleaseQuery($name, $version)->one();
+        $result = $this->createReleaseQuery($name, $version)->one();
 
         if (!$result) {
             return null;
@@ -300,7 +300,7 @@ class PackageManager extends Component
             $versions = null;
         }
 
-        $results = $this->_createReleaseQuery($name, $versions)->all();
+        $results = $this->createReleaseQuery($name, $versions)->all();
         $releases = [];
 
         foreach ($results as $result) {
@@ -327,7 +327,7 @@ class PackageManager extends Component
     public function getReleasesAfter(string $name, string $from, ?string $minStability = 'stable', ?string $constraint = null): array
     {
         $versions = $this->getVersionsAfter($name, $from, $minStability, $constraint, false);
-        $results = $this->_createReleaseQuery($name, $versions)->all();
+        $results = $this->createReleaseQuery($name, $versions)->all();
         $releases = [];
 
         foreach ($results as $result) {
@@ -651,11 +651,11 @@ class PackageManager extends Component
     }
 
     /**
-     * @param string $name
+     * @param string|null $name
      * @param string|string[]|null $version
      * @return Query
      */
-    private function _createReleaseQuery(string $name, $version = null): Query
+    public function createReleaseQuery(?string $name = null, $version = null): Query
     {
         $query = (new Query())
             ->select([
@@ -689,10 +689,11 @@ class PackageManager extends Component
             ])
             ->from(['craftnet_packageversions pv'])
             ->innerJoin(['craftnet_packages p'], '[[p.id]] = [[pv.packageId]]')
-            ->where([
-                'p.name' => $name,
-                'pv.valid' => true,
-            ]);
+            ->where(['pv.valid' => true]);
+
+        if ($name !== null) {
+            $query->andWhere(['p.name' => $name]);
+        }
 
         if ($version !== null) {
             $vp = new VersionParser();
@@ -1067,7 +1068,7 @@ class PackageManager extends Component
             ->execute();
 
         // Get the new plugin releases
-        $releases = $this->_createReleaseQuery($plugin->packageName)
+        $releases = $this->createReleaseQuery($plugin->packageName)
             ->select(['pv.id', 'pv.normalizedVersion as version', 'pv.stability'])
             ->indexBy('id')
             ->all();
