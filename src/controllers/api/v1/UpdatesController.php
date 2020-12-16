@@ -4,11 +4,8 @@ namespace craftnet\controllers\api\v1;
 
 use Composer\Semver\Comparator;
 use Composer\Semver\VersionParser;
-use Craft;
 use craft\db\Query;
-use craft\helpers\ArrayHelper;
 use craft\models\Update;
-use craftnet\ChangelogParser;
 use craftnet\composer\PackageRelease;
 use craftnet\controllers\api\BaseApiController;
 use craftnet\errors\ValidationException;
@@ -235,43 +232,16 @@ class UpdatesController extends BaseApiController
         }
 
         $packageManager = $this->module->getPackageManager();
-        $versions = $packageManager->getVersionsAfter($name, $fromVersion, $stability, $constraint);
-
-        // Are they already at the latest?
-        if (empty($versions)) {
-            return [[], null];
-        }
+        $releases = $packageManager->getReleasesAfter($name, $fromVersion, $stability, $constraint);
 
         // Sort descending
-        $versions = array_reverse($versions);
+        $releases = array_reverse($releases);
 
-        // Prep the release info
-        $releaseInfo = [];
-        $vp = new VersionParser();
-        foreach ($versions as $version) {
-            $normalizedVersion = $vp->normalize($version);
-            $releaseInfo[$normalizedVersion] = (object)[
-                'version' => $version,
-            ];
-        }
-
-        // Get the latest release's changelog
-        $toVersion = reset($versions);
-        $latest = $packageManager->getRelease($name, $toVersion);
-        $changelog = $latest->changelog ?? null;
-
-        if ($changelog) {
-            $changelogReleases = (new ChangelogParser())->parse($changelog, $fromVersion);
-            foreach ($changelogReleases as $normalizedVersion => $release) {
-                if (isset($releaseInfo[$normalizedVersion])) {
-                    $releaseInfo[$normalizedVersion]->critical = $release['critical'];
-                    $releaseInfo[$normalizedVersion]->date = $release['date'];
-                    $releaseInfo[$normalizedVersion]->notes = $release['notes'];
-                }
-            }
-        }
-
-        // Drop the version keys and convert objects to arrays
-        return [ArrayHelper::toArray(array_values($releaseInfo)), $latest];
+        return [
+            array_map(function(PackageRelease $release): array {
+                return $release->toArray(['version', 'critical', 'date', 'notes']);
+            }, $releases),
+            reset($releases) ?: null,
+        ];
     }
 }

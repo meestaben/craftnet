@@ -10,7 +10,7 @@ use yii\helpers\Markdown;
 
 class ChangelogParser
 {
-    public function parse(string $changelog, string $fromVersion = null): array
+    public function parse(string $changelog, ?string $fromVersion = null, ?array $onlyVersions = null): array
     {
         // Move it to a temp file & parse it
         $file = tmpfile();
@@ -21,6 +21,10 @@ class ChangelogParser
         $currentVersion = null;
         $vp = new VersionParser();
 
+        if ($onlyVersions !== null) {
+            $onlyVersions = array_flip($onlyVersions);
+        }
+
         while (($line = fgets($file)) !== false) {
             // Is this an H1 or H2?
             if (strncmp($line, '# ', 2) === 0 || strncmp($line, '## ', 3) === 0) {
@@ -29,13 +33,11 @@ class ChangelogParser
 
                 // Is it an H2 version heading?
                 if (preg_match('/^## (?:.* )?\[?v?(\d+\.\d+\.\d+(?:\.\d+)?(?:-[0-9A-Za-z-\.]+)?)\]?(?:\(.*?\)|\[.*?\])? - (\d{4}[-\.]\d\d?[-\.]\d\d?)( \[critical\])?/i', $line, $match)) {
-                    [, $version, $releaseDate] = $match;
-                    $releaseDate = DateTimeHelper::toDateTime(str_replace('.', '-', $releaseDate), false, false);
-                    $critical = !empty($match[3]);
+                    [, $version, $date] = $match;
 
                     // Make sure this is a version we care about
                     try {
-                        $normalizedVersion = $vp->normalize($match[1]);
+                        $normalizedVersion = $vp->normalize($version);
                     } catch (\UnexpectedValueException $e) {
                         continue;
                     }
@@ -45,12 +47,17 @@ class ChangelogParser
                         break;
                     }
 
+                    if ($onlyVersions !== null && !isset($onlyVersions[$normalizedVersion])) {
+                        // Not interested in this version
+                        continue;
+                    }
+
                     // Store the main release info
                     $currentVersion = $normalizedVersion;
                     $releases[$currentVersion] = [
                         'version' => $version,
-                        'critical' => $critical,
-                        'date' => $releaseDate ? $releaseDate->format(\DateTime::ATOM) : null,
+                        'critical' => !empty($match[3]),
+                        'date' => DateTimeHelper::toDateTime(str_replace('.', '-', $date), false, false),
                         'notes' => '',
                     ];
                 }
@@ -65,8 +72,11 @@ class ChangelogParser
 
         // Parse the release notes
         foreach ($releases as &$release) {
+            $release['notes'] = trim($release['notes']);
             if ($release['notes'] !== '') {
                 $release['notes'] = $this->_parseReleaseNotes($release['notes']);
+            } else {
+                $release['notes'] = null;
             }
         }
         unset($release);

@@ -4,6 +4,7 @@ namespace craftnet\composer;
 
 use Composer\Semver\VersionParser;
 use craft\base\Model;
+use craft\gql\types\DateTime;
 use craft\helpers\Json;
 
 /**
@@ -158,6 +159,21 @@ class PackageRelease extends Model
     public $changelog;
 
     /**
+     * @var DateTime|null The release date, according to the package’s latest release’s changelog
+     */
+    public $date;
+
+    /**
+     * @var bool Whether this is a critical release, according to the package’s latest release’s changelog
+     */
+    public $critical = false;
+
+    /**
+     * @var string|null The Markdown-parsed release notes, according to the package’s latest release’s changelog
+     */
+    public $notes;
+
+    /**
      * @var bool
      */
     public $valid = true;
@@ -192,6 +208,16 @@ class PackageRelease extends Model
         if (is_string($this->dist)) {
             $this->dist = Json::decode($this->dist);
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function datetimeAttributes(): array
+    {
+        $names = parent::datetimeAttributes();
+        $names[] = 'date';
+        return $names;
     }
 
     /**

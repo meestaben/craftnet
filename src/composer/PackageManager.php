@@ -9,7 +9,9 @@ use Composer\Semver\VersionParser;
 use Craft;
 use craft\db\Query;
 use craft\helpers\ArrayHelper;
+use craft\helpers\Db;
 use craft\helpers\Json;
+use craftnet\ChangelogParser;
 use craftnet\composer\jobs\UpdatePackage;
 use craftnet\errors\MissingTokenException;
 use craftnet\errors\VcsException;
@@ -681,6 +683,9 @@ class PackageManager extends Component
                 'pv.source',
                 'pv.dist',
                 'pv.changelog',
+                'pv.date',
+                'pv.critical',
+                'pv.notes',
             ])
             ->from(['craftnet_packageversions pv'])
             ->innerJoin(['craftnet_packages p'], '[[p.id]] = [[pv.packageId]]')
@@ -751,6 +756,8 @@ class PackageManager extends Component
         }
 
         $hasValidNewVersion = false;
+        $latestNewRelease = null;
+        $vp = new VersionParser();
 
         // Start a transaction
         $transaction = Craft::$app->getDb()->beginTransaction();
@@ -893,6 +900,10 @@ class PackageManager extends Component
 
                     if ($release->valid) {
                         $hasValidNewVersion = true;
+
+                        if ($latestNewRelease === null) {
+                            $latestNewRelease = $release;
+                        }
                     } else if ($isConsole) {
                         Console::stdout(Console::ansiFormat('invalid' . ($release->invalidReason ? " ({$release->invalidReason})" : ''), [Console::FG_RED]));
                         Console::stdout(Console::ansiFormat(' ... ', [Console::FG_YELLOW]));
@@ -1016,6 +1027,14 @@ class PackageManager extends Component
 
         if (isset($exception)) {
             throw $exception;
+        }
+
+        // Did we just update the latest version of the package?
+        if ($latestNewRelease) {
+            $latestNewVersion = $latestNewRelease->getNormalizedVersion();
+            if ($latestNewVersion === $vp->normalize($this->getLatestVersion($name, null))) {
+                $this->processPackageChangelog($name, $latestNewVersion);
+            }
         }
 
         // Did we just save the first version of an already approved plugin?
@@ -1224,6 +1243,61 @@ class PackageManager extends Component
             ])
             ->execute();
         $release->id = (int)$db->getLastInsertID('craftnet_packageversions');
+    }
+
+    /**
+     * Updates a package’s releases’ dates, critical flags, and notes based on its changelog.
+     *
+     * @param string $name The package name
+     * @param string|null The version to fetch the changelog from. If `null` the latest version will be used
+     * @throws InvalidArgumentException if `$version` is unknown
+     */
+    public function processPackageChangelog(string $name, ?string $version = null): void
+    {
+        // Get all the releases
+        /** @var PackageRelease[] $releases */
+        $releases = ArrayHelper::index($this->getAllReleases($name, null), 'normalizedVersion');
+
+        if (empty($releases)) {
+            return;
+        }
+
+        if ($version !== null) {
+            $normalizedVersion = (new VersionParser())->normalize($version);
+            if (!isset($releases[$normalizedVersion])) {
+                throw new InvalidArgumentException("Unknown version: $version");
+            }
+            $sourceRelease = $releases[$normalizedVersion];
+        } else {
+            // Just go with the latest release
+            $sourceRelease = end($releases);
+        }
+
+        if (!$sourceRelease->changelog) {
+            return;
+        }
+
+        $releaseInfo = (new ChangelogParser)->parse($sourceRelease->changelog, null, array_keys($releases));
+        $db = Craft::$app->getDb();
+
+        foreach ($releaseInfo as $version => $info) {
+            $release = $releases[$version];
+
+            // Only update if something has changed
+            if (
+                $release->date !== $info['date'] ||
+                $release->critical !== $info['critical'] ||
+                $release->notes !== $info['notes']
+            ) {
+                $db->createCommand()
+                    ->update('craftnet_packageversions', [
+                        'date' => Db::prepareDateForDb($info['date']),
+                        'critical' => $info['critical'],
+                        'notes' => $info['notes'],
+                    ], ['id' => $release->id], [], false)
+                    ->execute();
+            }
+        }
     }
 
     /**

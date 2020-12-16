@@ -52,7 +52,7 @@ class PackagesController extends Controller
     /**
      * @var string The specific version to update.
      */
-    public $onlyVersion;
+    public $version;
 
     /**
      * @var bool Whether the Composer repository JSON files should be regenerated after the action is complete
@@ -106,7 +106,7 @@ class PackagesController extends Controller
             case 'update':
                 $options[] = 'force';
                 $options[] = 'queue';
-                $options[] = 'onlyVersion';
+                $options[] = 'version';
                 break;
             case 'update-deps':
             case 'update-managed-packages':
@@ -116,6 +116,10 @@ class PackagesController extends Controller
             case 'create-webhook':
             case 'create-all-webhooks':
                 $options[] = 'force';
+                break;
+            case 'process-changelog':
+                $options[] = 'version';
+                break;
         }
 
         return $options;
@@ -254,7 +258,7 @@ class PackagesController extends Controller
      */
     public function actionUpdate(string $name): int
     {
-        $this->module->getPackageManager()->updatePackage($name, $this->force, $this->queue, $this->dumpJson, $this->onlyVersion);
+        $this->module->getPackageManager()->updatePackage($name, $this->force, $this->queue, $this->dumpJson, $this->version);
         return ExitCode::OK;
     }
 
@@ -368,6 +372,47 @@ class PackagesController extends Controller
         }
 
         return ExitCode::OK;
+    }
+
+    /**
+     * Updates a package's versions' release dates and critical flags based on its latest changelog.
+     *
+     * @param string $name The package name
+     * @return int
+     */
+    public function actionProcessChangelog(string $name): int
+    {
+        $this->_processChangelog($name, $this->version);
+        return ExitCode::OK;
+    }
+
+    /**
+     * Updates all packages' versions' release dates and critical flags based on their latest changelogs.
+     *
+     * @return int
+     */
+    public function actionProcessAllChangelogs(): int
+    {
+        $packageManager = $this->module->getPackageManager();
+        $names = $packageManager->getPackageNames();
+        $total = count($names);
+
+        foreach ($names as $i => $name) {
+            $this->stdout("[$i/$total] ");
+            $this->_processChangelog($name);
+        }
+
+        $this->stdout('Finished processing changelogs.' . PHP_EOL, Console::FG_GREEN);
+        return ExitCode::OK;
+    }
+
+    private function _processChangelog(string $name, ?string $version = null)
+    {
+        $this->stdout('Processing ');
+        $this->stdout($name, Console::FG_CYAN);
+        $this->stdout(' ... ');
+        $this->module->getPackageManager()->processPackageChangelog($name, $version);
+        $this->stdout('done' . PHP_EOL, Console::FG_GREEN);
     }
 
     /**

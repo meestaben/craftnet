@@ -2,6 +2,7 @@
 
 namespace craftnet\controllers\api\v1;
 
+use craft\helpers\DateTimeHelper;
 use craftnet\ChangelogParser;
 use craftnet\controllers\api\BaseApiController;
 use craftnet\helpers\Cache;
@@ -69,6 +70,9 @@ class PluginController extends BaseApiController
             $release = $packageManager->getRelease($plugin->packageName, $plugin->latestVersion);
 
             $releases = (new ChangelogParser())->parse($release->changelog ?? '');
+            foreach ($releases as &$release) {
+                $release['date'] = DateTimeHelper::toIso8601($release['date']) ?: null;
+            }
             $changelogData = array_values($releases);
             Cache::set($cacheKey, $changelogData);
         }
