@@ -15,6 +15,7 @@ use craftnet\errors\MissingTokenException;
 use craftnet\errors\VcsException;
 use craftnet\Module;
 use craftnet\plugins\Plugin;
+use UnexpectedValueException;
 use yii\base\Component;
 use yii\base\Exception;
 use yii\base\InvalidArgumentException;
@@ -53,7 +54,7 @@ class PackageManager extends Component
     ];
 
     /**
-     *
+     * @inheritdoc
      */
     public function init()
     {
@@ -66,7 +67,6 @@ class PackageManager extends Component
 
     /**
      * @param string $name
-     *
      * @return bool
      */
     public function packageExists(string $name): bool
@@ -80,7 +80,6 @@ class PackageManager extends Component
     /**
      * @param string $name
      * @param array $constraints
-     *
      * @return bool
      */
     public function packageVersionsExist(string $name, array $constraints): bool
@@ -106,7 +105,7 @@ class PackageManager extends Component
                         $satisfied = true;
                         break;
                     }
-                } catch (\UnexpectedValueException $e) {
+                } catch (UnexpectedValueException $e) {
                     // empty
                 }
             }
@@ -121,10 +120,9 @@ class PackageManager extends Component
     /**
      * @param string $name The package name
      * @param string $version The package version
-     *
      * @return PackageRelease|null
      */
-    public function getRelease(string $name, string $version)
+    public function getRelease(string $name, string $version): ?PackageRelease
     {
         $result = $this->_createReleaseQuery($name, $version)->one();
 
@@ -140,10 +138,9 @@ class PackageManager extends Component
      * @param string|null $minStability The minimum required stability (dev, alpha, beta, RC, or stable)
      * @param string|null $constraint The version constraint, if any
      * @param bool $sort Whether the versions should be sorted
-     *
      * @return string[] The known package versions
      */
-    public function getAllVersions(string $name, $minStability = 'stable', string $constraint = null, bool $sort = true): array
+    public function getAllVersions(string $name, ?string $minStability = 'stable', ?string $constraint = null, bool $sort = true): array
     {
         $query = (new Query())
             ->select(['pv.version'])
@@ -169,7 +166,7 @@ class PackageManager extends Component
                 $version = (new VersionParser())->normalize($constraint);
                 $query->andWhere(['pv.normalizedVersion' => $version]);
                 $constraint = null;
-            } catch (\UnexpectedValueException $e) {
+            } catch (UnexpectedValueException $e) {
             }
         }
 
@@ -190,12 +187,11 @@ class PackageManager extends Component
 
     /**
      * @param string $name The package name
-     * @param string $minStability The minimum required stability (dev, alpha, beta, RC, or stable)
+     * @param string|null $minStability The minimum required stability (dev, alpha, beta, RC, or stable)
      * @param string|null $constraint The version constraint, if any
-     *
      * @return string|null The latest version, or null if none can be found
      */
-    public function getLatestVersion(string $name, string $minStability = 'stable', string $constraint = null)
+    public function getLatestVersion(string $name, ?string $minStability = 'stable', ?string $constraint = null): ?string
     {
         // Get all the versions
         $versions = $this->getAllVersions($name, $minStability, $constraint);
@@ -206,12 +202,11 @@ class PackageManager extends Component
 
     /**
      * @param string $name The package name
-     * @param string $minStability The minimum required stability
+     * @param string|null $minStability The minimum required stability
      * @param string|null $constraint The version constraint, if any
-     *
      * @return PackageRelease|null The latest release, or null if none can be found
      */
-    public function getLatestRelease(string $name, string $minStability = 'stable', string $constraint = null)
+    public function getLatestRelease(string $name, ?string $minStability = 'stable', ?string $constraint = null): ?PackageRelease
     {
         $version = $this->getLatestVersion($name, $minStability, $constraint);
         return $version ? $this->getRelease($name, $version) : null;
@@ -222,13 +217,12 @@ class PackageManager extends Component
      *
      * @param string $name The package name
      * @param string $from The version that others should be after
-     * @param string $minStability The minimum required stability
+     * @param string|null $minStability The minimum required stability
      * @param string|null $constraint The version constraint, if any
      * @param bool $sort Whether the versions should be sorted
-     *
      * @return string[] The versions after $from, sorted oldest-to-newest
      */
-    public function getVersionsAfter(string $name, string $from, string $minStability = 'stable', string $constraint = null, bool $sort = true): array
+    public function getVersionsAfter(string $name, string $from, ?string $minStability = 'stable', ?string $constraint = null, bool $sort = true): array
     {
         $vp = new VersionParser();
         $from = $vp->normalize($from);
@@ -254,14 +248,19 @@ class PackageManager extends Component
      * @param string $name The package name
      * @param string $from The version that others should be after
      * @param string $to The version that others should be before or equal to
-     * @param string $minStability The minimum required stability
+     * @param string|null $minStability The minimum required stability
      * @param string|null $constraint The version constraint, if any
      * @param bool $sort Whether the versions should be sorted
-     *
      * @return string[] The versions after $from and up to $to, sorted oldest-to-newest
      */
-    public function getVersionsBetween(string $name, string $from, string $to, string $minStability = 'stable', string $constraint = null, bool $sort = true): array
-    {
+    public function getVersionsBetween(
+        string $name,
+        string $from,
+        string $to,
+        ?string $minStability = 'stable',
+        ?string $constraint = null,
+        bool $sort = true
+    ): array {
         $vp = new VersionParser();
         $from = $vp->normalize($from);
         $to = $vp->normalize($to);
@@ -288,10 +287,10 @@ class PackageManager extends Component
      * @param string $name The package name
      * @param string|null $minStability The minimum required stability
      * @param string|null $constraint The version constraint, if any
-     *
+     * @param bool $sort Whether the releases should be sorted by version
      * @return PackageRelease[] The releases, sorted oldest-to-newest
      */
-    public function getAllReleases(string $name, $minStability = 'stable', string $constraint = null): array
+    public function getAllReleases(string $name, ?string $minStability = 'stable', ?string $constraint = null, bool $sort = true): array
     {
         if ($minStability !== null || $constraint !== null) {
             $versions = $this->getAllVersions($name, $minStability, $constraint, false);
@@ -306,8 +305,10 @@ class PackageManager extends Component
             $releases[] = new PackageRelease($result);
         }
 
-        // Sort them oldest-to-newest
-        $this->sortVersions($releases);
+        if ($sort) {
+            // Sort them oldest-to-newest
+            $this->sortVersions($releases);
+        }
 
         return $releases;
     }
@@ -317,12 +318,11 @@ class PackageManager extends Component
      *
      * @param string $name The package name
      * @param string $from The version that others should be after
-     * @param string $minStability The minimum required stability
+     * @param string|null $minStability The minimum required stability
      * @param string|null $constraint The version constraint, if any
-     *
      * @return PackageRelease[] The releases after $from, sorted oldest-to-newest
      */
-    public function getReleasesAfter(string $name, string $from, string $minStability = 'stable', string $constraint = null): array
+    public function getReleasesAfter(string $name, string $from, ?string $minStability = 'stable', ?string $constraint = null): array
     {
         $versions = $this->getVersionsAfter($name, $from, $minStability, $constraint, false);
         $results = $this->_createReleaseQuery($name, $versions)->all();
@@ -340,7 +340,6 @@ class PackageManager extends Component
 
     /**
      * @param string $minStability The minimum required stability (dev, alpha, beta, RC, or stable)
-     *
      * @return string[] The allowed stabilities, or an empty array if all stabilities should be allowed
      */
     public function getStabilities(string $minStability = 'stable'): array
@@ -371,7 +370,7 @@ class PackageManager extends Component
      * @param string[]|PackageRelease[]|array[] &$versions
      * @param int $dir The sort direction (SORT_ASC = oldest -> newest; SORT_DESC = newest -> oldest)
      */
-    public function sortVersions(array &$versions, int $dir = SORT_ASC)
+    public function sortVersions(array &$versions, int $dir = SORT_ASC): void
     {
         $vp = new VersionParser();
 
@@ -404,7 +403,6 @@ class PackageManager extends Component
     /**
      * @param string $name The dependency package name
      * @param string $version The dependency package version
-     *
      * @return bool Whether any managed packages require this dependency/version
      */
     public function isDependencyVersionRequired(string $name, string $version): bool
@@ -428,7 +426,7 @@ class PackageManager extends Component
     /**
      * @param Package $package
      */
-    public function savePackage(Package $package)
+    public function savePackage(Package $package): void
     {
         $data = [
             'developerId' => $package->developerId,
@@ -457,7 +455,7 @@ class PackageManager extends Component
     /**
      * @param string|Package $package
      */
-    public function removePackage($package)
+    public function removePackage($package): void
     {
         if (is_string($package)) {
             $package = $this->getPackage($package);
@@ -487,7 +485,6 @@ class PackageManager extends Component
 
     /**
      * @param string $name
-     *
      * @return Package
      * @throws InvalidArgumentException
      */
@@ -504,7 +501,6 @@ class PackageManager extends Component
 
     /**
      * @param int $id
-     *
      * @return Package
      * @throws Exception
      */
@@ -521,10 +517,9 @@ class PackageManager extends Component
 
     /**
      * @param string $url
-     *
      * @return string|null
      */
-    public function getPackageNameByRepoUrl(string $url)
+    public function getPackageNameByRepoUrl(string $url): ?string
     {
         return $this->_createPackageQuery()
             ->select(['name'])
@@ -537,10 +532,9 @@ class PackageManager extends Component
      *
      * @param string|Package $package The package or its name
      * @param bool $force Whether the webhook should be created even if one already exists
-     *
      * @throws Exception if the package couldn't be found
      */
-    public function createWebhook($package, bool $force = false)
+    public function createWebhook($package, bool $force = false): void
     {
         if (is_string($package)) {
             $package = $this->getPackage($package);
@@ -557,10 +551,7 @@ class PackageManager extends Component
                 return;
             }
 
-            if ($this->deleteWebhook($package)) {
-                $package->webhookId = null;
-                $package->webhookSecret = null;
-            }
+            $this->deleteWebhook($package);
         }
 
         $package->webhookId = null;
@@ -613,10 +604,9 @@ class PackageManager extends Component
      * Deletes a VCS webhook for a given package.
      *
      * @param string|Package $package The package or its name
-     *
      * @throws Exception if the package couldn't be found
      */
-    public function deleteWebhook($package)
+    public function deleteWebhook($package): void
     {
         if (is_string($package)) {
             $package = $this->getPackage($package);
@@ -661,7 +651,6 @@ class PackageManager extends Component
     /**
      * @param string $name
      * @param string|string[]|null $version
-     *
      * @return Query
      */
     private function _createReleaseQuery(string $name, $version = null): Query
@@ -726,7 +715,7 @@ class PackageManager extends Component
      * @throws MissingTokenException if the package is a plugin, but we don't have a VCS token for it
      * @throws \Throwable if reasons
      */
-    public function updatePackage(string $name, bool $force = false, bool $queue = false, bool $dumpJson = false, $onlyVersion = null): int
+    public function updatePackage(string $name, bool $force = false, bool $queue = false, bool $dumpJson = false, ?string $onlyVersion = null): int
     {
         if ($queue) {
             Craft::$app->getQueue()->push(new UpdatePackage([
@@ -797,7 +786,7 @@ class PackageManager extends Component
                 // Don't include invalid versions
                 try {
                     $normalizedVersion = (new VersionParser())->normalize($version);
-                } catch (\UnexpectedValueException $e) {
+                } catch (UnexpectedValueException $e) {
                     if ($isConsole) {
                         Console::output(Console::ansiFormat("- skipping {$version} ({$sha}) - invalid version", [Console::FG_RED]));
                     }
@@ -1044,7 +1033,7 @@ class PackageManager extends Component
     /**
      * @param Plugin $plugin
      */
-    public function updatePluginReleaseOrder(Plugin $plugin)
+    public function updatePluginReleaseOrder(Plugin $plugin): void
     {
         $isConsole = Craft::$app->getRequest()->getIsConsoleRequest();
 
@@ -1119,7 +1108,7 @@ class PackageManager extends Component
     /**
      * @param PackageRelease $cmsRelease
      */
-    public function updatePluginCompatIndexForCmsRelease(PackageRelease $cmsRelease)
+    public function updatePluginCompatIndexForCmsRelease(PackageRelease $cmsRelease): void
     {
         if (Craft::$app->getRequest()->getIsConsoleRequest()) {
             Console::stdout(Console::ansiFormat('updating compatibility index ... ', [Console::FG_YELLOW]));
@@ -1165,7 +1154,7 @@ class PackageManager extends Component
     /**
      * @param PackageRelease $pluginRelease
      */
-    public function updatePluginCompatIndexForPluginRelease(PackageRelease $pluginRelease)
+    public function updatePluginCompatIndexForPluginRelease(PackageRelease $pluginRelease): void
     {
         $isConsole = Craft::$app->getRequest()->getIsConsoleRequest();
 
@@ -1201,7 +1190,7 @@ class PackageManager extends Component
     /**
      * @param PackageRelease $release
      */
-    public function savePackageRelease(PackageRelease $release)
+    public function savePackageRelease(PackageRelease $release): void
     {
         $db = Craft::$app->getDb();
         $db->createCommand()
@@ -1242,9 +1231,9 @@ class PackageManager extends Component
      *
      * @param bool $force Whether to update package releases even if their SHA hasn't changed
      * @param bool $queue Whether to queue the updates
-     * @param array $errors Any errors that occur when updating
+     * @param array|null $errors Any errors that occur when updating
      */
-    public function updateDeps(bool $force = false, bool $queue = false, array &$errors = null)
+    public function updateDeps(bool $force = false, bool $queue = false, array &$errors = null): void
     {
         Craft::info('Starting to update package dependencies.', __METHOD__);
 
@@ -1273,9 +1262,9 @@ class PackageManager extends Component
      *
      * @param bool $force Whether to update package releases even if their SHA hasn't changed
      * @param bool $queue Whether to queue the updates
-     * @param array $errors Any errors that occur when updating
+     * @param array|null $errors Any errors that occur when updating
      */
-    public function updateManagedPackages(bool $force = false, bool $queue = false, array &$errors = null)
+    public function updateManagedPackages(bool $force = false, bool $queue = false, array &$errors = null): void
     {
         Craft::info('Starting to update managed packages.', __METHOD__);
 
@@ -1304,7 +1293,7 @@ class PackageManager extends Component
      *
      * @return string|null
      */
-    public function getRandomGitHubFallbackToken()
+    public function getRandomGitHubFallbackToken(): ?string
     {
         if (empty($this->githubFallbackTokens)) {
             return null;
