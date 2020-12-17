@@ -108,9 +108,13 @@ class FeedsController extends Controller
                 'pluginHandle' => 'pl.handle',
                 'developerName' => 'dc.field_developerName',
                 'developerUrl' => 'dc.field_developerUrl',
+                'u.firstName',
+                'u.lastName',
+                'u.username',
             ])
             ->innerJoin('craftnet_plugins pl', '[[pl.packageId]] = [[p.id]]')
             ->innerJoin('content dc', '[[dc.elementId]] = [[pl.developerId]]')
+            ->innerJoin('users u', '[[u.id]] = [[pl.developerId]]')
             ->andWhere(['not', ['pv.time' => null]])
             ->orderBy(['pv.time' => SORT_DESC])
             ->limit(20);
@@ -120,13 +124,21 @@ class FeedsController extends Controller
         }
 
         return $this->_asFeed($title, array_map(function(array $release): array {
+            $developerName = $release['developerName'];
+            if (!$developerName) {
+                if ($release['firstName']) {
+                    $developerName = $release['firstName'] . $release['lastName'] ? " {$release['lastName']}" : '';
+                } else {
+                    $developerName = $release['username'];
+                }
+            }
             return [
                 'id' => $release['id'],
                 'title' => "{$release['pluginName']} {$release['version']}" . ($release['critical'] ? ' [CRITICAL]' : ''),
                 'link' => "https://plugins.craftcms.com/{$release['pluginHandle']}",
                 'updated' => $release['date'] ?? $release['time'],
                 'author' => [
-                    'name' => $release['developerName'],
+                    'name' => $developerName,
                     'url' => $release['developerUrl'],
                 ],
                 'content' => $release['notes'],
