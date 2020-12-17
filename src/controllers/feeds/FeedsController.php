@@ -1,6 +1,6 @@
 <?php
 
-namespace craftnet\controllers\plugins;
+namespace craftnet\controllers\feeds;
 
 use Craft;
 use craft\db\Query;
