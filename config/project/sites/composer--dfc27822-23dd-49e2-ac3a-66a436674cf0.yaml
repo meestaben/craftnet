@@ -1,4 +1,5 @@
-baseUrl: 'https://composer.craftcms.com/'
+baseUrl: $URL_COMPOSER
+enabled: true
 handle: composer
 hasUrls: true
 language: en-US

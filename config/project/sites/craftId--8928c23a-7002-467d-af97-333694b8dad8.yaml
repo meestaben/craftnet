@@ -1,4 +1,5 @@
-baseUrl: 'https://id.craftcms.com/'
+baseUrl: $URL_ID
+enabled: true
 handle: craftId
 hasUrls: true
 language: en-US

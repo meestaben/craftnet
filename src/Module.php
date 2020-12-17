@@ -316,8 +316,10 @@ class Module extends \yii\base\Module
 
     private function _initSiteRequest()
     {
-        if (Craft::$app->getRequest()->getOrigin() === getenv('CRAFT_ID_ORIGIN')) {
-            Craft::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Origin', getenv('CRAFT_ID_ORIGIN'));
+        $idOrigin = rtrim(getenv('ID_URL'), '/');
+
+        if (Craft::$app->getRequest()->getOrigin() === $idOrigin) {
+            Craft::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Origin', $idOrigin);
             Craft::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Credentials', 'true');
         } else {
             Craft::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Origin', '*');

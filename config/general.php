@@ -14,6 +14,7 @@ return [
         'allowUpdates' => false,
         'devMode' => isset($_REQUEST['secret']) && $_REQUEST['secret'] === getenv('DEV_MODE_SECRET'),
         'omitScriptNameInUrls' => true,
+        'baseCpUrl' => getenv('ID_URL'),
         'cpTrigger' => getenv('CRAFT_CP_TRIGGER'),
         'imageDriver' => 'gd',
         'preventUserEnumeration' => true,
@@ -48,25 +49,12 @@ return [
             '--exclude-table-data \'apilog.requests\'',
     ],
     'prod' => [
-        'siteUrl' => [
-            'api' => 'https://api.craftcms.com/',
-            'composer' => 'https://composer.craftcms.com/',
-            'craftId' => 'https://id.craftcms.com/',
-            'plugins' => 'https://plugins.craftcms.com/',
-        ],
         'defaultCookieDomain' => '.craftcms.com',
-        'baseCpUrl' => 'https://id.craftcms.com/',
         'runQueueAutomatically' => false,
     ],
     'stage' => [
         'testToEmailAddress' => getenv('TEST_EMAIL') ?: null,
-        'siteUrl' => [
-            'api' => getenv('CRAFT_API_ORIGIN'),
-            'composer' => 'https://composer.craftcms.com/',
-            'craftId' => getenv('CRAFT_ID_ORIGIN'),
-        ],
         'defaultCookieDomain' => '.craftcms.com',
-        'baseCpUrl' => getenv('CRAFT_ID_ORIGIN'),
         'disabledPlugins' => ['webhooks'],
     ],
     'dev' => [
@@ -74,14 +62,7 @@ return [
         'useCompressedJs' => false,
         'allowUpdates' => true,
         'testToEmailAddress' => getenv('TEST_EMAIL') ?: null,
-        'siteUrl' => [
-            'api' => 'https://api.craftcms.test/',
-            'composer' => 'https://composer.craftcms.test/',
-            'craftId' => getenv('CRAFT_ID_ORIGIN') ?: 'https://id.craftcms.test/',
-            'plugins' => 'https://plugins.craftcms.test/',
-        ],
         'defaultCookieDomain' => '.craftcms.test',
-        'baseCpUrl' => 'https://id.craftcms.test/',
         'disabledPlugins' => ['webhooks'],
         'enableBasicHttpAuth' => true,
     ],
@@ -90,14 +71,7 @@ return [
         'useCompressedJs' => false,
         'allowUpdates' => true,
         'testToEmailAddress' => getenv('TEST_EMAIL') ?: null,
-        'siteUrl' => [
-            'api' => 'https://api.craftcms.next/',
-            'composer' => 'https://composer.craftcms.next/',
-            'craftId' => 'https://id.craftcms.next/',
-            'plugins' => 'https://plugins.craftcms.next/',
-        ],
         'defaultCookieDomain' => '.craftcms.next',
-        'baseCpUrl' => 'https://id.craftcms.next/',
         'disabledPlugins' => ['webhooks'],
     ]
 ];

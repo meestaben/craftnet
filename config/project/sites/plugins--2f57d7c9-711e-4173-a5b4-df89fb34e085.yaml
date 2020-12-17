@@ -1,4 +1,5 @@
-baseUrl: 'https://plugins.craftcms.com/'
+baseUrl: $URL_PS
+enabled: true
 handle: plugins
 hasUrls: true
 language: en-US

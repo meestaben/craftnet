@@ -1,7 +1,7 @@
 <?php
 
 // Only run scheduled jobs on production
-if (getenv('CRAFT_ENV') !== 'prod') {
+if (!defined('CRAFT_ENVIRONMENT') || CRAFT_ENVIRONMENT !== 'prod') {
     return;
 }
 

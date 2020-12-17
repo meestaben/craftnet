@@ -1,4 +1,5 @@
-baseUrl: 'https://api.craftcms.com/'
+baseUrl: $URL_API
+enabled: true
 handle: api
 hasUrls: true
 language: en-US
