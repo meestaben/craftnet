@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "343e481677ecd0ae2e930821974cf871",
+    "content-hash": "4585fe728b4ef9f4010428826bff755f",
     "packages": [
         {
             "name": "adam-paterson/oauth2-stripe",
@@ -806,12 +806,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/craftcms/cms.git",
-                "reference": "35cd966704b4ff1f381bd86f1ff08d9e6003b71d"
+                "reference": "30ea311ce66ff36b274299d1f172b42c16b0127e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/craftcms/cms/zipball/35cd966704b4ff1f381bd86f1ff08d9e6003b71d",
-                "reference": "35cd966704b4ff1f381bd86f1ff08d9e6003b71d",
+                "url": "https://api.github.com/repos/craftcms/cms/zipball/30ea311ce66ff36b274299d1f172b42c16b0127e",
+                "reference": "30ea311ce66ff36b274299d1f172b42c16b0127e",
                 "shasum": ""
             },
             "require": {
@@ -893,15 +893,7 @@
                 "craftcms",
                 "yii2"
             ],
-            "support": {
-                "docs": "https://craftcms.com/docs/3.x/",
-                "email": "support@craftcms.com",
-                "forum": "https://craftcms.stackexchange.com/",
-                "issues": "https://github.com/craftcms/cms/issues?state=open",
-                "rss": "https://github.com/craftcms/cms/releases.atom",
-                "source": "https://github.com/craftcms/cms"
-            },
-            "time": "2020-12-17T19:11:50+00:00"
+            "time": "2020-12-17T22:27:39+00:00"
         },
         {
             "name": "craftcms/commerce",
@@ -8793,10 +8785,10 @@
     ],
     "aliases": [
         {
-            "package": "craftcms/cms",
-            "version": "3.6.9999999.9999999-dev",
             "alias": "3.6.0-RC3",
-            "alias_normalized": "3.6.0.0-RC3"
+            "alias_normalized": "3.6.0.0-RC3",
+            "version": "3.6.9999999.9999999-dev",
+            "package": "craftcms/cms"
         }
     ],
     "minimum-stability": "stable",
@@ -8810,5 +8802,5 @@
     "platform-overrides": {
         "php": "7.3.11"
     },
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "1.1.0"
 }
