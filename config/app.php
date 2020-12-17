@@ -101,11 +101,6 @@ return [
             ],
             'cache' => [
                 'class' => yii\redis\Cache::class,
-                'redis' => [
-                    'hostname' => getenv('ELASTICACHE_HOSTNAME'),
-                    'port' => getenv('ELASTICACHE_PORT'),
-                    'database' => 0,
-                ],
             ],
             'mutex' => [
                 'class' => \yii\redis\Mutex::class,
@@ -130,19 +125,12 @@ return [
                 'region' => getenv('PARTNER_QUEUE_REGION')
             ],
             'session' => function() {
+                $config = craft\helpers\App::sessionConfig();
+                $config['class'] = yii\redis\Session::class;
                 $stateKeyPrefix = md5('Craft.' . craft\web\Session::class . '.' . Craft::$app->id);
-
-                /** @var yii\redis\Session $session */
-                $session = Craft::createObject([
-                    'class' => yii\redis\Session::class,
-                    'flashParam' => $stateKeyPrefix . '__flash',
-                    'name' => Craft::$app->getConfig()->getGeneral()->phpSessionName,
-                    'cookieParams' => Craft::cookieConfig(),
-                ]);
-
-                $session->attachBehaviors([craft\behaviors\SessionBehavior::class]);
-                $session->authAccessParam = $stateKeyPrefix . '__auth_access';
-                return $session;
+                $config['flashParam'] = $stateKeyPrefix . '__flash';
+                $config['authAccessParam'] = $stateKeyPrefix . '__auth_access';
+                return Craft::createObject($config);
             },
             'log' => function() {
                 $logFileName = Craft::$app->getRequest()->getIsConsoleRequest() ? 'console.log' : 'web.log';
