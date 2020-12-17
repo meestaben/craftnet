@@ -1,4 +1,4 @@
-dateModified: 1603312450
+dateModified: 1608237930
 email:
   fromEmail: support@pixelandtonic.com
   fromName: 'Pixel & Tonic'
@@ -21,7 +21,7 @@ plugins:
     edition: pro
     enabled: true
     licenseKey: $COMMERCE_LICENSE
-    schemaVersion: 3.2.7
+    schemaVersion: 3.2.13
     settings:
       activeCartDuration: PT1H
       allowEmptyCartOnCheckout: true
@@ -80,5 +80,5 @@ system:
   edition: pro
   live: true
   name: Craftnet
-  schemaVersion: 3.5.13
+  schemaVersion: 3.6.0
   timeZone: UTC

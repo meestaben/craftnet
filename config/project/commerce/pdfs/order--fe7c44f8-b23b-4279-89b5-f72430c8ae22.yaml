@@ -3,6 +3,7 @@ enabled: true
 fileNameFormat: 'Order-{shortNumber|upper}'
 handle: order
 isDefault: true
+language: orderLanguage
 name: Default
 sortOrder: 0
 templatePath: _pdf/order.html
