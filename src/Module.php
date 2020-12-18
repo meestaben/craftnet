@@ -316,7 +316,7 @@ class Module extends \yii\base\Module
 
     private function _initSiteRequest()
     {
-        $idOrigin = rtrim(getenv('ID_URL'), '/');
+        $idOrigin = rtrim(getenv('URL_ID'), '/');
 
         if (Craft::$app->getRequest()->getOrigin() === $idOrigin) {
             Craft::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Origin', $idOrigin);

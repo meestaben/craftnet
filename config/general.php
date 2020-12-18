@@ -14,7 +14,7 @@ return [
         'allowUpdates' => false,
         'devMode' => isset($_REQUEST['secret']) && $_REQUEST['secret'] === getenv('DEV_MODE_SECRET'),
         'omitScriptNameInUrls' => true,
-        'baseCpUrl' => getenv('ID_URL'),
+        'baseCpUrl' => getenv('URL_ID'),
         'cpTrigger' => getenv('CRAFT_CP_TRIGGER'),
         'imageDriver' => 'gd',
         'preventUserEnumeration' => true,
