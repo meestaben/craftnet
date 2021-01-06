@@ -65,7 +65,7 @@ class LicensesController extends Controller
                 // Lock in the renewal prices
                 /** @var LicenseInterface[] $ownerLicenses */
                 foreach ($ownerLicenses as $license) {
-                    if ($license->getWillAutoRenew()) {
+                    if ($license->getOwnerId() && $license->getWillAutoRenew()) {
                         $newRenewalPrice = $license->getEdition()->getRenewal()->getPrice();
                         if ($license->getRenewalPrice() !== $newRenewalPrice) {
                             $license->setRenewalPrice($newRenewalPrice);
@@ -74,7 +74,7 @@ class LicensesController extends Controller
                 }
 
                 $ownerLicensesByType = ArrayHelper::index($ownerLicenses, null, function(LicenseInterface $license) {
-                    return $license->getWillAutoRenew() ? 'auto' : 'manual';
+                    return $license->getOwnerId() && $license->getWillAutoRenew() ? 'auto' : 'manual';
                 });
 
                 $this->stdout("    - Emailing {$email} about " . count($ownerLicenses) . ' licenses ... ', Console::FG_YELLOW);
@@ -142,11 +142,16 @@ class LicensesController extends Controller
             try {
                 /** @var string $email */
                 /** @var User|null $user */
-                [$email, $user] = $this->_resolveOwnerKey($ownerKey);
+                [$email, $user, $usingOwnerId] = $this->_resolveOwnerKey($ownerKey);
 
                 /** @var LicenseInterface[] $renewLicenses */
                 /** @var LicenseInterface[] $expireLicenses */
-                [$renewLicenses, $expireLicenses] = $this->_findRenewableLicenses($ownerLicenses, $user);
+                if ($user === null || !$usingOwnerId) {
+                    $renewLicenses = [];
+                    $expireLicenses = $ownerLicenses;
+                } else {
+                    [$renewLicenses, $expireLicenses] = $this->_findRenewableLicenses($ownerLicenses);
+                }
 
                 // If there are any licenses that should be auto-renewed, give that a shot
                 if (!empty($renewLicenses)) {
@@ -199,7 +204,7 @@ class LicensesController extends Controller
      */
     private function _resolveOwnerKey(string $ownerKey): array
     {
-        if (preg_match('/^owner-(\d+)$/', $ownerKey, $matches)) {
+        if ($usingOwnerId = (bool)preg_match('/^owner-(\d+)$/', $ownerKey, $matches)) {
             $user = User::find()->id((int)$matches[1])->anyStatus()->one();
             $email = $user->email;
         } else {
@@ -207,7 +212,7 @@ class LicensesController extends Controller
             $user = User::find()->email($email)->anyStatus()->one();
         }
 
-        return [$email, $user];
+        return [$email, $user, $usingOwnerId];
     }
 
     /**
@@ -215,16 +220,10 @@ class LicensesController extends Controller
      * that should expire.
      *
      * @param LicenseInterface[] $licenses
-     * @param User|null $user
      * @return array
      */
-    private function _findRenewableLicenses(array $licenses, User $user = null): array
+    private function _findRenewableLicenses(array $licenses): array
     {
-        // If no Craft ID, then there's nothing to auto-renew
-        if ($user === null) {
-            return [[], $licenses];
-        }
-
         $utc = new \DateTimeZone('UTC');
         $today = new \DateTime('midnight', $utc);
 
