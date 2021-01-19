@@ -92,6 +92,7 @@ return [
     'siebirdclients.com',
     'siebirdstaging.com',
     'sierrabravo.net',
+    'solidstaging.dev',
     'staging-site.link',
     'stagingbox.ca',
     'stagingbox.co.uk',
