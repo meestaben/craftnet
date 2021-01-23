@@ -313,7 +313,14 @@ abstract class BaseApiController extends Controller
                     if ($this->cmsEdition !== null) {
                         $cmsLicense->lastEdition = $this->cmsEdition;
                     }
-                    $cmsLicenseManager->saveLicense($cmsLicense, false);
+                    $cmsLicenseManager->saveLicense($cmsLicense, false, [
+                        'domain',
+                        'lastAllowedVersion',
+                        'lastStatus',
+                        'lastActivityOn',
+                        'lastVersion',
+                        'lastEdition',
+                    ]);
 
                     // update the history
                     if ($cmsLicenseDomain !== $oldCmsLicenseDomain) {
@@ -445,7 +452,13 @@ abstract class BaseApiController extends Controller
                 }
 
                 // update the license
-                $pluginLicenseManager->saveLicense($pluginLicense, false);
+                $pluginLicenseManager->saveLicense($pluginLicense, false, [
+                    'cmsLicenseId',
+                    'lastAllowedVersion',
+                    'lastActivityOn',
+                    'lastStatus',
+                    'lastVersion',
+                ]);
 
                 // update the history
                 if ($pluginLicense->cmsLicenseId !== $oldCmsLicenseId) {

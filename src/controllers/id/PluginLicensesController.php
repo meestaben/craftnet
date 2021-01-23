@@ -143,7 +143,7 @@ class PluginLicensesController extends Controller
             if ($license && $user && $license->ownerId === $user->id) {
                 $license->ownerId = null;
 
-                if ($manager->saveLicense($license)) {
+                if ($manager->saveLicense($license, true, ['ownerId'])) {
                     $manager->addHistory($license->id, "released by {$user->email}");
                     return $this->asJson(['success' => true]);
                 }

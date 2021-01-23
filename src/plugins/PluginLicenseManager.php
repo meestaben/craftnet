@@ -15,6 +15,7 @@ use yii\base\Component;
 use yii\base\Exception;
 use yii\base\InvalidArgumentException;
 use yii\db\Expression;
+use yii\helpers\ArrayHelper;
 
 class PluginLicenseManager extends Component
 {
@@ -338,16 +339,21 @@ class PluginLicenseManager extends Component
      *
      * @param PluginLicense $license
      * @param bool $runValidation
+     * @param array|null $attributes
      * @return bool if the license validated and was saved
      * @throws Exception if the license validated but didn't save
      * @throws \yii\db\Exception
      */
-    public function saveLicense(PluginLicense $license, bool $runValidation = true): bool
+    public function saveLicense(PluginLicense $license, bool $runValidation = true, ?array $attributes = null): bool
     {
         if ($runValidation && !$license->validate()) {
             Craft::info('License not saved due to validation error.', __METHOD__);
 
             return false;
+        }
+
+        if (is_array($attributes)) {
+            $attributes = array_flip($attributes);
         }
 
         if (!$license->pluginId) {
@@ -358,6 +364,10 @@ class PluginLicenseManager extends Component
 
             if ($license->pluginId === false) {
                 throw new Exception("Invalid plugin handle: {$license->pluginHandle}");
+            }
+
+            if ($attributes !== null && isset($attributes['pluginHandle'])) {
+                $attributes['pluginId'] = true;
             }
         }
 
@@ -371,6 +381,10 @@ class PluginLicenseManager extends Component
             if ($license->editionId === false) {
                 throw new Exception("Invalid plugin edition: {$license->edition}");
             }
+
+            if ($attributes !== null && isset($attributes['edition'])) {
+                $attributes['editionId'] = true;
+            }
         }
 
         if ($license->trial) {
@@ -379,12 +393,26 @@ class PluginLicenseManager extends Component
             $license->autoRenew = false;
             $license->reminded = false;
             $license->renewalPrice = null;
+
+            if ($attributes !== null && isset($attributes['trial'])) {
+                $attributes['expirable'] = true;
+                $attributes['expired'] = true;
+                $attributes['autoRenew'] = true;
+                $attributes['reminded'] = true;
+                $attributes['renewalPrice'] = true;
+            }
         } else if ($license->expirable) {
             if (!$license->renewalPrice) {
                 $license->renewalPrice = $license->getEdition()->getRenewal()->getPrice();
+                if ($attributes !== null) {
+                    $attributes['renewalPrice'] = true;
+                }
             }
-        } else {
+        } else if ($license->renewalPrice !== null) {
             $license->renewalPrice = null;
+            if ($attributes !== null) {
+                $attributes['renewalPrice'] = true;
+            }
         }
 
         $data = [
@@ -421,6 +449,9 @@ class PluginLicenseManager extends Component
             // set the ID on the model
             $license->id = (int)Craft::$app->getDb()->getLastInsertID('craftnet_pluginlicenses');
         } else {
+            if ($attributes !== null) {
+                $data = ArrayHelper::filter($data, array_keys($attributes));
+            }
             $success = (bool)Craft::$app->getDb()->createCommand()
                 ->update('craftnet_pluginlicenses', $data, ['id' => $license->id])
                 ->execute();
@@ -498,7 +529,10 @@ class PluginLicenseManager extends Component
         $license->ownerId = $user->id;
         $license->email = $user->email;
 
-        if (!$this->saveLicense($license)) {
+        if (!$this->saveLicense($license, true, [
+            'ownerId',
+            'email',
+        ])) {
             throw new Exception('Could not save plugin license: ' . implode(', ', $license->getErrorSummary(true)));
         }
 

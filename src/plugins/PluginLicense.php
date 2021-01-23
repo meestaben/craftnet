@@ -141,7 +141,9 @@ class PluginLicense extends License
     public function setRenewalPrice(float $renewalPrice)
     {
         $this->renewalPrice = $renewalPrice;
-        Module::getInstance()->getPluginLicenseManager()->saveLicense($this, false);
+        Module::getInstance()->getPluginLicenseManager()->saveLicense($this, false, [
+            'renewalPrice',
+        ]);
     }
 
     /**
@@ -150,7 +152,9 @@ class PluginLicense extends License
     public function markAsReminded()
     {
         $this->reminded = true;
-        Module::getInstance()->getPluginLicenseManager()->saveLicense($this, false);
+        Module::getInstance()->getPluginLicenseManager()->saveLicense($this, false, [
+            'reminded',
+        ]);
     }
 
     /**
@@ -168,7 +172,10 @@ class PluginLicense extends License
     {
         $this->expired = true;
         $this->reminded = false;
-        Module::getInstance()->getPluginLicenseManager()->saveLicense($this, false);
+        Module::getInstance()->getPluginLicenseManager()->saveLicense($this, false, [
+            'expired',
+            'reminded',
+        ]);
     }
 
     /**

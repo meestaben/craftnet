@@ -152,7 +152,9 @@ class CmsLicense extends License
     public function setRenewalPrice(float $renewalPrice)
     {
         $this->renewalPrice = $renewalPrice;
-        Module::getInstance()->getCmsLicenseManager()->saveLicense($this, false);
+        Module::getInstance()->getCmsLicenseManager()->saveLicense($this, false, [
+            'renewalPrice',
+        ]);
     }
 
     /**
@@ -161,7 +163,9 @@ class CmsLicense extends License
     public function markAsReminded()
     {
         $this->reminded = true;
-        Module::getInstance()->getCmsLicenseManager()->saveLicense($this, false);
+        Module::getInstance()->getCmsLicenseManager()->saveLicense($this, false, [
+            'reminded',
+        ]);
     }
 
     /**
@@ -179,7 +183,10 @@ class CmsLicense extends License
     {
         $this->expired = true;
         $this->reminded = false;
-        Module::getInstance()->getCmsLicenseManager()->saveLicense($this, false);
+        Module::getInstance()->getCmsLicenseManager()->saveLicense($this, false, [
+            'expired',
+            'reminded',
+        ]);
     }
 
     /**
