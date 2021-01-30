@@ -344,7 +344,7 @@ abstract class BaseApiController extends Controller
                     $pluginLicense = null;
                     switch ($pluginLicenseKey) {
                         case '__REQUEST__':
-                            if (isset($this->plugins[$pluginHandle])) {
+                            if ($this->email && isset($this->plugins[$pluginHandle])) {
                                 // Only oblige if they are running a commercial edition
                                 $edition = $this->installedPluginEdition($pluginHandle);
                                 if ($edition->price != 0) {
