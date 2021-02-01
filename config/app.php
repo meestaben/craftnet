@@ -23,6 +23,7 @@ return [
                             'acceptance',
                             'craftdemo',
                             'dev',
+                            'integration',
                             'loc',
                             'local',
                             'qa',
