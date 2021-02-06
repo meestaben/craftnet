@@ -74,6 +74,7 @@ return [
     'ngrok.com',
     'ngrok.io',
     'nip.io',
+    'novowebdesign.dev',
     'nxcli.net',
     'ondev.co',
     'oneis.us',
