@@ -59,6 +59,7 @@ return [
     'martinleveille.dev',
     'mcipreview.com',
     'microserve-staging.ca',
+    'miranj.dev',
     'mldev.net',
     'mock-up.ca',
     'modlabdev.com',
