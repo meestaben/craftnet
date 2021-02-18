@@ -11,7 +11,7 @@
 
 Hey {{ user.friendlyName ?? 'there' }},
 
-{{ newPlugin.getDeveloperName() }} recently launched a new plugin, {{ newPlugin.name }}, which replaces {{ oldPlugin.name }}.
+{{ newPlugin.getDeveloperName() }} recently launched a new plugin, [{{ newPlugin.name }}](https://plugins.craftcms.com/{{ newPlugin.handle }}), which replaces {{ oldPlugin.name }}.
 
 They’ve requested that all old {{ oldPlugin.name }} licenses be transferred to {{ newPlugin.name }}.
 
