@@ -261,18 +261,26 @@ class PluginLicenseManager extends Component
      * Returns licenses for a given plugin.
      *
      * @param int $pluginId
+     * @param int|null $editionId
+     * @param bool $includeFreeEditions
      * @return PluginLicense[]
      */
-    public function getLicensesByPlugin(int $pluginId): array
+    public function getLicensesByPlugin(int $pluginId, ?int $editionId = null, bool $includeFreeEditions = false): array
     {
-        $query = $this->_createLicenseQuery()
+        $query = $this->_createLicenseQuery(false, false, $includeFreeEditions)
             ->innerJoin('craftnet_plugins p', '[[p.id]] = [[l.pluginId]]')
             ->andWhere(['l.pluginId' => $pluginId]);
+
+        if ($editionId !== null) {
+            $query->andWhere(['l.editionId' => $editionId]);
+        }
 
         $results = $query
             ->orderBy(['l.dateCreated' => SORT_ASC])
             ->all();
+
         $licenses = [];
+
         foreach ($results as $result) {
             $licenses[] = new PluginLicense($result);
         }
@@ -748,9 +756,10 @@ class PluginLicenseManager extends Component
     /**
      * @param bool $anyStatus whether to include licenses for disabled editions
      * @param bool $includeTrials whether to include trial licenses
+     * @param bool $includeFreeEditions whether to include licenses for free editions
      * @return Query
      */
-    private function _createLicenseQuery(bool $anyStatus = false, bool $includeTrials = false): Query
+    private function _createLicenseQuery(bool $anyStatus = false, bool $includeTrials = false, bool $includeFreeEditions = false): Query
     {
         $query = (new Query())
             ->select([
@@ -783,7 +792,7 @@ class PluginLicenseManager extends Component
             ])
             ->from(['craftnet_pluginlicenses l'])
             // exclude licenses for plugin editions that are now free
-            ->leftJoin('craftnet_plugineditions e', ['and', '[[e.id]] = [[l.editionId]]', ['not', ['e.price' => 0]]])
+            ->leftJoin('craftnet_plugineditions e', ['and', '[[e.id]] = [[l.editionId]]'])
             ->where(array_filter([
                 'or',
                 ['not', ['e.id' => null]],
@@ -803,6 +812,10 @@ class PluginLicenseManager extends Component
 
         if (!$includeTrials) {
             $query->andWhere(['l.trial' => false]);
+        }
+
+        if (!$includeFreeEditions) {
+            $query->andWhere(['not', ['e.price' => 0]]);
         }
 
         return $query;

@@ -8,6 +8,7 @@ use craft\commerce\elements\Order;
 use craft\commerce\models\LineItem;
 use craft\db\Query;
 use craft\elements\User;
+use craft\helpers\ArrayHelper;
 use craft\helpers\DateTimeHelper;
 use craftnet\errors\LicenseNotFoundException;
 use craftnet\helpers\KeyHelper;
@@ -39,35 +40,11 @@ class PluginLicensesController extends Controller
         $plugin = null;
         $edition = null;
 
-        $license->pluginHandle = $this->prompt('Plugin:', [
-            'required' => true,
-            'validator' => function(string $input, string &$error = null) {
-                if (!Plugin::find()->handle($input)->exists()) {
-                    $error = 'No plugin exists with that handle.';
-                    return false;
-                }
-                return true;
-            }
-        ]);
+        $plugin = $this->_pluginPrompt();
+        $edition = $this->_pluginEditionPrompt($plugin);
 
-        /** @var Plugin $plugin */
-        $plugin = Plugin::find()->handle($license->pluginHandle)->one();
-
-        $license->edition = $this->prompt('Edition:', [
-            'required' => true,
-            'validator' => function(string $input, string &$error = null) use ($plugin) {
-                if (!PluginEdition::find()->pluginId($plugin->id)->handle($input)->exists()) {
-                    $validEditions = PluginEdition::find()->pluginId($plugin->id)->select(['craftnet_plugineditions.handle'])->column();
-                    $error = 'Invalid edition handle. Valid options are: ' . implode(', ', $validEditions);
-                    return false;
-                }
-                return true;
-            },
-            'default' => PluginEdition::find()->pluginId($plugin->id)->one()->handle,
-        ]);
-
-        /** @var PluginEdition $edition */
-        $edition = PluginEdition::find()->pluginId($plugin->id)->handle($license->edition)->one();
+        $license->pluginHandle = $plugin->handle;
+        $license->edition = $edition->handle;
 
         $cmsLicenseKey = $this->prompt('Craft license key (optional):', [
             'validator' => function(string $input, string &$error = null) {
@@ -369,5 +346,140 @@ EOD;
 
         $this->stdout('Done upgrading licenses' . PHP_EOL . PHP_EOL, Console::FG_GREEN);
         return ExitCode::OK;
+    }
+
+    /**
+     * Transfers all licenses from one plugin/edition to another.
+     *
+     * @return int
+     */
+    public function actionTransfer(): int
+    {
+        $oldPlugin = $this->_pluginPrompt('Old plugin:');
+        $oldEdition = $this->_pluginEditionPrompt($oldPlugin, 'Old edition:');
+        $newPlugin = $this->_pluginPrompt('New plugin:');
+        $newEdition = $this->_pluginEditionPrompt($newPlugin, 'New edition:');
+
+        if ($oldEdition->id == $newEdition->id) {
+            $this->stdout("That’s the same plugin/edition. Guess we’re done!\n");
+            return ExitCode::OK;
+        }
+
+        $licenseManager = $this->module->getPluginLicenseManager();
+        $allLicenses = $licenseManager->getLicensesByPlugin($oldPlugin->id, $oldEdition->id, true);
+
+        if (empty($allLicenses)) {
+            $this->stdout("No licenses found for $oldEdition->description.\n");
+            return ExitCode::OK;
+        }
+
+        $this->stdout(count($allLicenses), Console::FG_CYAN);
+        $this->stdout(" $oldEdition->description licenses found.\n");
+
+        $sendEmail = $this->confirm('Send email to license holders?');
+
+        if (!$this->confirm('Transfer licenses now?')) {
+            $this->stdout("Aborted\n");
+            return ExitCode::OK;
+        }
+
+        $licensesByEmail = ArrayHelper::index($allLicenses, null, function(PluginLicense $license): string {
+            return mb_strtolower($license->email);
+        });
+
+        $mailer = Craft::$app->getMailer();
+
+        foreach ($licensesByEmail as $email => $licenses) {
+            foreach ($licenses as $license) {
+                $this->stdout("Transferring $license->shortKey ($license->email) ... ");
+                $license->pluginId = $newPlugin->id;
+                $license->pluginHandle = $newPlugin->handle;
+                $license->editionId = $newEdition->id;
+                $license->edition = $newEdition->handle;
+
+                if (!$licenseManager->saveLicense($license)) {
+                    $errors = implode('', array_map(function(string $error) {
+                        return " - $error\n";
+                    }, $license->getFirstErrors()));
+                    $this->stdout("validation errors:\n$errors", Console::FG_RED);
+                    continue 2;
+                }
+
+                $licenseManager->addHistory($license->id, "Transferred from {$oldEdition->getDescription()}");
+                $this->stdout("done\n", Console::FG_GREEN);
+            }
+
+            if ($sendEmail) {
+                $this->stdout('- Sending email ... ');
+                $user = User::find()->email($email)->one();
+                $message = $mailer
+                    ->composeFromKey(Module::MESSAGE_KEY_LICENSE_TRANSFER, compact(
+                        'oldPlugin',
+                        'oldEdition',
+                        'newPlugin',
+                        'newEdition',
+                        'user',
+                        'licenses'
+                    ))
+                    ->setTo($user ?? $email);
+
+                if ($message->send()) {
+                    $this->stdout("done\n", Console::FG_GREEN);
+                } else {
+                    $this->stderr("error sending email\n", Console::FG_RED);
+                }
+            }
+        }
+
+        return ExitCode::OK;
+    }
+
+    /**
+     * Prompts for a plugin.
+     *
+     * @param string $text
+     * @return Plugin
+     */
+    private function _pluginPrompt(string $text = 'Plugin:'): Plugin
+    {
+        $handle = $this->prompt($text, [
+            'required' => true,
+            'validator' => function(string $input, string &$error = null) {
+                if (!Plugin::find()->handle($input)->exists()) {
+                    $error = 'No plugin exists with that handle.';
+                    return false;
+                }
+                return true;
+            }
+        ]);
+
+        return Plugin::find()->handle($handle)->one();
+    }
+
+    /**
+     * Prompts for a plugin edition.
+     *
+     * @param Plugin $plugin
+     * @param string $text
+     * @return PluginEdition
+     */
+    private function _pluginEditionPrompt(Plugin $plugin, string $text = 'Edition:'): PluginEdition
+    {
+        $editions = PluginEdition::find()->pluginId($plugin->id)->indexBy('name')->all();
+
+        if (empty($editions)) {
+            throw new InvalidArgumentException("$plugin->name has no editions");
+        }
+
+        if (count($editions) === 1) {
+            return reset($editions);
+        }
+
+        $name = $this->prompt($text, [
+            'required' => true,
+            'options' => array_keys($editions),
+        ]);
+
+        return $editions[$name];
     }
 }

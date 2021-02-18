@@ -72,6 +72,7 @@ class Module extends \yii\base\Module
     const MESSAGE_KEY_DEVELOPER_SALE = 'developer_sale';
     const MESSAGE_KEY_LICENSE_REMINDER = 'license_reminder';
     const MESSAGE_KEY_LICENSE_NOTIFICATION = 'license_notification';
+    const MESSAGE_KEY_LICENSE_TRANSFER = 'license_transfer';
     const MESSAGE_KEY_SECURITY_ALERT = 'security_alert';
 
     /**
@@ -146,6 +147,12 @@ class Module extends \yii\base\Module
                 'heading' => 'When licenses have expired/auto-renewed:',
                 'subject' => 'Important license info',
                 'body' => file_get_contents(__DIR__ . '/emails/license_notification.md'),
+            ]);
+            $e->messages[] = new SystemMessage([
+                'key' => self::MESSAGE_KEY_LICENSE_TRANSFER,
+                'heading' => 'When a license has been transferred to a new plugin/edition:',
+                'subject' => 'Important license info',
+                'body' => file_get_contents(__DIR__ . '/emails/license_transfer.md'),
             ]);
             $e->messages[] = new SystemMessage([
                 'key' => self::MESSAGE_KEY_SECURITY_ALERT,
