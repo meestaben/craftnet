@@ -811,6 +811,7 @@ EOL;
             'activeInstalls' => $plugin->activeInstalls,
             'packageName' => $plugin->packageName,
             'lastUpdate' => ($plugin->latestVersionTime ?? $plugin->dateUpdated)->format(\DateTime::ATOM),
+            'abandoned' => $plugin->abandoned,
         ];
 
         foreach ($plugin->getEditions() as $edition) {
@@ -859,6 +860,11 @@ EOL;
             $data['screenshotUrls'] = $screenshotUrls;
             $data['thumbnailUrls'] = $thumbnailUrls;
             $data['screenshotIds'] = $screenshotIds;
+
+            // Replacement
+            $replacement = $plugin->getReplacement();
+            $data['replacementName'] = $replacement->name ?? null;
+            $data['replacementHandle'] = $replacement->handle ?? null;
         }
 
         return $data;

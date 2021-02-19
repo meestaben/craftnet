@@ -180,6 +180,30 @@
                 value: plugin.keywords,
                 errors: plugin.getErrors('keywords'),
             }) }}
+
+            <hr>
+
+            {{ forms.lightswitchField({
+                label: 'Abandoned?',
+                id: 'abandoned',
+                name: 'abandoned',
+                on: plugin.abandoned,
+                toggle: 'replacement-container',
+            }) }}
+
+            {% tag 'div' with {
+                id: 'replacement-container',
+                class: not plugin.abandoned ? 'hidden' : null,
+            } %}
+                {{ forms.elementSelectField({
+                    label: 'Replacement Plugin',
+                    id: 'replacement',
+                    name: 'replacement',
+                    elementType: 'craftnet\\plugins\\Plugin',
+                    elements: [plugin.getReplacement()]|filter,
+                    limit: 1,
+                }) }}
+            {% endtag %}
         </div>
     </div>
 

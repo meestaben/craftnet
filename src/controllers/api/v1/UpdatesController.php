@@ -207,6 +207,15 @@ class UpdatesController extends BaseApiController
                 $info['packageName'] = $plugin->packageName;
             }
 
+            if ($plugin->abandoned && version_compare($this->cmsVersion, '3.6.7', '>=')) {
+                $info['abandoned'] = true;
+                if ($replacement = $plugin->getReplacement()) {
+                    $info['replacementName'] = $replacement->name;
+                    $info['replacementHandle'] = $replacement->handle;
+                    $info['replacementUrl'] = "https://plugins.craftcms.com/$replacement->handle";
+                }
+            }
+
             $updateInfo[$handle] = $info;
         }
 

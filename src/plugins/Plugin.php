@@ -364,6 +364,16 @@ class Plugin extends Element
     public $totalPurchases;
 
     /**
+     * @var bool Whether the plugin is abandoned
+     */
+    public $abandoned = false;
+
+    /**
+     * @var int|null The replacement plugin’s ID
+     */
+    public $replacementId;
+
+    /**
      * @var PluginEdition[]|null
      */
     private $_editions;
@@ -923,6 +933,8 @@ class Plugin extends Element
             'changelogPath' => $this->changelogPath ?: null,
             'pendingApproval' => $this->pendingApproval,
             'keywords' => $this->keywords,
+            'abandoned' => $this->abandoned,
+            'replacementId' => $this->replacementId,
         ];
 
         if ($this->_approved) {
@@ -1116,6 +1128,19 @@ EOD;
     public function getCpEditUrl()
     {
         return UrlHelper::cpUrl("plugins/{$this->id}-{$this->handle}");
+    }
+
+    /**
+     * Returns the replacement plugin.
+     *
+     * @return Plugin|null
+     */
+    public function getReplacement(): ?Plugin
+    {
+        if ($this->replacementId === null) {
+            return null;
+        }
+        return Plugin::findOne($this->replacementId);
     }
 
     // Protected Methods

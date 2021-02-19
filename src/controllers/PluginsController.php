@@ -472,6 +472,20 @@ JS;
 
         $plugin->setScreenshots(Asset::find()->id($screenshotIds)->fixedOrder()->all());
 
+        // Abandoned?
+        // ---------------------------------------------------------------------
+
+        $plugin->abandoned = $this->request->getBodyParam('abandoned') ?? $plugin->abandoned;
+        if ($plugin->abandoned) {
+            $replacementId = $this->request->getBodyParam('replacement') ?? $plugin->replacementId;
+            if (is_array($replacementId)) {
+                $replacementId = $replacementId[0] ?? null;
+            }
+            $plugin->replacementId = $replacementId ?: null;
+        } else {
+            $plugin->replacementId = null;
+        }
+
         // Editions
         // ---------------------------------------------------------------------
 
