@@ -75,7 +75,6 @@ class UpdatesController extends BaseApiController
         }
 
         $includePackageName = (
-            $this->cmsVersion &&
             Comparator::greaterThanOrEqualTo($this->cmsVersion, '3.1.21') &&
             Comparator::notEqualTo($this->cmsVersion, '3.2.0-alpha.1')
         );
