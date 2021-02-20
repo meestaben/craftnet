@@ -475,7 +475,7 @@ JS;
         // Abandoned?
         // ---------------------------------------------------------------------
 
-        $plugin->abandoned = $this->request->getBodyParam('abandoned') ?? $plugin->abandoned;
+        $plugin->abandoned = (bool)($this->request->getBodyParam('abandoned') ?? $plugin->abandoned);
         if ($plugin->abandoned) {
             $replacementId = $this->request->getBodyParam('replacement') ?? $plugin->replacementId;
             if (is_array($replacementId)) {
