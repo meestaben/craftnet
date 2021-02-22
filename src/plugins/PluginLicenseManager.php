@@ -815,7 +815,11 @@ class PluginLicenseManager extends Component
         }
 
         if (!$includeFreeEditions) {
-            $query->andWhere(['not', ['e.price' => 0]]);
+            $query->andWhere(array_filter([
+                'or',
+                ['not', ['e.price' => 0]],
+                $includeTrials ? ['l.trial' => true] : false,
+            ]));
         }
 
         return $query;
