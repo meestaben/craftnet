@@ -124,7 +124,7 @@ class PluginLicense extends License
      */
     public function getWillAutoRenew(): bool
     {
-        return $this->autoRenew;
+        return $this->autoRenew && !$this->getPlugin()->abandoned;
     }
 
     /**
