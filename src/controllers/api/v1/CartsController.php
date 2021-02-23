@@ -614,6 +614,10 @@ class CartsController extends BaseApiController
             return null;
         }
 
+        if ($plugin->abandoned) {
+            return null;
+        }
+
         // get the edition
         try {
             $edition = $plugin->getEdition($item->edition);
@@ -708,6 +712,10 @@ class CartsController extends BaseApiController
                 'message' => $e->getMessage(),
                 'code' => self::ERROR_CODE_MISSING,
             ];
+            return null;
+        }
+
+        if ($license->getPlugin()->abandoned) {
             return null;
         }
 
