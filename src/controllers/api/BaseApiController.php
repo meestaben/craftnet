@@ -343,14 +343,14 @@ abstract class BaseApiController extends Controller
                     [$pluginHandle, $pluginLicenseKey] = explode(':', $pluginLicenseInfo);
 
                     // Ignore if the plugin is abandoned
-                    if (isset($this->plugins[$pluginHandle]) && $this->plugins[$pluginHandle]->abandoned) {
+                    if (!isset($this->plugins[$pluginHandle]) || $this->plugins[$pluginHandle]->abandoned) {
                         continue;
                     }
 
                     $pluginLicense = null;
                     switch ($pluginLicenseKey) {
                         case '__REQUEST__':
-                            if ($this->email && isset($this->plugins[$pluginHandle])) {
+                            if ($this->email) {
                                 // Only oblige if they are running a commercial edition
                                 $edition = $this->installedPluginEdition($pluginHandle);
                                 if ($edition->price != 0) {
