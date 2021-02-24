@@ -393,9 +393,12 @@ abstract class BaseApiController extends Controller
             }
 
             // set the plugin license statuses
-            foreach (array_keys($this->plugins) as $pluginHandle) {
-                // ignore if they're using an invalid license key
-                if (isset($this->pluginLicenseStatuses[$pluginHandle]) && $this->pluginLicenseStatuses[$pluginHandle] === self::LICENSE_STATUS_INVALID) {
+            foreach ($this->plugins as $pluginHandle => $plugin) {
+                // ignore if the plugin was abandoned or they're using an invalid license key
+                if (
+                    $plugin->abandoned ||
+                    (isset($this->pluginLicenseStatuses[$pluginHandle]) && $this->pluginLicenseStatuses[$pluginHandle] === self::LICENSE_STATUS_INVALID)
+                ) {
                     continue;
                 }
 
