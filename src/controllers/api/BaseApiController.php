@@ -341,6 +341,12 @@ abstract class BaseApiController extends Controller
 
                 foreach (explode(',', $pluginLicenseKeys) as $pluginLicenseInfo) {
                     [$pluginHandle, $pluginLicenseKey] = explode(':', $pluginLicenseInfo);
+
+                    // Ignore if the plugin is abandoned
+                    if (isset($this->plugins[$pluginHandle]) && $this->plugins[$pluginHandle]->abandoned) {
+                        continue;
+                    }
+
                     $pluginLicense = null;
                     switch ($pluginLicenseKey) {
                         case '__REQUEST__':
