@@ -465,7 +465,7 @@ EOD;
      */
     private function _pluginEditionPrompt(Plugin $plugin, string $text = 'Edition:'): PluginEdition
     {
-        $editions = PluginEdition::find()->pluginId($plugin->id)->indexBy('name')->all();
+        $editions = PluginEdition::find()->pluginId($plugin->id)->indexBy('handle')->all();
 
         if (empty($editions)) {
             throw new InvalidArgumentException("$plugin->name has no editions");
@@ -475,11 +475,8 @@ EOD;
             return reset($editions);
         }
 
-        $name = $this->prompt($text, [
-            'required' => true,
-            'options' => array_keys($editions),
-        ]);
-
-        return $editions[$name];
+        $options = ArrayHelper::getColumn($editions, 'name');
+        $handle = $this->select($text, $options);
+        return $editions[$handle];
     }
 }
