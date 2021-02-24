@@ -30,6 +30,7 @@ return [
                             'sandbox',
                             'stage',
                             'staging',
+                            'systest',
                             'test',
                             'testing',
                             'uat',
