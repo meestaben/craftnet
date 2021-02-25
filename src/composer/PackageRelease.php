@@ -5,6 +5,7 @@ namespace craftnet\composer;
 use Composer\Semver\VersionParser;
 use craft\base\Model;
 use craft\gql\types\DateTime;
+use craft\helpers\DateTimeHelper;
 use craft\helpers\Json;
 
 /**
@@ -213,6 +214,16 @@ class PackageRelease extends Model
     /**
      * @inheritdoc
      */
+    public function attributes()
+    {
+        $attributes = parent::attributes();
+        $attributes[] = 'dateWithoutTimeZone';
+        return $attributes;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function datetimeAttributes(): array
     {
         $names = parent::datetimeAttributes();
@@ -268,5 +279,17 @@ class PackageRelease extends Model
     public function getStability(): string
     {
         return VersionParser::parseStability($this->version);
+    }
+
+    /**
+     * Returns the release date without the timezone info
+     * @return string|null
+     */
+    public function getDateWithoutTimeZone(): ?string
+    {
+        if ($this->date !== null) {
+            return DateTimeHelper::toDateTime($this->date)->format('Y-m-d\TH:i:s');
+        }
+        return null;
     }
 }
