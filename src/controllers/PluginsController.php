@@ -477,11 +477,27 @@ JS;
 
         $plugin->abandoned = (bool)($this->request->getBodyParam('abandoned') ?? $plugin->abandoned);
         if ($plugin->abandoned) {
-            $replacementId = $this->request->getBodyParam('replacement') ?? $plugin->replacementId;
-            if (is_array($replacementId)) {
-                $replacementId = $replacementId[0] ?? null;
+            if (!$isCpRequest) {
+                $replacementHandle = $this->request->getBodyParam('replacementHandle');
+
+                if ($replacementHandle) {
+                    $replacementPlugin = Plugin::find()->handle($replacementHandle)->one();
+
+                    if (!$replacementPlugin) {
+                        throw new Exception('Replacement plugin doesn’t exist.');
+                    }
+
+                    $plugin->replacementId = $replacementPlugin->id;
+                } else {
+                    $plugin->replacementId = null;
+                }
+            } else {
+                $replacementId = $this->request->getBodyParam('replacement') ?? $plugin->replacementId;
+                if (is_array($replacementId)) {
+                    $replacementId = $replacementId[0] ?? null;
+                }
+                $plugin->replacementId = $replacementId ?: null;
             }
-            $plugin->replacementId = $replacementId ?: null;
         } else {
             $plugin->replacementId = null;
         }

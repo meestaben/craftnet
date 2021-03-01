@@ -117,6 +117,7 @@ const mutations = {
         statePlugin.repository = plugin.repository
         statePlugin.license = plugin.license
         statePlugin.keywords = plugin.keywords
+        statePlugin.replacementHandle = plugin.replacementHandle
 
         let price = parseFloat(plugin.price)
         statePlugin.price = (price ? price : null)
