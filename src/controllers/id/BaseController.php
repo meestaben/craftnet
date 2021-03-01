@@ -69,6 +69,8 @@ abstract class BaseController extends Controller
             ->asArray()
             ->scalar();
 
+        $replacement = $plugin->getReplacement();
+
         return [
             'id' => $plugin->id,
             'enabled' => $plugin->enabled,
@@ -100,6 +102,8 @@ abstract class BaseController extends Controller
 
             'lastHistoryNote' => $lastHistoryNote,
             'activeInstalls' => $plugin->activeInstalls,
+            'abandoned' => $plugin->abandoned,
+            'replacementHandle' => $replacement->handle ?? null,
         ];
     }
 
