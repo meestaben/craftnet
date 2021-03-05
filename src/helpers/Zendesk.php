@@ -4,6 +4,7 @@ namespace craftnet\helpers;
 
 use craft\commerce\elements\Subscription;
 use craft\elements\User;
+use craft\helpers\App;
 use craftnet\controllers\id\DeveloperSupportController;
 use yii\db\Expression;
 use Zendesk\API\HttpClient;
@@ -20,8 +21,8 @@ abstract class Zendesk
     {
         $client = new HttpClient('craftcms');
         $client->setAuth(Auth::BASIC, [
-            'username' => getenv('ZENDESK_USERNAME'),
-            'token' => getenv('ZENDESK_TOKEN'),
+            'username' => App::env('ZENDESK_USERNAME'),
+            'token' => App::env('ZENDESK_TOKEN'),
         ]);
         return $client;
     }

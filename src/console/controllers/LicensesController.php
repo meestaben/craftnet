@@ -9,6 +9,7 @@ use craft\commerce\Plugin as Commerce;
 use craft\commerce\stripe\gateways\PaymentIntents as StripeGateway;
 use craft\commerce\stripe\models\forms\payment\PaymentIntent as PaymentForm;
 use craft\elements\User;
+use craft\helpers\App;
 use craft\helpers\ArrayHelper;
 use craftnet\base\LicenseInterface;
 use craftnet\Module;
@@ -264,7 +265,7 @@ class LicensesController extends Controller
 
             // Make sure they have a payment source
             /** @var PaymentSource|null $paymentSource */
-            $paymentSource = ArrayHelper::firstValue($commerce->getPaymentSources()->getAllGatewayPaymentSourcesByUserId(getenv('STRIPE_GATEWAY_ID'), $user->id));
+            $paymentSource = ArrayHelper::firstValue($commerce->getPaymentSources()->getAllGatewayPaymentSourcesByUserId(App::env('STRIPE_GATEWAY_ID'), $user->id));
             if ($paymentSource === null) {
                 return false;
             }
@@ -275,7 +276,7 @@ class LicensesController extends Controller
                 'number' => $commerce->getCarts()->generateCartNumber(),
                 'currency' => 'USD',
                 'paymentCurrency' => 'USD',
-                'gatewayId' => getenv('STRIPE_GATEWAY_ID'),
+                'gatewayId' => App::env('STRIPE_GATEWAY_ID'),
                 'orderLanguage' => Craft::$app->language,
                 'customerId' => $customer->id,
                 'email' => $user->email,
@@ -309,7 +310,7 @@ class LicensesController extends Controller
 
             // Pay for it
             /** @var StripeGateway $gateway */
-            $gateway = $commerce->getGateways()->getGatewayById(getenv('STRIPE_GATEWAY_ID'));
+            $gateway = $commerce->getGateways()->getGatewayById(App::env('STRIPE_GATEWAY_ID'));
             /** @var PaymentForm $paymentForm */
             $paymentForm = $gateway->getPaymentFormModel();
             $paymentForm->populateFromPaymentSource($paymentSource);

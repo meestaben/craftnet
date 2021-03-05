@@ -2,6 +2,7 @@
 
 namespace craftnet\controllers\api\v1;
 
+use craft\helpers\App;
 use craftnet\controllers\api\BaseApiController;
 use craftnet\partners\Partner;
 use craftnet\partners\PartnerService;
@@ -15,7 +16,7 @@ class PartnersController extends BaseApiController
     {
         parent::init();
         $secret = $this->request->getHeaders()->get('X-Partner-Secret');
-        if ($secret !== getenv('PARTNER_SECRET')) {
+        if ($secret !== App::env('PARTNER_SECRET')) {
             throw new BadRequestHttpException('Wrong secret');
         }
     }

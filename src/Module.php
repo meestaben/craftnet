@@ -26,6 +26,7 @@ use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
 use craft\events\UserEvent;
 use craft\fieldlayoutelements\StandardTextField;
+use craft\helpers\App;
 use craft\models\FieldLayout;
 use craft\models\SystemMessage;
 use craft\services\Elements;
@@ -342,7 +343,7 @@ class Module extends \yii\base\Module
 
     private function _initSiteRequest()
     {
-        $idOrigin = rtrim(getenv('URL_ID'), '/');
+        $idOrigin = rtrim(App::env('URL_ID'), '/');
 
         if (Craft::$app->getRequest()->getOrigin() === $idOrigin) {
             Craft::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Origin', $idOrigin);

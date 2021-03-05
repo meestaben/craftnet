@@ -686,7 +686,7 @@ EOL;
                         ->setSubject('Craftnet API Error')
                         ->setTextBody($body)
                         ->setHtmlBody(Markdown::process($body, 'gfm'))
-                        ->setTo(explode(',', getenv('API_ERROR_RECIPIENTS')))
+                        ->setTo(explode(',', App::env('API_ERROR_RECIPIENTS')))
                         ->send();
 
                     // Log it to bugsnag

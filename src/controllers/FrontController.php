@@ -14,6 +14,7 @@ use Craft;
 use craft\db\Query;
 use craft\elements\Asset;
 use craft\elements\User;
+use craft\helpers\App;
 use craft\helpers\Json;
 use craft\web\Controller;
 use craftnet\behaviors\UserBehavior;
@@ -55,7 +56,7 @@ class FrontController extends Controller
     {
         // Validate the request
         $secret = Craft::$app->request->getQueryParam('auth_secret');
-        if (!$secret || !hash_equals($secret, getenv('FRONT_AUTH_SECRET'))) {
+        if (!$secret || !hash_equals($secret, App::env('FRONT_AUTH_SECRET'))) {
             throw new UnauthorizedHttpException();
         }
 
@@ -213,7 +214,7 @@ class FrontController extends Controller
     public function actionScrubConversation(): Response
     {
         $conversationId = $this->request->getRequiredBodyParam('conversationId');
-        $token = getenv('FRONT_TOKEN');
+        $token = App::env('FRONT_TOKEN');
 
         // request conversation details
         $apiHost = 'https://api2.frontapp.com/';

@@ -11,6 +11,7 @@ use craft\commerce\stripe\models\forms\CancelSubscription;
 use craft\commerce\stripe\models\forms\Subscription as SubscriptionForm;
 use craft\commerce\stripe\models\forms\SwitchPlans;
 use craft\elements\User;
+use craft\helpers\App;
 use craft\helpers\DateTimeHelper;
 use craft\web\Controller;
 use yii\web\Response;
@@ -121,7 +122,7 @@ class DeveloperSupportController extends Controller
         $premiumSubscription = Subscription::find()->plan(self::PLAN_PREMIUM)->userId($this->_user->id)->isExpired(false)->one();
 
         /** @var PaymentIntents $gateway */
-        $gateway = $commerce->getGateways()->getGatewayById(getenv('STRIPE_GATEWAY_ID'));
+        $gateway = $commerce->getGateways()->getGatewayById(App::env('STRIPE_GATEWAY_ID'));
 
         switch ($plan) {
             case self::PLAN_PRO:
@@ -183,7 +184,7 @@ class DeveloperSupportController extends Controller
         $premiumSubscription = Subscription::find()->plan(self::PLAN_PREMIUM)->userId($this->_user->id)->isExpired(false)->one();
 
         /** @var PaymentIntents $gateway */
-        $gateway = $commerce->getGateways()->getGatewayById(getenv('STRIPE_GATEWAY_ID'));
+        $gateway = $commerce->getGateways()->getGatewayById(App::env('STRIPE_GATEWAY_ID'));
 
         /** @var SubscriptionForm $subscriptionForm */
         $subscriptionForm = $gateway->getSubscriptionFormModel();

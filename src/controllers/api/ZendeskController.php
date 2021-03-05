@@ -3,6 +3,7 @@
 namespace craftnet\controllers\api;
 
 use Craft;
+use craft\helpers\App;
 use craft\helpers\Json;
 use craftnet\controllers\id\DeveloperSupportController;
 use craftnet\errors\ValidationException;
@@ -68,7 +69,7 @@ class ZendeskController extends BaseApiController
         Craft::$app->getMailer()->compose()
             ->setSubject('Zendesk Test Webhook')
             ->setTextBody(Json::encode($this->getPayload(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))
-            ->setTo(explode(',', getenv('TEST_EMAIL')))
+            ->setTo(explode(',', App::env('TEST_EMAIL')))
             ->send();
 
         return '';
@@ -81,7 +82,7 @@ class ZendeskController extends BaseApiController
     {
         $secret = $this->request->getRequiredQueryParam('secret');
 
-        if ($secret !== getenv('ZENDESK_SECRET')) {
+        if ($secret !== App::env('ZENDESK_SECRET')) {
             throw new BadRequestHttpException('Invalid request body.');
         }
     }

@@ -1,5 +1,6 @@
 <?php
 
+use craft\helpers\App;
 use craftnet\services\Oauth;
 
 return [
@@ -44,12 +45,12 @@ return [
                     ],
                     'packageManager' => [
                         'class' => craftnet\composer\PackageManager::class,
-                        'githubFallbackTokens' => getenv('GITHUB_FALLBACK_TOKENS'),
+                        'githubFallbackTokens' => App::env('GITHUB_FALLBACK_TOKENS'),
                         'requirePluginVcsTokens' => false,
                     ],
                     'jsonDumper' => [
                         'class' => craftnet\composer\JsonDumper::class,
-                        'composerWebroot' => getenv('COMPOSER_WEBROOT'),
+                        'composerWebroot' => App::env('COMPOSER_WEBROOT'),
                     ],
                     'oauth' => [
                         'class' => Oauth::class,
@@ -57,15 +58,15 @@ return [
                             Oauth::PROVIDER_GITHUB => [
                                 'class' => 'Github',
                                 'oauthClass' => League\OAuth2\Client\Provider\Github::class,
-                                'clientIdKey' => getenv('GITHUB_APP_CLIENT_ID'),
-                                'clientSecretKey' => getenv('GITHUB_APP_CLIENT_SECRET'),
+                                'clientIdKey' => App::env('GITHUB_APP_CLIENT_ID'),
+                                'clientSecretKey' => App::env('GITHUB_APP_CLIENT_SECRET'),
                                 'scope' => ['user:email', 'write:repo_hook', 'public_repo'],
                             ],
                             Oauth::PROVIDER_BITBUCKET => [
                                 'class' => 'Bitbucket',
                                 'oauthClass' => Stevenmaguire\OAuth2\Client\Provider\Bitbucket::class,
-                                'clientIdKey' => getenv('BITBUCKET_APP_CLIENT_ID'),
-                                'clientSecretKey' => getenv('BITBUCKET_APP_CLIENT_SECRET'),
+                                'clientIdKey' => App::env('BITBUCKET_APP_CLIENT_ID'),
+                                'clientSecretKey' => App::env('BITBUCKET_APP_CLIENT_SECRET'),
                                 'scope' => 'account',
                             ],
                         ]
@@ -97,8 +98,8 @@ return [
         'components' => [
             'redis' => [
                 'class' => yii\redis\Connection::class,
-                'hostname' => getenv('ELASTICACHE_HOSTNAME'),
-                'port' => getenv('ELASTICACHE_PORT'),
+                'hostname' => App::env('ELASTICACHE_HOSTNAME'),
+                'port' => App::env('ELASTICACHE_PORT'),
                 'database' => 0,
             ],
             'cache' => [
@@ -109,22 +110,22 @@ return [
             ],
             'queue' => [
                 'class' => \yii\queue\sqs\Queue::class,
-                'url' => getenv('SQS_URL'),
-                'key' => getenv('AWS_ACCESS_KEY_ID'),
-                'secret' => getenv('AWS_SECRET_ACCESS_KEY'),
-                'region' => getenv('REGION'),
+                'url' => App::env('SQS_URL'),
+                'key' => App::env('AWS_ACCESS_KEY_ID'),
+                'secret' => App::env('AWS_SECRET_ACCESS_KEY'),
+                'region' => App::env('REGION'),
             ],
             'dlq' => [
                 'class' => \yii\queue\sqs\Queue::class,
-                'url' => getenv('SQS_DEAD_LETTER_URL'),
-                'key' => getenv('AWS_ACCESS_KEY_ID'),
-                'secret' => getenv('AWS_SECRET_ACCESS_KEY'),
-                'region' => getenv('REGION'),
+                'url' => App::env('SQS_DEAD_LETTER_URL'),
+                'key' => App::env('AWS_ACCESS_KEY_ID'),
+                'secret' => App::env('AWS_SECRET_ACCESS_KEY'),
+                'region' => App::env('REGION'),
             ],
             'partnerQueue' => [
                 'class' => \yii\queue\sqs\Queue::class,
-                'url' => getenv('PARTNER_QUEUE_URL'),
-                'region' => getenv('PARTNER_QUEUE_REGION')
+                'url' => App::env('PARTNER_QUEUE_URL'),
+                'region' => App::env('PARTNER_QUEUE_REGION')
             ],
             'session' => function() {
                 $config = craft\helpers\App::sessionConfig();
@@ -147,7 +148,7 @@ return [
                         ],
                         [
                             'class' => craft\log\FileTarget::class,
-                            'logFile' => getenv('CRAFT_STORAGE_PATH') . '/logs/' . $logFileName,
+                            'logFile' => App::env('CRAFT_STORAGE_PATH') . '/logs/' . $logFileName,
                             'levels' => !YII_DEBUG ? yii\log\Logger::LEVEL_ERROR | yii\log\Logger::LEVEL_WARNING : yii\log\Logger::LEVEL_ERROR | yii\log\Logger::LEVEL_WARNING | yii\log\Logger::LEVEL_INFO | yii\log\Logger::LEVEL_TRACE | yii\log\Logger::LEVEL_PROFILE,
                         ],
                     ],
@@ -162,9 +163,9 @@ return [
 
                 // Define the default config for replica DB connections
                 $config['slaveConfig'] = [
-                    'username' => getenv('DB_USER'),
-                    'password' => getenv('DB_PASSWORD'),
-                    'tablePrefix' => getenv('DB_TABLE_PREFIX'),
+                    'username' => App::env('DB_USER'),
+                    'password' => App::env('DB_PASSWORD'),
+                    'tablePrefix' => App::env('DB_TABLE_PREFIX'),
                     'attributes' => [
                         // Use a smaller connection timeout
                         PDO::ATTR_TIMEOUT => 10,
@@ -175,8 +176,8 @@ return [
                 // Define the replica DB connections
                 $config['slaves'] = [
                     [
-                        'dsn' => getenv('DB_READ_DSN_1'),
-                        'dsn' => getenv('DB_READ_DSN_2'),
+                        'dsn' => App::env('DB_READ_DSN_1'),
+                        'dsn' => App::env('DB_READ_DSN_2'),
                     ],
                 ];
 

@@ -11,6 +11,7 @@ use craft\commerce\Plugin as Commerce;
 use craft\commerce\stripe\gateways\PaymentIntents as StripeGateway;
 use craft\commerce\stripe\models\forms\payment\PaymentIntent as PaymentForm;
 use craft\commerce\stripe\Plugin as Stripe;
+use craft\helpers\App;
 use craft\helpers\StringHelper;
 use craftnet\errors\ValidationException;
 use Stripe\Customer as StripeCustomer;
@@ -113,7 +114,7 @@ class PaymentsController extends CartsController
         if ($totalPrice) {
             // get the gateway
             /** @var StripeGateway $gateway */
-            $gateway = $commerce->getGateways()->getGatewayById(getenv('STRIPE_GATEWAY_ID'));
+            $gateway = $commerce->getGateways()->getGatewayById(App::env('STRIPE_GATEWAY_ID'));
 
             // pay
             /** @var PaymentForm $paymentForm */

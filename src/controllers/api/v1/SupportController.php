@@ -3,6 +3,7 @@
 namespace craftnet\controllers\api\v1;
 
 use Craft;
+use craft\helpers\App;
 use craft\web\UploadedFile;
 use craftnet\cms\CmsLicense;
 use craftnet\cms\CmsLicenseManager;
@@ -39,7 +40,7 @@ class SupportController extends BaseApiController
 
         if ($this->cmsVersion) {
             $customFields[] = [
-                'id' => getenv('ZENDESK_FIELD_CRAFT_VERSION'),
+                'id' => App::env('ZENDESK_FIELD_CRAFT_VERSION'),
                 'value' => $this->cmsVersion
             ];
         }
@@ -50,14 +51,14 @@ class SupportController extends BaseApiController
         ) {
             $trial = $cmsLicense && $cmsLicense->editionHandle !== $this->cmsEdition;
             $customFields[] = [
-                'id' => getenv('ZENDESK_FIELD_CRAFT_EDITION'),
+                'id' => App::env('ZENDESK_FIELD_CRAFT_EDITION'),
                 'value' => "edition_{$this->cmsEdition}" . ($trial ? '_trial' : '')
             ];
         }
 
         if ($cmsLicense) {
             $customFields[] = [
-                'id' => getenv('ZENDESK_FIELD_CRAFT_LICENSE'),
+                'id' => App::env('ZENDESK_FIELD_CRAFT_LICENSE'),
                 'value' => $cmsLicense->key
             ];
         }
@@ -77,14 +78,14 @@ class SupportController extends BaseApiController
                 $pluginInfos[] = $pluginInfo;
             }
             $customFields[] = [
-                'id' => getenv('ZENDESK_FIELD_PLUGINS'),
+                'id' => App::env('ZENDESK_FIELD_PLUGINS'),
                 'value' => implode("\n", $pluginInfos)
             ];
         }
 
         if (($host = $requestHeaders->get('X-Craft-Host')) !== null) {
             $customFields[] = [
-                'id' => getenv('ZENDESK_FIELD_HOST'),
+                'id' => App::env('ZENDESK_FIELD_HOST'),
                 'value' => $host
             ];
         }
@@ -120,14 +121,14 @@ class SupportController extends BaseApiController
 
         $email = mb_strtolower($this->request->getRequiredBodyParam('email'));
         $plan = Zendesk::plan($email);
-        $tags = [getenv('ZENDESK_TAG'), $plan];
+        $tags = [App::env('ZENDESK_TAG'), $plan];
 
         $response = Zendesk::client()->tickets()->create([
             'requester' => [
                 'name' => $this->request->getRequiredBodyParam('name'),
                 'email' => $email,
             ],
-            'subject' => getenv('ZENDESK_SUBJECT'),
+            'subject' => App::env('ZENDESK_SUBJECT'),
             'comment' => [
                 'body' => $body,
                 'html_body' => Markdown::process($body, 'gfm'),

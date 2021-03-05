@@ -10,6 +10,7 @@ use Aws\Sts\StsClient;
 use Composer\Util\MetadataMinifier;
 use Craft;
 use craft\db\Query;
+use craft\helpers\App;
 use craft\helpers\Console;
 use craft\helpers\DateTimeHelper;
 use craft\helpers\FileHelper;
@@ -43,7 +44,7 @@ class JsonDumper extends Component
      */
     public function init()
     {
-        if ($id = (getenv('CLOUDFRONT_COMPOSER_DISTRIBUTION_ID'))) {
+        if ($id = (App::env('CLOUDFRONT_COMPOSER_DISTRIBUTION_ID'))) {
             $this->cfDistributionId = $id;
         }
     }
@@ -321,9 +322,9 @@ class JsonDumper extends Component
      */
     private function _getCloudFrontClient(): CloudFrontClient
     {
-        $awsKeyId = getenv('AWS_ACCESS_KEY_ID');
-        $awsSecretKey = getenv('AWS_SECRET_ACCESS_KEY');
-        $awsRegion = getenv('REGION');
+        $awsKeyId = App::env('AWS_ACCESS_KEY_ID');
+        $awsSecretKey = App::env('AWS_SECRET_ACCESS_KEY');
+        $awsRegion = App::env('REGION');
 
         $config = [
             'region' => $awsRegion,

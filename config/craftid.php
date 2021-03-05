@@ -1,11 +1,13 @@
 <?php
 
+use craft\helpers\App;
+
 return [
     '*' => [
         'craftIdUrl' => 'https://id.craftcms.com',
-        'stripePublicKey' => getenv('STRIPE_PUBLIC_KEY'),
-        'stripeApiKey' => getenv('STRIPE_API_KEY'),
-        'stripeClientId' => getenv('STRIPE_CLIENT_ID'),
+        'stripePublicKey' => App::env('STRIPE_PUBLIC_KEY'),
+        'stripeApiKey' => App::env('STRIPE_API_KEY'),
+        'stripeClientId' => App::env('STRIPE_CLIENT_ID'),
         'oauthServer' => [
             'accessTokenExpiry' => 'PT1H',
             'refreshTokenExpiry' => 'P1M',
@@ -27,7 +29,7 @@ return [
             ],
             'privateKey' => __DIR__ . '/keys/oauth-server',
             'publicKey' => __DIR__ . '/keys/oauth-server.pub',
-            'encryptionKey' => getenv('OAUTH_ENC_KEY'),
+            'encryptionKey' => App::env('OAUTH_ENC_KEY'),
             'scopes' => [
                 'purchasePlugins' => "Purchase plugins",
                 'existingPlugins' => "List existing plugins",

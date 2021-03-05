@@ -4,6 +4,8 @@
  * Craft console bootstrap file
  */
 
+use craft\helpers\App;
+
 define('CRAFT_BASE_PATH', __DIR__);
 define('CRAFT_VENDOR_PATH', CRAFT_BASE_PATH.'/vendor');
 
@@ -16,11 +18,11 @@ if (file_exists(CRAFT_BASE_PATH.'/.env')) {
     $dotenv->load();
 }
 
-if ($storagePath = getenv('CRAFT_STORAGE_PATH')) {
+if ($storagePath = App::env('CRAFT_STORAGE_PATH')) {
     define('CRAFT_STORAGE_PATH', $storagePath);
 }
 
-if ($keyPath = getenv('LICENSE_KEY_PATH')) {
+if ($keyPath = App::env('LICENSE_KEY_PATH')) {
     define('CRAFT_LICENSE_KEY_PATH', $keyPath);
 }
 
@@ -46,7 +48,7 @@ if (file_exists($envVars) && is_file($envVars)) {
     }
 }
 
-define('CRAFT_ENVIRONMENT', getenv('CRAFT_ENV') ?: 'prod');
+define('CRAFT_ENVIRONMENT', App::env('CRAFT_ENV') ?: 'prod');
 
 // Craft
 $app = require CRAFT_VENDOR_PATH.'/craftcms/cms/bootstrap/console.php';

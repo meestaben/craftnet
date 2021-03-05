@@ -9,6 +9,7 @@ use craft\commerce\models\Customer;
 use craft\commerce\models\LineItem;
 use craft\commerce\Plugin as Commerce;
 use craft\elements\User;
+use craft\helpers\App;
 use craft\helpers\StringHelper;
 use craftnet\cms\CmsEdition;
 use craftnet\cms\CmsRenewal;
@@ -54,7 +55,7 @@ class CartsController extends BaseApiController
             'number' => Commerce::getInstance()->getCarts()->generateCartNumber(),
             'currency' => 'USD',
             'paymentCurrency' => 'USD',
-            'gatewayId' => getenv('STRIPE_GATEWAY_ID'),
+            'gatewayId' => App::env('STRIPE_GATEWAY_ID'),
             'orderLanguage' => Craft::$app->language,
         ]);
 
@@ -62,7 +63,7 @@ class CartsController extends BaseApiController
 
         return $this->asJson([
             'cart' => $this->cartArray($cart),
-            'stripePublicKey' => getenv('STRIPE_PUBLIC_KEY'),
+            'stripePublicKey' => App::env('STRIPE_PUBLIC_KEY'),
         ]);
     }
 
@@ -78,7 +79,7 @@ class CartsController extends BaseApiController
 
         return $this->asJson([
             'cart' => $this->cartArray($cart),
-            'stripePublicKey' => getenv('STRIPE_PUBLIC_KEY'),
+            'stripePublicKey' => App::env('STRIPE_PUBLIC_KEY'),
         ]);
     }
 
@@ -97,7 +98,7 @@ class CartsController extends BaseApiController
         return $this->asJson([
             'updated' => true,
             'cart' => $this->cartArray($cart),
-            'stripePublicKey' => getenv('STRIPE_PUBLIC_KEY'),
+            'stripePublicKey' => App::env('STRIPE_PUBLIC_KEY'),
         ]);
     }
 

@@ -8,6 +8,7 @@ use craft\elements\Asset;
 use craft\elements\Category;
 use craft\errors\AssetDisallowedExtensionException;
 use craft\errors\ImageException;
+use craft\helpers\App;
 use craft\helpers\ConfigHelper;
 use craft\helpers\Db;
 use craft\helpers\FileHelper;
@@ -753,8 +754,8 @@ JS;
         try {
             Craft::$app->getMailer()->compose()
                 ->setSubject('A plugin is waiting for approval: ' . $plugin->name)
-                ->setTextBody('https://id.craftcms.com/' . getenv('CRAFT_CP_TRIGGER') . '/plugins/' . $plugin->id)
-                ->setTo(explode(',', getenv('PLUGIN_APPROVAL_RECIPIENTS')))
+                ->setTextBody('https://id.craftcms.com/' . App::env('CRAFT_CP_TRIGGER') . '/plugins/' . $plugin->id)
+                ->setTo(explode(',', App::env('PLUGIN_APPROVAL_RECIPIENTS')))
                 ->send();
         } catch (\Exception $e) {
             // Just log and move on.

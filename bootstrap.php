@@ -3,6 +3,8 @@
  * Craft web bootstrap file
  */
 
+use craft\helpers\App;
+
 switch ($_SERVER['HTTP_HOST']) {
     case 'api.craftcms.com':
     case 'api.craftcms.test':
@@ -41,13 +43,13 @@ if (file_exists(CRAFT_BASE_PATH . '/.env')) {
     $dotenv->load();
 }
 
-if ($storagePath = getenv('CRAFT_STORAGE_PATH')) {
+if ($storagePath = App::env('CRAFT_STORAGE_PATH')) {
     define('CRAFT_STORAGE_PATH', $storagePath);
 }
-if ($keyPath = getenv('LICENSE_KEY_PATH')) {
+if ($keyPath = App::env('LICENSE_KEY_PATH')) {
     define('CRAFT_LICENSE_KEY_PATH', $keyPath);
 }
 
-define('CRAFT_ENVIRONMENT', getenv('CRAFT_ENV') ?: 'prod');
+define('CRAFT_ENVIRONMENT', App::env('CRAFT_ENV') ?: 'prod');
 
 return require CRAFT_VENDOR_PATH . '/craftcms/cms/bootstrap/web.php';

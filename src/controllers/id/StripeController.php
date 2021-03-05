@@ -7,6 +7,7 @@ use Craft;
 use craft\commerce\Plugin as Commerce;
 use craft\commerce\stripe\gateways\PaymentIntents;
 use craft\elements\User;
+use craft\helpers\App;
 use craft\helpers\UrlHelper;
 use craftnet\behaviors\UserBehavior;
 use League\OAuth2\Client\Token\AccessToken;
@@ -147,7 +148,7 @@ class StripeController extends BaseController
         }
 
         /** @var PaymentIntents $gateway */
-        $gateway = $plugin->getGateways()->getGatewayById(getenv('STRIPE_GATEWAY_ID'));
+        $gateway = $plugin->getGateways()->getGatewayById(App::env('STRIPE_GATEWAY_ID'));
 
         if (!$gateway || !$gateway->supportsPaymentSources()) {
             $error = Craft::t('commerce', 'There is no gateway selected that supports payment sources.');

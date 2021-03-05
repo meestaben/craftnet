@@ -6,19 +6,21 @@
  * list of the available settings in vendor/craftcms/cms/src/config/GeneralConfig.php.
  */
 
+use craft\helpers\App;
+
 return [
     '*' => [
         'aliases' => [
             '@nodeModules' => dirname(__FILE__) . '/../node_modules'
         ],
         'allowUpdates' => false,
-        'devMode' => isset($_REQUEST['secret']) && $_REQUEST['secret'] === getenv('DEV_MODE_SECRET'),
+        'devMode' => isset($_REQUEST['secret']) && $_REQUEST['secret'] === App::env('DEV_MODE_SECRET'),
         'omitScriptNameInUrls' => true,
-        'baseCpUrl' => getenv('URL_ID'),
-        'cpTrigger' => getenv('CRAFT_CP_TRIGGER'),
+        'baseCpUrl' => App::env('URL_ID'),
+        'cpTrigger' => App::env('CRAFT_CP_TRIGGER'),
         'imageDriver' => 'gd',
         'preventUserEnumeration' => true,
-        'securityKey' => getenv('CRAFT_SECURITY_KEY'),
+        'securityKey' => App::env('CRAFT_SECURITY_KEY'),
         'csrfTokenName' => 'CRAFTNET_CSRF_TOKEN',
         'phpSessionName' => 'CraftnetSessionId',
         'generateTransformsBeforePageLoad' => true,
@@ -53,7 +55,7 @@ return [
         'runQueueAutomatically' => false,
     ],
     'stage' => [
-        'testToEmailAddress' => getenv('TEST_EMAIL') ?: null,
+        'testToEmailAddress' => App::env('TEST_EMAIL') ?: null,
         'defaultCookieDomain' => '.craftcms.com',
         'disabledPlugins' => ['webhooks'],
     ],
@@ -61,7 +63,7 @@ return [
         'devMode' => true,
         'useCompressedJs' => false,
         'allowUpdates' => true,
-        'testToEmailAddress' => getenv('TEST_EMAIL') ?: null,
+        'testToEmailAddress' => App::env('TEST_EMAIL') ?: null,
         'defaultCookieDomain' => '.craftcms.test',
         'disabledPlugins' => ['webhooks'],
         'enableBasicHttpAuth' => true,
@@ -70,7 +72,7 @@ return [
         'devMode' => true,
         'useCompressedJs' => false,
         'allowUpdates' => true,
-        'testToEmailAddress' => getenv('TEST_EMAIL') ?: null,
+        'testToEmailAddress' => App::env('TEST_EMAIL') ?: null,
         'defaultCookieDomain' => '.craftcms.next',
         'disabledPlugins' => ['webhooks'],
     ]

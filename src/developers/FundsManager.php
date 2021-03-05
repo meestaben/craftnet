@@ -6,6 +6,7 @@ use Craft;
 use craft\commerce\models\LineItem;
 use craft\db\Query;
 use craft\elements\User;
+use craft\helpers\App;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Db;
 use craftnet\behaviors\UserBehavior;
@@ -250,7 +251,7 @@ class FundsManager extends BaseObject
             throw new InsufficientFundsException($balance);
         }
 
-        Stripe::setApiKey(getenv('STRIPE_API_KEY'));
+        Stripe::setApiKey(App::env('STRIPE_API_KEY'));
 
         $params = ArrayHelper::merge([
             'amount' => round($amount * 100),
