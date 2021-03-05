@@ -178,6 +178,7 @@
                             <textbox id="replacement" label="Replacement Plugin"
                                      instructions="The handle of the replacement plugin. Leave this field empty if you don’t want to specify a replacement plugin."
                                      v-model="pluginDraft.replacementHandle"
+                                     :errors="errors.replacementHandle"
                                      />
                         </template>
                     </div>

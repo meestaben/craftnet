@@ -483,11 +483,11 @@ JS;
                 if ($replacementHandle) {
                     $replacementPlugin = Plugin::find()->handle($replacementHandle)->one();
 
-                    if (!$replacementPlugin) {
-                        throw new Exception('Replacement plugin doesn’t exist.');
+                    if ($replacementPlugin) {
+                        $plugin->replacementId = $replacementPlugin->id;
+                    } else {
+                        $plugin->addError('replacementHandle', 'Invalid plugin handle.');
                     }
-
-                    $plugin->replacementId = $replacementPlugin->id;
                 } else {
                     $plugin->replacementId = null;
                 }
