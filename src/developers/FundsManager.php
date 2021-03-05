@@ -93,7 +93,7 @@ class FundsManager extends BaseObject
      * Debits the developer's account.
      *
      * @param string $note the transaction note
-     * @param float $debit the credit amount (not including any fees that need to be removed)
+     * @param float $debit the debit amount
      * @param string|null $txnType the transaction type (e.g. `stripe_transfer`)
      * @return int the transaction ID
      * @throws InvalidArgumentException if $debit is negative or 0
