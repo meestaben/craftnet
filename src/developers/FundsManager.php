@@ -63,7 +63,7 @@ class FundsManager extends BaseObject
             ->select(['balance'])
             ->from('craftnet_developers')
             ->where(['id' => $this->developer->id])
-            ->scalar(Craft::$app->getDb()->getMaster());
+            ->scalar(Craft::$app->getDb()->getPrimary());
     }
 
     /**
