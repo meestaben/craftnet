@@ -46,18 +46,13 @@ export default {
                 })
                 .then(() => {
                     this.loading = false
-
                     this.$store.dispatch('app/displayNotice', 'Payout settings saved.')
 
                 })
                 .catch(response => {
                     this.loading = false
-                    console.log('response', response)
                     this.errors = response.data.errors
-
                     this.$store.dispatch('app/displayError', 'Couldn’t save payout settings.')
-
-                    console.log('error', response);
                 })
         }
     },
