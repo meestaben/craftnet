@@ -229,24 +229,24 @@ class FundsController extends Controller
         }
 
         $this->tableRow($headers, $maxCellSizes);
-        $this->tableRow([], $maxCellSizes, '-');
+        $this->stdout(str_repeat('-', array_sum($maxCellSizes) + (count($maxCellSizes) - 1) * 2) . PHP_EOL);
         foreach ($data as $row) {
             $this->tableRow($row, $maxCellSizes);
         }
     }
 
-    protected function tableRow(array $row, array $sizes, $pad = ' ')
+    protected function tableRow(array $row, array $sizes)
     {
         foreach ($sizes as $i => $size) {
             if ($i !== 0) {
-                $this->stdout(' | ');
+                $this->stdout('  ');
             }
 
             $cell = $row[$i] ?? '';
             $value = is_array($cell) ? $cell[0] : $cell;
             $len = strlen($value);
             if ($len < $sizes[$i]) {
-                $value = str_pad($value, $sizes[$i], $pad, $cell['pad'] ?? STR_PAD_RIGHT);
+                $value = str_pad($value, $sizes[$i], ' ', $cell['pad'] ?? STR_PAD_RIGHT);
             } else if ($len > $sizes[$i]) {
                 $value = substr($value, 0, $sizes[$i] - 1) . '…';
             }
