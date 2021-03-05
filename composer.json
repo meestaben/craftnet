@@ -2,7 +2,7 @@
   "minimum-stability": "stable",
   "prefer-stable": true,
   "require": {
-    "craftcms/cms": "3.6.x-dev#30ea311ce66ff36b274299d1f172b42c16b0127e as 3.6.0-RC3",
+    "craftcms/cms": "^3.6.9",
     "justinrainbow/json-schema": "^5.2",
     "yiisoft/yii2-redis": "^2.0.6",
     "knplabs/github-api": "^2.5.0",
