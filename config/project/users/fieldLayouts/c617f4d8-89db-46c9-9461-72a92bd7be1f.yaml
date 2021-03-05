@@ -119,6 +119,35 @@ tabs:
         warning: null
         width: 100
       -
+        attribute: payPalEmail
+        autocapitalize: true
+        autocomplete: false
+        autocorrect: true
+        autofocus: false
+        class: null
+        disabled: false
+        id: null
+        instructions: null
+        label: 'PayPal Email'
+        mandatory: true
+        max: null
+        maxlength: null
+        min: null
+        name: null
+        orientation: null
+        placeholder: null
+        readonly: false
+        requirable: false
+        required: false
+        size: null
+        step: null
+        tip: null
+        title: null
+        translatable: false
+        type: craft\fieldlayoutelements\StandardTextField
+        warning: null
+        width: 100
+      -
         fieldUid: 0ff67b0d-c811-4767-9d75-25472eee67a3
         instructions: null
         label: null

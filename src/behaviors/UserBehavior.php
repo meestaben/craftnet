@@ -149,7 +149,7 @@ class UserBehavior extends Behavior
     {
         // Only set the PayPal email if we're saving the current user and they are a developer
         if (
-            $this->owner->getIsCurrent() &&
+            (Craft::$app->getRequest()->getIsCpRequest() || $this->owner->getIsCurrent()) &&
             $this->owner->isInGroup('developers') &&
             ($payPalEmail = Craft::$app->getRequest()->getBodyParam('payPalEmail')) !== null
         ) {

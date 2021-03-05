@@ -16,6 +16,7 @@ use craft\elements\db\UserQuery;
 use craft\elements\User;
 use craft\events\DefineBehaviorsEvent;
 use craft\events\DefineConsoleActionsEvent;
+use craft\events\DefineFieldLayoutFieldsEvent;
 use craft\events\DeleteElementEvent;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterCpNavItemsEvent;
@@ -24,6 +25,8 @@ use craft\events\RegisterTemplateRootsEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
 use craft\events\UserEvent;
+use craft\fieldlayoutelements\StandardTextField;
+use craft\models\FieldLayout;
 use craft\models\SystemMessage;
 use craft\services\Elements;
 use craft\services\Fields;
@@ -318,6 +321,22 @@ class Module extends \yii\base\Module
                     'label' => 'Manage plugins',
                 ],
             ];
+        });
+
+        Event::on(FieldLayout::class, FieldLayout::EVENT_DEFINE_STANDARD_FIELDS, function(DefineFieldLayoutFieldsEvent $e) {
+            /** @var FieldLayout $fieldLayout */
+            $fieldLayout = $e->sender;
+
+            switch ($fieldLayout->type) {
+                case User::class:
+                    $e->fields[] = [
+                        'class' => StandardTextField::class,
+                        'attribute' => 'payPalEmail',
+                        'label' => 'PayPal Email',
+                        'mandatory' => true,
+                    ];
+                    break;
+            }
         });
     }
 
