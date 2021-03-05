@@ -602,7 +602,7 @@ export default {
                 categoryIds: [],
                 screenshotIds: [],
                 editions: this.pluginDraft.editions,
-                abandoned: this.pluginDraft.abandoned,
+                abandoned: this.pluginDraft.abandoned ? 1 : 0,
                 replacementHandle: this.pluginDraft.replacementHandle,
             }
 
