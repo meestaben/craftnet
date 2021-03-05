@@ -5,6 +5,7 @@ namespace craftnet\controllers\api\v1;
 use Composer\Semver\Comparator;
 use Composer\Semver\VersionParser;
 use craft\db\Query;
+use craft\helpers\ArrayHelper;
 use craft\models\Update;
 use craftnet\composer\PackageRelease;
 use craftnet\controllers\api\BaseApiController;
@@ -247,7 +248,9 @@ class UpdatesController extends BaseApiController
 
         return [
             array_map(function(PackageRelease $release): array {
-                return $release->toArray(['version', 'critical', 'date', 'notes']);
+                $info = $release->toArray(['version', 'critical', 'dateWithoutTimeZone', 'notes']);
+                $info['date'] = ArrayHelper::remove($info, 'dateWithoutTimeZone');
+                return $info;
             }, $releases),
             reset($releases) ?: null,
         ];

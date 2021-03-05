@@ -71,7 +71,8 @@ class PluginController extends BaseApiController
 
             $releases = (new ChangelogParser())->parse($release->changelog ?? '');
             foreach ($releases as &$release) {
-                $release['date'] = DateTimeHelper::toIso8601($release['date']) ?: null;
+                $date = DateTimeHelper::toDateTime($release['date']);
+                $release['date'] = $date ? $date->format('Y-m-d\TH:i:s') : null;
             }
             $changelogData = array_values($releases);
             Cache::set($cacheKey, $changelogData);

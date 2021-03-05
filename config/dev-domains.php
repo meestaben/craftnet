@@ -98,6 +98,7 @@ return [
     'stagingbox.ca',
     'stagingbox.co.uk',
     'steadfa.st',
+    'stormdev.co.uk',
     'sunscreem.xyz',
     'tad.am',
     'testsite.no',
