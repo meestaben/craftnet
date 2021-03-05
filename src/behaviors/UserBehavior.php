@@ -5,6 +5,7 @@ namespace craftnet\behaviors;
 use Craft;
 use craft\base\Element;
 use craft\elements\User;
+use craft\events\DefineRulesEvent;
 use craftnet\developers\EmailVerifier;
 use craftnet\developers\FundsManager;
 use craftnet\helpers\KeyHelper;
@@ -59,6 +60,8 @@ class UserBehavior extends Behavior
     public function events()
     {
         return [
+            Element::EVENT_BEFORE_VALIDATE => [$this, 'beforeValidate'],
+            Element::EVENT_DEFINE_RULES => [$this, 'defineRules'],
             Element::EVENT_AFTER_SAVE => [$this, 'afterSave'],
         ];
     }
@@ -138,6 +141,34 @@ class UserBehavior extends Behavior
     }
 
     /**
+     * Handles pre-validation stuff
+     *
+     * @return void
+     */
+    public function beforeValidate(): void
+    {
+        // Only set the PayPal email if we're saving the current user and they are a developer
+        if (
+            $this->owner->getIsCurrent() &&
+            $this->owner->isInGroup('developers') &&
+            ($payPalEmail = Craft::$app->getRequest()->getBodyParam('payPalEmail')) !== null
+        ) {
+            $this->payPalEmail = $payPalEmail ?: null;
+        }
+    }
+
+    /**
+     * Defines validation rules for the user
+     *
+     * @param DefineRulesEvent $event
+     * @return void
+     */
+    public function defineRules(DefineRulesEvent $event): void
+    {
+        $event->rules[] = ['payPalEmail', 'email'];
+    }
+
+    /**
      * Handles post-user-save stuff
      */
     public function afterSave()
@@ -172,15 +203,6 @@ class UserBehavior extends Behavior
         }
 
         if ($isDeveloper) {
-            if (
-                $currentUser &&
-                $currentUser->id == $this->owner->id &&
-                $request->getIsPost() &&
-                $request->getBodyParam('payPalEmail') !== null
-            ) {
-                $this->payPalEmail = $request->getBodyParam('payPalEmail');
-            }
-
             $this->saveDeveloperInfo();
         }
     }
