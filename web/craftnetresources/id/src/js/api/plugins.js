@@ -45,6 +45,10 @@ export default {
                         }
                         break;
 
+                    case 'abandoned':
+                        FormDataHelper.append(formData, attribute, plugin.abandoned ? 1 : 0)
+                        break
+
                     default:
                         FormDataHelper.append(formData, attribute, plugin[attribute]);
                 }
