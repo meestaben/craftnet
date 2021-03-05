@@ -44,7 +44,7 @@ class FundsController extends Controller
     {
         // Find the accounts we owe money to
         $accounts = User::find()
-            ->select(['username', 'firstName', 'lastName', 'field_developerName', 'email', 'balance'])
+            ->select(['username', 'firstName', 'lastName', 'field_developerName', 'email', 'payPalEmail', 'balance'])
             ->andWhere(['not', ['balance' => 0]])
             ->orderBy(['balance' => SORT_DESC])
             ->asArray()
@@ -68,11 +68,12 @@ class FundsController extends Controller
                 $account['username'],
                 $name,
                 $account['email'],
+                $account['payPalEmail'],
                 $this->_currency($account['balance'], true),
             ];
         }
         $this->stdout('Accounts with a non-zero balance:' . PHP_EOL . PHP_EOL);
-        $this->table(['Username', 'Name', 'Email', 'Balance'], $tableData);
+        $this->table(['Username', 'Name', 'Email', 'PayPal', 'Balance'], $tableData);
         $this->stdout(PHP_EOL);
 
         return ExitCode::OK;
