@@ -60,13 +60,13 @@ use craftnet\utilities\UnavailablePlugins;
 use yii\base\Event;
 
 /**
- * @property CmsLicenseManager $cmsLicenseManager
- * @property InvoiceManager $invoiceManager
- * @property JsonDumper $jsonDumper
- * @property Oauth $oauth
- * @property PackageManager $packageManager
- * @property PluginLicenseManager $pluginLicenseManager
- * @property SaleManager $saleManager
+ * @property-read CmsLicenseManager $cmsLicenseManager
+ * @property-read InvoiceManager $invoiceManager
+ * @property-read JsonDumper $jsonDumper
+ * @property-read Oauth $oauth
+ * @property-read PackageManager $packageManager
+ * @property-read PluginLicenseManager $pluginLicenseManager
+ * @property-read SaleManager $saleManager
  */
 class Module extends \yii\base\Module
 {
