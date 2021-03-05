@@ -62,6 +62,7 @@ class AccountController extends Controller
                 'photoId' => $user->getPhoto() ? $user->getPhoto()->getId() : null,
                 'photoUrl' => $photoUrl,
                 'hasApiToken' => $user->apiToken !== null,
+                'payPalEmail' => $user->payPalEmail,
             ],
         ]);
     }
