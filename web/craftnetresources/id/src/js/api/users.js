@@ -43,6 +43,7 @@ export default {
                 case 'password':
                 case 'newPassword':
                 case 'photo':
+                case 'payPalEmail':
                     FormDataHelper.append(formData, attribute, user[attribute]);
                     break;
                 default:

@@ -23,12 +23,15 @@
                 </form>
             </div>
         </div>
+
+        <payout-settings></payout-settings>
     </div>
 </template>
 
 <script>
     import {mapState} from 'vuex'
     import ConnectedApps from '../../components/developer/connected-apps/ConnectedApps'
+    import PayoutSettings from '../../components/developer/PayoutSettings'
 
     export default {
         data() {
@@ -41,6 +44,7 @@
 
         components: {
             ConnectedApps,
+            PayoutSettings,
         },
 
         computed: {

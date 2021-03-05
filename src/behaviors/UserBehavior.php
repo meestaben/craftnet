@@ -172,6 +172,15 @@ class UserBehavior extends Behavior
         }
 
         if ($isDeveloper) {
+            if (
+                $currentUser &&
+                $currentUser->id == $this->owner->id &&
+                $request->getIsPost() &&
+                $request->getBodyParam('payPalEmail') !== null
+            ) {
+                $this->payPalEmail = $request->getBodyParam('payPalEmail');
+            }
+
             $this->saveDeveloperInfo();
         }
     }
