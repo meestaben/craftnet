@@ -48,6 +48,9 @@ return [
                         'githubFallbackTokens' => App::env('GITHUB_FALLBACK_TOKENS'),
                         'requirePluginVcsTokens' => false,
                     ],
+                    'payoutManager' => [
+                        'class' => \craftnet\payouts\PayoutManager::class,
+                    ],
                     'jsonDumper' => [
                         'class' => craftnet\composer\JsonDumper::class,
                         'composerWebroot' => App::env('COMPOSER_WEBROOT'),

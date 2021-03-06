@@ -50,6 +50,7 @@ use craftnet\composer\PackageManager;
 use craftnet\fields\Plugins;
 use craftnet\invoices\InvoiceManager;
 use craftnet\orders\PdfRenderer;
+use craftnet\payouts\PayoutManager;
 use craftnet\plugins\Plugin;
 use craftnet\plugins\PluginEdition;
 use craftnet\plugins\PluginLicenseManager;
@@ -66,6 +67,7 @@ use yii\base\Event;
  * @property-read JsonDumper $jsonDumper
  * @property-read Oauth $oauth
  * @property-read PackageManager $packageManager
+ * @property-read PayoutManager $payoutManager
  * @property-read PluginLicenseManager $pluginLicenseManager
  * @property-read SaleManager $saleManager
  */
@@ -256,6 +258,14 @@ class Module extends \yii\base\Module
     public function getSaleManager(): SaleManager
     {
         return $this->get('saleManager');
+    }
+
+    /**
+     * @return PayoutManager
+     */
+    public function getPayoutManager(): PayoutManager
+    {
+        return $this->get('payoutManager');
     }
 
     private function _initConsoleRequset()
