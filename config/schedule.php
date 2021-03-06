@@ -15,9 +15,9 @@ $schedule->command('craftnet/licenses/process-expired-licenses')
     ->daily()
     ->withoutOverlapping();
 
-$schedule->command('craftnet/payouts/send')
-    ->daily()
-    ->withoutOverlapping();
+//$schedule->command('craftnet/payouts/send')
+//    ->daily()
+//    ->withoutOverlapping();
 
 $schedule->command('craftnet/payouts/update')
     ->everyTenMinutes()
