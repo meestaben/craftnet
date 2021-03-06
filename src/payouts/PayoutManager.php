@@ -227,7 +227,7 @@ class PayoutManager extends BaseObject
         Craft::warning("Unsuccessful PayPal connection: {$e->getMessage()}");
         Craft::$app->getErrorHandler()->logException($e);
 
-        Db::insert('craftnet_paypal_payout_errors', [
+        Db::insert('craftnet_payout_errors', [
             'payoutId' => $payoutId,
             'message' => $e->getMessage(),
             'data' => $e->getData(),
