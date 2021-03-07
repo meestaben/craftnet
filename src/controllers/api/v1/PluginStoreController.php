@@ -526,12 +526,12 @@ class PluginStoreController extends BaseApiController
                 return $query;
             case 'dynamic':
                 $query = $this->_createPluginQuery()
+                    ->andWhere(['not', ['craftnet_plugins.dateApproved' => null]])
                     ->limit(20);
                 switch ($entry->slug) {
                     case 'recently-added':
-                        $query
-                            ->andWhere(['not', ['craftnet_plugins.dateApproved' => null]])
-                            ->orderBy(['craftnet_plugins.dateApproved' => SORT_DESC]);
+                        $query->orderBy(['craftnet_plugins.dateApproved' => SORT_DESC]);
+                        break;
                         break;
                     case 'top-paid':
                         $query
