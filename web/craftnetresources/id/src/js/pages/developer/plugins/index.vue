@@ -40,24 +40,7 @@
                         <td>{{ plugin.activeInstalls }}</td>
                         <td>
                             <div class="text-nowrap">
-                                <template v-if="priceRanges[plugin.id].min !== priceRanges[plugin.id].max">
-                                    <template v-if="priceRanges[plugin.id].min > 0">
-                                        {{priceRanges[plugin.id].min|currency}}
-                                    </template>
-                                    <template v-else>
-                                        Free
-                                    </template>
-                                    -
-                                    {{priceRanges[plugin.id].max|currency}}
-                                </template>
-                                <template v-else>
-                                    <template v-if="priceRanges[plugin.id].min > 0">
-                                        {{priceRanges[plugin.id].min|currency}}
-                                    </template>
-                                    <template v-else>
-                                        Free
-                                    </template>
-                                </template>
+                                {{ fullPriceLabel(plugin.id) }}
                             </div>
                         </td>
                         <td>
@@ -94,6 +77,7 @@
 <script>
     import {mapState} from 'vuex'
     import Empty from '../../../components/Empty'
+    import {currency} from '@/js/filters/currency'
 
     export default {
         components: {
@@ -137,7 +121,7 @@
                 }
 
                 return priceRanges
-            }
+            },
         },
 
         methods: {
@@ -170,6 +154,20 @@
                     min,
                     max
                 }
+            },
+
+            fullPriceLabel(pluginId) {
+                const {min, max} = this.priceRanges[pluginId]
+
+                if (min !== max) {
+                    return `${this.priceLabel(min)}–${this.priceLabel(max)}`
+                }
+
+                return this.priceLabel(min)
+            },
+
+            priceLabel(price) {
+                return price > 0 ? currency(price) : 'Free'
             }
         },
 
