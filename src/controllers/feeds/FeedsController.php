@@ -116,6 +116,7 @@ class FeedsController extends Controller
             ->innerJoin('content dc', '[[dc.elementId]] = [[pl.developerId]]')
             ->innerJoin('users u', '[[u.id]] = [[pl.developerId]]')
             ->andWhere(['not', ['pv.time' => null]])
+            ->andWhere(['not', ['pl.dateApproved' => null]])
             ->orderBy(['pv.time' => SORT_DESC])
             ->limit(20);
 
