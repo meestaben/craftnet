@@ -532,6 +532,8 @@ class PluginStoreController extends BaseApiController
                     case 'recently-added':
                         $query->orderBy(['craftnet_plugins.dateApproved' => SORT_DESC]);
                         break;
+                    case 'recently-updated':
+                        $query->orderBy(['latestVersionTime' => SORT_DESC]);
                         break;
                     case 'top-paid':
                         $query
