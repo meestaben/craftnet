@@ -104,6 +104,7 @@ return [
     'tad.am',
     'testsite.no',
     'tdebv.nl',
+    'tdev.team',
     'the-neighbourhood-production.com',
     'the-neighbourhood-staging.com',
     'tuckshop.design',
