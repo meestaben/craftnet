@@ -52,9 +52,8 @@ class PluginStoreController extends BaseApiController
     public function actionIndex(): Response
     {
         $cacheKey = __METHOD__ . '-' . $this->cmsVersion;
-        $pluginStoreData = Cache::get($cacheKey);
 
-        if (!$pluginStoreData) {
+        $data = Cache::getOrSet($cacheKey, function() {
             $featuredPlugins = [];
 
             foreach ($this->_createFeaturedSectionQuery()->all() as $entry) {
@@ -77,17 +76,15 @@ class PluginStoreController extends BaseApiController
                 ->indexBy('id')
                 ->all();
 
-            $pluginStoreData = [
+            return [
                 'categories' => $this->_categories(),
                 'featuredPlugins' => $featuredPlugins,
                 'plugins' => $this->transformPlugins($plugins),
                 'expiryDateOptions' => $this->_expiryDateOptions(),
             ];
+        });
 
-            Cache::set($cacheKey, $pluginStoreData);
-        }
-
-        return $this->asJson($pluginStoreData);
+        return $this->asJson($data);
     }
 
     /**
@@ -119,16 +116,14 @@ class PluginStoreController extends BaseApiController
     public function actionFeaturedSection($handle): Response
     {
         $cacheKey = __METHOD__ . $handle;
-        $data = Cache::get($cacheKey);
 
-        if (!$data) {
+        $data = Cache::getOrSet($cacheKey, function() use ($handle) {
             $featuredSectionEntry = $this->_createFeaturedSectionQuery()
                 ->slug($handle)
                 ->one();
 
-            $data = $this->_transformFeaturedSection($featuredSectionEntry);
-            Cache::set($cacheKey, $data);
-        }
+            return $this->_transformFeaturedSection($featuredSectionEntry);
+        });
 
         return $this->asJson($data);
     }
@@ -141,9 +136,8 @@ class PluginStoreController extends BaseApiController
     public function actionFeaturedSections(): Response
     {
         $cacheKey = __METHOD__;
-        $data = Cache::get($cacheKey);
 
-        if (!$data) {
+        $data = Cache::getOrSet($cacheKey, function() {
             $data = [];
 
             foreach ($this->_createFeaturedSectionQuery()->all() as $entry) {
@@ -161,8 +155,8 @@ class PluginStoreController extends BaseApiController
                 }
             }
 
-            Cache::set($cacheKey, $data);
-        }
+            return $data;
+        });
 
         return $this->asJson($data);
     }
@@ -178,17 +172,17 @@ class PluginStoreController extends BaseApiController
     public function actionPlugin(string $handle): Response
     {
         $cacheKey = __METHOD__ . '-' . $handle;
-        $data = Cache::get($cacheKey);
 
-        if (!$data) {
-            $plugin = $this->_plugin($handle);
-
-            if (!$plugin) {
-                return $this->asErrorJson("Couldn't find plugin");
-            }
-
-            $data = $this->transformPlugin($plugin, true);
-            Cache::set($cacheKey, $data);
+        try {
+            $data = Cache::getOrSet($cacheKey, function() use ($handle) {
+                $plugin = $this->_plugin($handle);
+                if (!$plugin) {
+                    throw new InvalidArgumentException();
+                }
+                return $this->transformPlugin($plugin, true);
+            });
+        } catch (InvalidArgumentException $e) {
+            return $this->asErrorJson("Couldn't find plugin");
         }
 
         // Add the latest compatible version
@@ -267,9 +261,8 @@ class PluginStoreController extends BaseApiController
         $direction = $direction === 'asc' ? SORT_ASC : SORT_DESC;
 
         $cacheKey = __METHOD__ . "-{$handle}-{$categoryId}-{$developerId}-{$searchQuery}-{$perPage}-{$page}-{$orderBy}-{$direction}";
-        $data = Cache::get($cacheKey);
 
-        if (!$data) {
+        $data = Cache::getOrSet($cacheKey, function() use ($handle, $categoryId, $developerId, $searchQuery, $perPage, $page, $orderBy, $direction) {
             $query = $this->_createPluginQuery()
                 ->limit($perPage);
 
@@ -329,17 +322,14 @@ class PluginStoreController extends BaseApiController
                 $plugins = [];
             }
 
-
-            $data = [
+            return [
                 'plugins' => $this->transformPlugins($plugins),
                 'totalResults' => $totalResults,
                 'currentPage' => $page,
                 'perPage' => $perPage,
                 'total' => $totalPages,
             ];
-
-            Cache::set($cacheKey, $data);
-        }
+        });
 
         return $this->asJson($data);
     }
@@ -354,9 +344,8 @@ class PluginStoreController extends BaseApiController
     public function actionPluginsByFeaturedSection(string $handle): Response
     {
         $cacheKey = __METHOD__ . '-' . $handle;
-        $data = Cache::get($cacheKey);
 
-        if (!$data) {
+        $data = Cache::getOrSet($cacheKey, function() use ($handle) {
             $entry = $this->_createFeaturedSectionQuery()
                 ->slug($handle)
                 ->one();
@@ -372,16 +361,14 @@ class PluginStoreController extends BaseApiController
                 $plugins = [];
             }
 
-            $data = [
+            return [
                 'plugins' => $this->transformPlugins($plugins),
                 'currentPage' => 1,
                 'perPage' => 100,
                 'total' => 1,
                 'totalResults' => count($plugins),
             ];
-
-            Cache::set($cacheKey, $data);
-        }
+        });
 
         return $this->asJson($data);
     }
@@ -396,20 +383,17 @@ class PluginStoreController extends BaseApiController
     public function actionPluginsByHandles(): Response
     {
         $pluginHandles = $this->request->getParam('pluginHandles', '');
-
         $cacheKey = __METHOD__ . $pluginHandles;
-        $data = Cache::get($cacheKey);
 
-        if (!$data) {
+        $data = Cache::getOrSet($cacheKey, function() use ($pluginHandles) {
             $pluginHandles = explode(',', $pluginHandles);
 
             $plugins = $this->_createPluginQuery()
                 ->andWhere(['craftnet_plugins.handle' => $pluginHandles])
                 ->all();
 
-            $data = $this->transformPlugins($plugins);
-            Cache::set($cacheKey, $data);
-        }
+            return $this->transformPlugins($plugins);
+        });
 
         return $this->asJson($data);
     }
@@ -447,9 +431,8 @@ class PluginStoreController extends BaseApiController
     private function _categories(): array
     {
         $cacheKey = __METHOD__;
-        $data = Cache::get($cacheKey);
 
-        if (!$data) {
+        return Cache::getOrSet($cacheKey, function() {
             $data = [];
 
             /** @var Category[] $categories */
@@ -470,10 +453,8 @@ class PluginStoreController extends BaseApiController
                 ];
             }
 
-            Cache::set($cacheKey, $data);
-        }
-
-        return $data;
+            return $data;
+        });
     }
 
     /**
