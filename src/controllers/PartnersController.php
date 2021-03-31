@@ -157,7 +157,7 @@ class PartnersController extends Controller
 
         return $this->asJson([
             'partner' => $data,
-            'success' => true
+            'success' => true,
         ]);
     }
 
@@ -184,7 +184,7 @@ class PartnersController extends Controller
         $screenshots = array_map(function($sreenshot) {
             return [
                 'id' => $sreenshot->id,
-                'url' => $sreenshot->url
+                'url' => $sreenshot->url,
             ];
         }, $screenshots);
 
@@ -295,7 +295,7 @@ class PartnersController extends Controller
 
             Craft::$app->getSession()->setError('Couldn’t save partner.');
             Craft::$app->getUrlManager()->setRouteParams([
-                'partner' => $partner
+                'partner' => $partner,
             ]);
             return null;
         }
@@ -355,7 +355,7 @@ class PartnersController extends Controller
 
         return $this->asJson([
             'success' => true,
-            'history' => $partnerHistory
+            'history' => $partnerHistory,
         ]);
     }
 
@@ -369,7 +369,7 @@ class PartnersController extends Controller
         $rowsAffected = PartnerHistory::deleteById((int)$id);
 
         return $this->asJson([
-            'success' => (bool)$rowsAffected
+            'success' => (bool)$rowsAffected,
         ]);
     }
 

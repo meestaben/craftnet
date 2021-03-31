@@ -125,7 +125,7 @@ class PluginsController extends Controller
         if ($icon) {
             if ($this->request->getIsCpRequest()) {
                 $iconHtml = Craft::$app->getView()->renderTemplate('_elements/element', [
-                    'element' => $icon
+                    'element' => $icon,
                 ]);
             } else {
                 $iconHtml = null;
@@ -442,7 +442,7 @@ JS;
 
                     $folder = $assetsService->findFolder([
                         'volumeId' => $volumeId,
-                        'path' => $subpath . '/'
+                        'path' => $subpath . '/',
                     ]);
 
                     if (!$folder) {
@@ -564,7 +564,7 @@ JS;
 
             Craft::$app->getSession()->setError('Couldn’t save plugin.');
             Craft::$app->getUrlManager()->setRouteParams([
-                'plugin' => $plugin
+                'plugin' => $plugin,
             ]);
             return null;
         }
@@ -601,7 +601,7 @@ JS;
 
                 $folder = $assetsService->findFolder([
                     'volumeId' => $volumeId,
-                    'path' => $subpath . '/'
+                    'path' => $subpath . '/',
                 ]);
 
                 if (!$folder) {
@@ -746,7 +746,7 @@ JS;
 
             Craft::$app->getSession()->setError('Couldn’t submit plugin for approval.');
             Craft::$app->getUrlManager()->setRouteParams([
-                'plugin' => $plugin
+                'plugin' => $plugin,
             ]);
             return null;
         }

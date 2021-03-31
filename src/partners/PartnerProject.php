@@ -41,7 +41,7 @@ class PartnerProject extends Model
         $rules = parent::rules();
 
         $rules[] = [
-            ['name', 'url'], 'trim'
+            ['name', 'url'], 'trim',
         ];
 
         $rules[] = [
@@ -51,7 +51,7 @@ class PartnerProject extends Model
                 Element::SCENARIO_DEFAULT,
                 Element::SCENARIO_LIVE,
                 Partner::SCENARIO_PROJECTS,
-            ]
+            ],
         ];
 
         $rules[] = [
@@ -66,7 +66,7 @@ class PartnerProject extends Model
                 Element::SCENARIO_DEFAULT,
                 Element::SCENARIO_LIVE,
                 Partner::SCENARIO_PROJECTS,
-            ]
+            ],
         ];
 
         $rules[] = ['url', 'url', 'enableIDN' => true];

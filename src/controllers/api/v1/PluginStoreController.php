@@ -203,7 +203,7 @@ class PluginStoreController extends BaseApiController
                             ->innerJoin(['craftnet_pluginversioncompat s_vc'], '[[s_vc.pluginVersionId]] = [[s_v.id]]')
                             ->where(['s_v.packageId' => $data['packageId']])
                             ->andWhere(['s_vc.cmsVersionId' => $cmsRelease->id])
-                            ->groupBy(['s_v.packageId'])
+                            ->groupBy(['s_v.packageId']),
                     ])
                     ->scalar();
             } else {
@@ -255,7 +255,8 @@ class PluginStoreController extends BaseApiController
         int $page = 1,
         string $orderBy = 'dateUpdated',
         string $direction = 'desc'
-    ): Response {
+    ): Response
+    {
         $perPage = max(min($perPage, 100), 1);
         $page = max($page, 1);
         $direction = $direction === 'asc' ? SORT_ASC : SORT_DESC;

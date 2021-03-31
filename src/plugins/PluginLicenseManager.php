@@ -92,8 +92,8 @@ class PluginLicenseManager extends Component
                 ],
                 [
                     'and',
-                    ['<', 'expiresOn', Db::prepareDateForDb($date)]
-                ]
+                    ['<', 'expiresOn', Db::prepareDateForDb($date)],
+                ],
             ])
             ->all();
 
@@ -626,7 +626,7 @@ class PluginLicenseManager extends Component
             $license = $result->getAttributes(['id', 'editionId', 'key', 'cmsLicenseId', 'email', 'notes', 'autoRenew', 'expirable', 'expired', 'expiresOn', 'dateCreated']);
         } else {
             $license = [
-                'shortKey' => $result->getShortKey()
+                'shortKey' => $result->getShortKey(),
             ];
         }
 
@@ -677,7 +677,7 @@ class PluginLicenseManager extends Component
                 $cmsLicense = $cmsLicenseResult->getAttributes(['key', 'editionHandle']);
             } else {
                 $cmsLicense = [
-                    'shortKey' => substr($cmsLicenseResult->key, 0, 10)
+                    'shortKey' => substr($cmsLicenseResult->key, 0, 10),
                 ];
             }
         }

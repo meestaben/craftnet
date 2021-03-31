@@ -28,7 +28,7 @@ class PluginsController extends Controller
     where lp."pluginId" = p.id
     and lp.timestamp > :date
 )', [
-                'date' => Db::prepareDateForDb(new \DateTime('1 year ago'))
+                'date' => Db::prepareDateForDb(new \DateTime('1 year ago')),
             ])
             ->execute();
 

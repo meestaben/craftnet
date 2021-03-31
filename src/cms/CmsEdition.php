@@ -46,7 +46,7 @@ class CmsEdition extends CmsPurchasable implements EditionInterface
             [
                 'key' => '*',
                 'label' => 'All editions',
-            ]
+            ],
         ];
     }
 

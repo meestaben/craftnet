@@ -52,7 +52,7 @@ class CmsLicensesController extends Controller
         if ($this->confirm('Create a history record for the license?', true)) {
             $note = $this->prompt('Note: ', [
                 'required' => true,
-                'default' => "created by {$email}"
+                'default' => "created by {$email}",
             ]);
         }
 
@@ -253,7 +253,7 @@ class CmsLicensesController extends Controller
                     return false;
                 }
                 return true;
-            }
+            },
         ]);
     }
 
@@ -268,7 +268,7 @@ class CmsLicensesController extends Controller
                     return false;
                 }
                 return true;
-            }
+            },
         ]);
     }
 
@@ -279,7 +279,7 @@ class CmsLicensesController extends Controller
             'default' => $default,
             'validator' => function(string $email, string &$error = null) {
                 return (new EmailValidator())->validate($email, $error);
-            }
+            },
         ]);
     }
 

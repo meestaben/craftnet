@@ -66,7 +66,7 @@ class Client extends Model
     public function rules()
     {
         return [
-            [['name', 'identifier'], 'required']
+            [['name', 'identifier'], 'required'],
         ];
     }
 }

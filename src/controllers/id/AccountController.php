@@ -114,7 +114,7 @@ class AccountController extends Controller
             Craft::error('There was an error uploading the photo: ' . $exception->getMessage(), __METHOD__);
 
             return $this->asErrorJson(Craft::t('app', 'There was an error uploading your photo: {error}', [
-                'error' => $exception->getMessage()
+                'error' => $exception->getMessage(),
             ]));
         }
     }

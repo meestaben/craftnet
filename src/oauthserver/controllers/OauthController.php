@@ -237,7 +237,7 @@ class OauthController extends Controller
             if (isset($grantTypes[$grantTypeParam])) {
                 $grantClass = $grantTypes[$grantTypeParam];
             }
-        } elseif ($responseTypeParam) {
+        } else if ($responseTypeParam) {
             if (isset($responseTypes[$responseTypeParam])) {
                 $grantClass = $responseTypes[$responseTypeParam];
             }

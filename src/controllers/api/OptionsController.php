@@ -2,7 +2,6 @@
 
 namespace craftnet\controllers\api;
 
-use Craft;
 use yii\web\Response;
 
 class OptionsController extends BaseApiController

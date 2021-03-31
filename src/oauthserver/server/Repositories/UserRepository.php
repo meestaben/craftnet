@@ -27,7 +27,8 @@ class UserRepository implements UserRepositoryInterface
         $password,
         $grantType,
         ClientEntityInterface $clientEntity
-    ) {
+    )
+    {
         $userEntity = new UserEntity();
         $userEntity->setIdentifier(1);
 

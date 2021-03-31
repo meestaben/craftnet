@@ -141,12 +141,12 @@ class CmsLicenseManager extends Component
                 'and',
                 [
                     'l.ownerId' => $ownerId,
-                    'l.editionHandle' => 'pro'
+                    'l.editionHandle' => 'pro',
                 ],
                 [
                     'and',
-                    ['<', 'expiresOn', Db::prepareDateForDb($date)]
-                ]
+                    ['<', 'expiresOn', Db::prepareDateForDb($date)],
+                ],
             ])
             ->all();
 
@@ -549,7 +549,7 @@ class CmsLicenseManager extends Component
             $license['edition'] = $result->editionHandle;
         } else {
             $license = [
-                'shortKey' => $result->getShortKey()
+                'shortKey' => $result->getShortKey(),
             ];
         }
 
@@ -777,7 +777,7 @@ class CmsLicenseManager extends Component
 
             $renewalOptions[$key] = [
                 'expiryDate' => $expiryDateOption[1],
-                'amount' => $amount
+                'amount' => $amount,
             ];
         }
 

@@ -114,7 +114,7 @@ class PartnerHistory extends Model implements JsonSerializable
         $rules[] = [
             [
                 'partnerId',
-                'message'
+                'message',
             ],
             'required',
         ];

@@ -5,7 +5,6 @@ namespace craftnet\console\controllers;
 use Composer\Semver\Comparator;
 use Craft;
 use craft\elements\User;
-use craft\helpers\DateTimeHelper;
 use craftnet\Module;
 use craftnet\plugins\Plugin;
 use yii\console\Controller;
@@ -34,7 +33,7 @@ class SecurityAlertController extends Controller
                     return false;
                 }
                 return true;
-            }
+            },
         ]);
 
         $plugin = Plugin::find()->handle($handle)->one();

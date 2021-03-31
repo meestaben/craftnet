@@ -32,7 +32,7 @@ class CmsLicensesController extends Controller
                 'or',
                 ['like', 'domain', $search],
                 ['like', 'key', $search . '%', false],
-                ['like', 'email', $search]
+                ['like', 'email', $search],
             ]);
         }
 
@@ -72,7 +72,7 @@ class CmsLicensesController extends Controller
             'filters' => $filters,
             'licenses' => $licenses,
             'owners' => $owners,
-            'pageInfo' => Paginate::create($paginator)
+            'pageInfo' => Paginate::create($paginator),
         ]);
     }
 }

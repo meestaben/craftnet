@@ -110,7 +110,7 @@ class PartnerService
 
             return [
                 'id' => $id,
-                'title' => $allCapabilities[$id]
+                'title' => $allCapabilities[$id],
             ];
         }, $capabilities);
 
@@ -388,7 +388,7 @@ class PartnerService
                 'url',
                 'linkType',
                 'withCraftCommerce',
-                'screenshots'
+                'screenshots',
             ]);
 
             if (is_array($data['projects'][$i]['screenshots'])) {
@@ -568,7 +568,7 @@ class PartnerService
 
             $folder = $assetsService->findFolder([
                 'volumeId' => $volumeId,
-                'path' => $subpath . '/'
+                'path' => $subpath . '/',
             ]);
 
             if (!$folder) {
@@ -683,7 +683,7 @@ class PartnerService
 
         $folder = $assetsService->findFolder([
             'volumeId' => $volumeId,
-            'path' => $subpath . '/'
+            'path' => $subpath . '/',
         ]);
 
         if (!$folder) {

@@ -4,7 +4,6 @@ namespace craftnet\controllers\api\v1\utils;
 
 use Composer\Semver\Comparator;
 use Composer\Semver\VersionParser;
-use Craft;
 use craft\helpers\DateTimeHelper;
 use craft\helpers\Json;
 use craftnet\controllers\api\BaseApiController;

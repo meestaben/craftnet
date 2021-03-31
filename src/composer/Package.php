@@ -175,7 +175,7 @@ class Package extends Model
             return new GitHub($this, [
                 'client' => $client,
                 'owner' => $owner,
-                'repo' => $repo
+                'repo' => $repo,
             ]);
         }
 

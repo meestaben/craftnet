@@ -73,7 +73,7 @@ class EmailVerifier extends BaseObject
             ->composeFromKey(Module::MESSAGE_KEY_VERIFY, [
                 'user' => $this->user,
                 'email' => $email,
-                'link' => Template::raw($url)
+                'link' => Template::raw($url),
             ])
             ->setTo($email)
             ->send();

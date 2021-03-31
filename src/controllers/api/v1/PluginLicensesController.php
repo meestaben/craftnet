@@ -87,7 +87,7 @@ class PluginLicensesController extends BaseApiController
                     'param' => 'plugin',
                     'message' => 'Invalid plugin handle: ' . $payload->plugin,
                     'code' => self::ERROR_CODE_MISSING,
-                ]
+                ],
             ]);
         }
 
@@ -103,7 +103,7 @@ class PluginLicensesController extends BaseApiController
                     'param' => 'edition',
                     'message' => $e->getMessage(),
                     'code' => self::ERROR_CODE_MISSING,
-                ]
+                ],
             ], null, 0, $e);
         }
 

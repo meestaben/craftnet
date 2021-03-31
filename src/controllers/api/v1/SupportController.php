@@ -41,7 +41,7 @@ class SupportController extends BaseApiController
         if ($this->cmsVersion) {
             $customFields[] = [
                 'id' => App::env('ZENDESK_FIELD_CRAFT_VERSION'),
-                'value' => $this->cmsVersion
+                'value' => $this->cmsVersion,
             ];
         }
 
@@ -52,14 +52,14 @@ class SupportController extends BaseApiController
             $trial = $cmsLicense && $cmsLicense->editionHandle !== $this->cmsEdition;
             $customFields[] = [
                 'id' => App::env('ZENDESK_FIELD_CRAFT_EDITION'),
-                'value' => "edition_{$this->cmsEdition}" . ($trial ? '_trial' : '')
+                'value' => "edition_{$this->cmsEdition}" . ($trial ? '_trial' : ''),
             ];
         }
 
         if ($cmsLicense) {
             $customFields[] = [
                 'id' => App::env('ZENDESK_FIELD_CRAFT_LICENSE'),
-                'value' => $cmsLicense->key
+                'value' => $cmsLicense->key,
             ];
         }
 
@@ -79,14 +79,14 @@ class SupportController extends BaseApiController
             }
             $customFields[] = [
                 'id' => App::env('ZENDESK_FIELD_PLUGINS'),
-                'value' => implode("\n", $pluginInfos)
+                'value' => implode("\n", $pluginInfos),
             ];
         }
 
         if (($host = $requestHeaders->get('X-Craft-Host')) !== null) {
             $customFields[] = [
                 'id' => App::env('ZENDESK_FIELD_HOST'),
-                'value' => $host
+                'value' => $host,
             ];
         }
         Craft::error('Support - Creating ZD client.', __METHOD__);

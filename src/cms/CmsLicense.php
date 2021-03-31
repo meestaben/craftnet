@@ -50,7 +50,7 @@ class CmsLicense extends License
                 ['editionHandle'], 'in', 'range' => [
                 CmsLicenseManager::EDITION_SOLO,
                 CmsLicenseManager::EDITION_PRO,
-            ]
+            ],
             ],
             [['email'], 'email'],
             [['domain'], 'validateDomain'],

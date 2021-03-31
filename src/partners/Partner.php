@@ -80,7 +80,7 @@ class Partner extends Element
                 'key' => '*',
                 'label' => 'All Partners',
                 'criteria' => ['status' => null],
-            ]
+            ],
         ];
 
         return $sources;
@@ -284,7 +284,7 @@ class Partner extends Element
                 self::SCENARIO_BASE_INFO,
                 self::SCENARIO_DEFAULT,
                 self::SCENARIO_LIVE,
-            ]
+            ],
         ];
 
         $rules[] = [
@@ -295,7 +295,7 @@ class Partner extends Element
                 self::SCENARIO_BASE_INFO,
                 self::SCENARIO_DEFAULT,
                 self::SCENARIO_LIVE,
-            ]
+            ],
         ];
 
         $rules[] = [
@@ -304,7 +304,7 @@ class Partner extends Element
             'on' => [
                 self::SCENARIO_BASE_INFO,
                 self::SCENARIO_LIVE,
-            ]
+            ],
         ];
 
         $rules[] = [
@@ -326,7 +326,7 @@ class Partner extends Element
             'on' => [
                 self::SCENARIO_BASE_INFO,
                 self::SCENARIO_LIVE,
-            ]
+            ],
         ];
 
         // When submitting from Craft ID, these requirements
@@ -340,7 +340,7 @@ class Partner extends Element
             'on' => [
                 self::SCENARIO_BASE_INFO,
                 self::SCENARIO_LIVE,
-            ]
+            ],
         ];
 
         // Always validate locations
@@ -352,7 +352,7 @@ class Partner extends Element
                 self::SCENARIO_DEFAULT,
                 self::SCENARIO_LIVE,
                 self::SCENARIO_LOCATIONS,
-            ]
+            ],
         ];
 
         // Always validate projects
@@ -364,7 +364,7 @@ class Partner extends Element
                 self::SCENARIO_DEFAULT,
                 self::SCENARIO_LIVE,
                 self::SCENARIO_PROJECTS,
-            ]
+            ],
         ];
 
         $rules[] = [
@@ -375,7 +375,7 @@ class Partner extends Element
                 self::SCENARIO_BASE_INFO,
                 self::SCENARIO_DEFAULT,
                 self::SCENARIO_LIVE,
-            ]
+            ],
         ];
 
         return $rules;

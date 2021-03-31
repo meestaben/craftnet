@@ -50,7 +50,8 @@ class ScopeRepository implements ScopeRepositoryInterface
         $grantType,
         ClientEntityInterface $clientEntity,
         $userIdentifier = null
-    ) {
+    )
+    {
         return $scopes;
     }
 }

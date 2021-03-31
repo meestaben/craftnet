@@ -304,10 +304,10 @@ class JsonDumper extends Component
                         'Paths' =>
                             [
                                 'Quantity' => 1,
-                                'Items' => [$path]
+                                'Items' => [$path],
                             ],
-                        'CallerReference' => 'craftnet-' . DateTimeHelper::currentTimeStamp()
-                    ]
+                        'CallerReference' => 'craftnet-' . DateTimeHelper::currentTimeStamp(),
+                    ],
                 ]
             );
         } catch (CloudFrontException $exception) {
@@ -328,7 +328,7 @@ class JsonDumper extends Component
 
         $config = [
             'region' => $awsRegion,
-            'version' => 'latest'
+            'version' => 'latest',
         ];
 
         $client = Craft::createGuzzleClient();

@@ -150,7 +150,7 @@ class CartsController extends BaseApiController
     {
         return $cart->toArray([], [
             'billingAddress',
-            'lineItems.purchasable.plugin'
+            'lineItems.purchasable.plugin',
         ]);
     }
 

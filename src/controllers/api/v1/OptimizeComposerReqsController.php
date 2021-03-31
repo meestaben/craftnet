@@ -102,8 +102,8 @@ class OptimizeComposerReqsController extends BaseApiController
                     'php-zts',
                     'php-debug',
                     'hhvm',
-                    'craftcms/cms'
-                ], array_keys($this->_ignore))
+                    'craftcms/cms',
+                ], array_keys($this->_ignore)),
                 ],
                 ['not like', 'name', 'lib-%', false],
                 ['not like', 'name', 'ext-%', false],

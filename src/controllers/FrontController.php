@@ -192,7 +192,7 @@ class FrontController extends Controller
                 'or',
                 ['key' => $key],
                 ['email' => $email],
-                ['domain' => $domain]
+                ['domain' => $domain],
             ])
             ->all();
 
@@ -220,8 +220,8 @@ class FrontController extends Controller
         $apiHost = 'https://api2.frontapp.com/';
         $config = [
             'headers' => [
-                'Authorization' => 'Bearer ' . $token
-            ]
+                'Authorization' => 'Bearer ' . $token,
+            ],
         ];
 
         $client = Craft::createGuzzleClient($config);

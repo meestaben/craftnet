@@ -100,7 +100,7 @@ class InvoicesController extends Controller
         $invoices = StripePlugin::getInstance()->getInvoices()->getUserInvoices($user->id);
 
         $data = [
-            'invoices' => []
+            'invoices' => [],
         ];
 
         foreach ($invoices as $invoice) {

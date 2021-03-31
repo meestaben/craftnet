@@ -2,7 +2,6 @@
 
 namespace craftnet\controllers\api\v1;
 
-use Craft;
 use craftnet\controllers\api\BaseApiController;
 use craftnet\plugins\Plugin;
 use yii\base\Exception;
@@ -47,7 +46,7 @@ class CmsLicensesController extends BaseApiController
         $this->cmsLicenses[] = $license;
 
         return $this->asJson([
-            'license' => $license->toArray()
+            'license' => $license->toArray(),
         ]);
     }
 

@@ -261,7 +261,7 @@ class DeveloperSupportController extends Controller
                 'name' => self::PLAN_BASIC_NAME,
                 'cost' => [
                     'switch' => 0,
-                    'recurring' => 0
+                    'recurring' => 0,
                 ],
             ],
             self::PLAN_PRO => [
@@ -276,7 +276,7 @@ class DeveloperSupportController extends Controller
                 'cost' => [
                     'switch' => $premiumPlan->getPlanData()['plan']['amount'] / 100,
                     'recurring' => $premiumPlan->getPlanData()['plan']['amount'] / 100,
-                ]
+                ],
             ],
         ];
 
@@ -284,7 +284,7 @@ class DeveloperSupportController extends Controller
         $premiumSubscription = Subscription::find()->planId($premiumPlan->id)->userId($user->id)->isExpired(false)->one();
 
         $proData = $premiumData = [
-            'status' => 'inactive'
+            'status' => 'inactive',
         ];
 
         if ($proSubscription) {

@@ -41,7 +41,7 @@ class IndexController extends Controller
 
         return $this->renderTemplate('index', [
             'stripeAccessToken' => $stripeAccessToken,
-            'stripePublicKey' => $stripePublicKey
+            'stripePublicKey' => $stripePublicKey,
         ]);
     }
 }

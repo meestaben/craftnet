@@ -45,7 +45,7 @@ class RefundController extends Controller
             'required' => true,
             'validator' => function(string $input) {
                 return Order::find()->number($input)->exists();
-            }
+            },
         ]);
         $order = Order::find()->number($orderNumber)->one();
 

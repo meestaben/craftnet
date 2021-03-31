@@ -55,7 +55,7 @@ class PluginLicensesController extends Controller
                     $error = $e->getMessage();
                     return false;
                 }
-            }
+            },
         ]);
 
         if ($cmsLicenseKey) {
@@ -66,7 +66,7 @@ class PluginLicensesController extends Controller
             'required' => true,
             'validator' => function(string $email, string &$error = null) {
                 return (new EmailValidator())->validate($email, $error);
-            }
+            },
         ]);
 
         if ($license->expirable = $this->confirm('Expirable?')) {
@@ -92,7 +92,7 @@ class PluginLicensesController extends Controller
                     $error = $e->getMessage();
                     return false;
                 }
-            }
+            },
         ]) ?: KeyHelper::generatePluginKey();
 
         $license->pluginId = $plugin->id;
@@ -112,7 +112,7 @@ class PluginLicensesController extends Controller
                 'required' => true,
                 'validator' => function(string $input) {
                     return Order::find()->number($input)->exists();
-                }
+                },
             ]);
             $order = Order::find()->number($orderNumber)->one();
             /** @var LineItem[] $lineItems */
@@ -136,7 +136,7 @@ class PluginLicensesController extends Controller
         if ($this->confirm('Create a history record for the license?', true)) {
             $note = $this->prompt('Note: ', [
                 'required' => true,
-                'default' => "created by {$license->email}" . (isset($order) ? " per order {$order->number}" : '')
+                'default' => "created by {$license->email}" . (isset($order) ? " per order {$order->number}" : ''),
             ]);
             $this->module->getPluginLicenseManager()->addHistory($license->id, $note);
         }
@@ -450,7 +450,7 @@ EOD;
                     return false;
                 }
                 return true;
-            }
+            },
         ]);
 
         return Plugin::find()->handle($handle)->one();

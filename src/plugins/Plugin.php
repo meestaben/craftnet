@@ -67,7 +67,7 @@ class Plugin extends Element
         return [
             self::STATUS_ENABLED => Craft::t('app', 'Enabled'),
             self::STATUS_PENDING => Craft::t('app', 'Pending Approval'),
-            self::STATUS_DISABLED => Craft::t('app', 'Disabled')
+            self::STATUS_DISABLED => Craft::t('app', 'Disabled'),
         ];
     }
 
@@ -659,7 +659,7 @@ class Plugin extends Element
             ->innerJoin(['craftnet_plugincategories pc'], [
                 'and',
                 '[[pc.categoryId]] = [[categories.id]]',
-                ['pc.pluginId' => $this->id]
+                ['pc.pluginId' => $this->id],
             ])
             ->orderBy(['pc.sortOrder' => SORT_ASC])
             ->all();
@@ -685,7 +685,7 @@ class Plugin extends Element
             ->innerJoin(['craftnet_pluginscreenshots ps'], [
                 'and',
                 '[[ps.assetId]] = [[assets.id]]',
-                ['ps.pluginId' => $this->id]
+                ['ps.pluginId' => $this->id],
             ])
             ->orderBy(['ps.sortOrder' => SORT_ASC])
             ->all();
@@ -1165,7 +1165,7 @@ EOD;
             case 'primaryCategory':
                 if ($category = ($this->getCategories()[0] ?? null)) {
                     return Craft::$app->getView()->renderTemplate('_elements/element', [
-                        'element' => $category
+                        'element' => $category,
                     ]);
                 }
                 return '';

@@ -307,10 +307,10 @@ class FundsManager extends BaseObject
             $db->createCommand()
                 ->update('craftnet_developers',
                     [
-                        'balance' => new Expression("[[balance]] {$operator} :adjustment", [':adjustment' => $adjustment])
+                        'balance' => new Expression("[[balance]] {$operator} :adjustment", [':adjustment' => $adjustment]),
                     ],
                     [
-                        'id' => $this->developer->id
+                        'id' => $this->developer->id,
                     ], [], false)
                 ->execute();
         }

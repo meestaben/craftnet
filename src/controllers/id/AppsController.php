@@ -142,7 +142,7 @@ class AppsController extends BaseController
         }
 
         return $this->renderTemplate('apps/callback', [
-            'apps' => $apps
+            'apps' => $apps,
         ]);
     }
 

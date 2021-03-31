@@ -56,7 +56,7 @@ class PaymentsController extends CartsController
                     'param' => 'orderNumber',
                     'message' => $e->getMessage(),
                     'code' => $e->getCode() === 404 ? self::ERROR_CODE_MISSING : self::ERROR_CODE_INVALID,
-                ]
+                ],
             ], null, 0, $e);
         }
 
@@ -235,7 +235,7 @@ class PaymentsController extends CartsController
 
         // Set it as the customer default for subscriptions
         $stripeCustomer->invoice_settings = [
-            'default_payment_method' => $paymentForm->paymentMethodId
+            'default_payment_method' => $paymentForm->paymentMethodId,
         ];
         $stripeCustomer->save();
 

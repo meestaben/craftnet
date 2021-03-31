@@ -250,7 +250,7 @@ class PluginQuery extends ElementQuery
 
             if ($this->minStability) {
                 $latestReleaseQuery->andWhere([
-                    's_v.stability' => $packageManager->getStabilities($this->minStability)
+                    's_v.stability' => $packageManager->getStabilities($this->minStability),
                 ]);
             }
 
@@ -277,7 +277,7 @@ class PluginQuery extends ElementQuery
 
             $this->subQuery
                 ->addSelect([
-                    'totalPurchases' => $totalPurchasesSubquery
+                    'totalPurchases' => $totalPurchasesSubquery,
                 ]);
             $this->query
                 ->addSelect(['totalPurchases']);

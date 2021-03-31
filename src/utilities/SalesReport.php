@@ -84,12 +84,12 @@ class SalesReport extends Utility
         $commercePurchasable = [
             'COMMERCE-STANDARD',
             'COMMERCE-PRO',
-            'COMMERCE-LITE'
+            'COMMERCE-LITE',
         ];
 
         $craftPurchasables = [
             'CRAFT-PRO',
-            'CRAFT-CLIENT'
+            'CRAFT-CLIENT',
         ];
 
         $allPurchasables = array_merge($craftPurchasables, $commercePurchasable);
@@ -114,7 +114,7 @@ class SalesReport extends Utility
                 $devPayments[$order->id][] = [
                     'fee' => $payment['fee'],
                     'debit' => $payment['debit'],
-                    'credit' => $payment['credit']
+                    'credit' => $payment['credit'],
                 ];
             }
         }

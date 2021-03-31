@@ -2,7 +2,6 @@
 
 namespace craftnet\controllers\api\v1;
 
-use Craft;
 use craftnet\controllers\api\BaseApiController;
 use craftnet\plugins\Plugin;
 use yii\web\Response;

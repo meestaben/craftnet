@@ -104,7 +104,7 @@ class PlaygroundController extends Controller
 
             if ($code) {
                 $token = $provider->getAccessToken('authorization_code', [
-                    'code' => $code
+                    'code' => $code,
                 ]);
 
                 Craft::$app->getSession()->set('oauthServer.playground.token', $token);
@@ -128,7 +128,7 @@ class PlaygroundController extends Controller
         $provider = $this->getRefreshTokenProvider($client);
 
         $newAccessToken = $provider->getAccessToken('refresh_token', [
-            'refresh_token' => $refreshTokenIdentifier
+            'refresh_token' => $refreshTokenIdentifier,
         ]);
 
         Craft::$app->getSession()->set('oauthServer.playground.token', $newAccessToken);
@@ -194,7 +194,7 @@ class PlaygroundController extends Controller
 
         $authorizationUrl = $provider->getAuthorizationUrl([
             'scope' => $scope,
-            'response_type' => 'token'
+            'response_type' => 'token',
         ]);
 
         return $this->redirect($authorizationUrl);
@@ -214,7 +214,7 @@ class PlaygroundController extends Controller
 
         $authorizationUrl = $provider->getAuthorizationUrl([
             'scope' => $scope,
-            'response_type' => 'code'
+            'response_type' => 'code',
         ]);
 
         return $this->redirect($authorizationUrl);
@@ -256,7 +256,7 @@ class PlaygroundController extends Controller
         try {
             $token = $provider->getAccessToken('password', [
                 'username' => 'demouser',
-                'password' => 'testpass'
+                'password' => 'testpass',
             ]);
 
             Craft::$app->getSession()->set('oauthServer.playground.token', $token);

@@ -104,7 +104,7 @@ class AccountController extends BaseApiController
             'purchasedPlugins' => $purchasedPlugins,
             'card' => $card,
             'cardToken' => $cardToken,
-            'billingAddress' => $billingAddressArray
+            'billingAddress' => $billingAddressArray,
         ]);
     }
 }

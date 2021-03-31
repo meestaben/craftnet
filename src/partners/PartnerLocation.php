@@ -45,7 +45,7 @@ class PartnerLocation extends Model
                 Element::SCENARIO_DEFAULT,
                 Element::SCENARIO_LIVE,
                 Partner::SCENARIO_LOCATIONS,
-            ]
+            ],
         ];
 
         $rules[] = ['email', 'email', 'enableIDN' => true];

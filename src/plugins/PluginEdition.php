@@ -96,7 +96,7 @@ class PluginEdition extends PluginPurchasable implements EditionInterface
                 'key' => 'free',
                 'label' => 'Free editions',
                 'criteria' => ['commercial' => false],
-            ]
+            ],
         ];
     }
 
@@ -265,7 +265,7 @@ class PluginEdition extends PluginPurchasable implements EditionInterface
         $rules[] = [
             [
                 'price',
-                'renewalPrice'
+                'renewalPrice',
             ],
             'number',
             'min' => 5,
@@ -274,32 +274,32 @@ class PluginEdition extends PluginPurchasable implements EditionInterface
 
         $rules[] = [
             [
-                'renewalPrice'
+                'renewalPrice',
             ],
             'required',
             'when' => [$this, 'isRenewalPriceRequired'],
-            'isEmpty' => [$this, 'isPriceEmpty']
+            'isEmpty' => [$this, 'isPriceEmpty'],
         ];
 
         $rules[] = [
             [
-                'renewalPrice'
+                'renewalPrice',
             ],
             'compare',
             'compareAttribute' => 'price',
             'type' => CompareValidator::TYPE_NUMBER,
             'operator' => '<=',
-            'when' => [$this, 'isRenewalPriceRequired']
+            'when' => [$this, 'isRenewalPriceRequired'],
         ];
 
         $rules[] = [
             [
-                'renewalPrice'
+                'renewalPrice',
             ],
             'number',
             'min' => 0,
             'max' => 0,
-            'when' => [$this, 'isRenewalPriceForbidden']
+            'when' => [$this, 'isRenewalPriceForbidden'],
         ];
 
         return $rules;

@@ -34,7 +34,7 @@ class StripeController extends BaseController
     {
         $provider = $this->_getStripeProvider();
         $options = [
-            'scope' => 'read_write'
+            'scope' => 'read_write',
         ];
 
         Craft::$app->getSession()->set('stripe.referrer', $this->request->getReferrer());
@@ -56,7 +56,7 @@ class StripeController extends BaseController
         $code = $this->request->getParam('code');
 
         $accessToken = $provider->getAccessToken('authorization_code', [
-            'code' => $code
+            'code' => $code,
         ]);
 
         $resourceOwner = $provider->getResourceOwner($accessToken);

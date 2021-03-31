@@ -28,7 +28,7 @@ class CountriesController extends BaseApiController
         $countryList = $this->_getCountryList();
 
         return $this->asJson([
-            'countries' => $countryList
+            'countries' => $countryList,
         ]);
     }
 
@@ -68,7 +68,7 @@ class CountriesController extends BaseApiController
             $countryData = [
                 'name' => $country->name,
                 'euMember' => $countryInfo->isEuMember($country->iso),
-                'stateRequired' => (bool)$country->isStateRequired
+                'stateRequired' => (bool)$country->isStateRequired,
             ];
 
             if (array_key_exists($country->id, $sortedStates)) {

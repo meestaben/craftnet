@@ -89,7 +89,7 @@ class ClientsController extends Controller
 
             // Send the site back to the template
             Craft::$app->getUrlManager()->setRouteParams([
-                'client' => $client
+                'client' => $client,
             ]);
 
             return null;

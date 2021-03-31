@@ -176,7 +176,7 @@ class PluginLicensesController extends Controller
             if ($user && $license->ownerId === $user->id) {
                 $notes = $this->request->getParam('notes');
 
-                if($notes !== null) {
+                if ($notes !== null) {
                     $license->notes = $this->request->getParam('notes');
                 }
 

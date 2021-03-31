@@ -262,7 +262,8 @@ class PackageManager extends Component
         ?string $minStability = 'stable',
         ?string $constraint = null,
         bool $sort = true
-    ): array {
+    ): array
+    {
         $vp = new VersionParser();
         $from = $vp->normalize($from);
         $to = $vp->normalize($to);
@@ -1143,7 +1144,7 @@ class PackageManager extends Component
             ->innerJoin(['craftnet_packagedeps d'], [
                 'and',
                 '[[d.versionId]] = [[v.id]]',
-                ['d.name' => 'craftcms/cms']
+                ['d.name' => 'craftcms/cms'],
             ])
             ->orderBy(['o.order' => SORT_DESC])
             ->all();
