@@ -67,7 +67,7 @@ class PackageController extends BaseApiController
         return $this->asJson($r);
     }
 
-    private function _release(PackageRelease $release = null)
+    private function _release(PackageRelease $release = null): ?array
     {
         if (!$release) {
             return null;

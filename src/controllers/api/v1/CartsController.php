@@ -300,7 +300,7 @@ class CartsController extends BaseApiController
      * @param array $errors
      * @throws Exception
      */
-    private function _updateCartEmailAndCustomer(Order $cart, User $user = null, string $email = null, array &$errors)
+    private function _updateCartEmailAndCustomer(Order $cart, ?User $user, ?string $email, array &$errors)
     {
         // validate first
         if ($email !== null && !(new EmailValidator())->validate($email, $error)) {
@@ -474,7 +474,7 @@ class CartsController extends BaseApiController
      * @param string|null $couponCode
      * @param array $errors
      */
-    private function _updateCartCouponCode(Order $cart, string $couponCode = null, array &$errors)
+    private function _updateCartCouponCode(Order $cart, ?string $couponCode, array &$errors)
     {
         $cart->couponCode = $couponCode;
 
@@ -495,7 +495,7 @@ class CartsController extends BaseApiController
      * @param $errors
      * @return LineItem|null
      */
-    private function _cmsEditionLineItem(Order $cart, \stdClass $item, string $paramPrefix, &$errors)
+    private function _cmsEditionLineItem(Order $cart, \stdClass $item, string $paramPrefix, &$errors): ?LineItem
     {
         $edition = CmsEdition::find()
             ->handle($item->edition)
@@ -562,7 +562,7 @@ class CartsController extends BaseApiController
      * @param $errors
      * @return LineItem|null
      */
-    private function _cmsRenewalLineItem(Order $cart, \stdClass $item, string $paramPrefix, &$errors)
+    private function _cmsRenewalLineItem(Order $cart, \stdClass $item, string $paramPrefix, &$errors): ?LineItem
     {
         try {
             $license = $this->module->getCmsLicenseManager()->getLicenseByKey($item->licenseKey);
@@ -599,7 +599,7 @@ class CartsController extends BaseApiController
      * @param $errors
      * @return LineItem|null
      */
-    private function _pluginEditionLineItem(Order $cart, \stdClass $item, string $paramPrefix, &$errors)
+    private function _pluginEditionLineItem(Order $cart, \stdClass $item, string $paramPrefix, &$errors): ?LineItem
     {
         // get the plugin
         $plugin = Plugin::find()
@@ -703,7 +703,7 @@ class CartsController extends BaseApiController
      * @param $errors
      * @return LineItem|null
      */
-    private function _pluginRenewalLineItem(Order $cart, \stdClass $item, string $paramPrefix, &$errors)
+    private function _pluginRenewalLineItem(Order $cart, \stdClass $item, string $paramPrefix, &$errors): ?LineItem
     {
         try {
             $license = $this->module->getPluginLicenseManager()->getLicenseByKey($item->licenseKey);
