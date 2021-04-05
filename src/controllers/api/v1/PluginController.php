@@ -8,7 +8,6 @@ use craftnet\controllers\api\BaseApiController;
 use craftnet\helpers\Cache;
 use craftnet\Module;
 use craftnet\plugins\Plugin;
-use yii\base\InvalidArgumentException;
 use yii\web\Response;
 
 /**
@@ -55,31 +54,28 @@ class PluginController extends BaseApiController
     public function actionChangelog($pluginId): Response
     {
         $cacheKey = __METHOD__ . '-' . $pluginId;
+        $changelogData = Cache::get($cacheKey);
 
-        try {
-            $changelogData = Cache::getOrSet($cacheKey, function() use ($pluginId) {
-                $plugin = Plugin::find()
-                    ->id($pluginId)
-                    ->withLatestReleaseInfo()
-                    ->one();
+        if (!$changelogData) {
+            $plugin = Plugin::find()
+                ->id($pluginId)
+                ->withLatestReleaseInfo()
+                ->one();
 
-                if (!$plugin) {
-                    throw new InvalidArgumentException();
-                }
+            if (!$plugin) {
+                return $this->asErrorJson("Couldn't find plugin");
+            }
 
-                $packageManager = Module::getInstance()->getPackageManager();
-                $release = $packageManager->getRelease($plugin->packageName, $plugin->latestVersion);
+            $packageManager = Module::getInstance()->getPackageManager();
+            $release = $packageManager->getRelease($plugin->packageName, $plugin->latestVersion);
 
-                $releases = (new ChangelogParser())->parse($release->changelog ?? '');
-                foreach ($releases as &$release) {
-                    $date = DateTimeHelper::toDateTime($release['date']);
-                    $release['date'] = $date ? $date->format('Y-m-d\TH:i:s') : null;
-                }
-
-                return array_values($releases);
-            });
-        } catch (InvalidArgumentException $e) {
-            return $this->asErrorJson("Couldn't find plugin");
+            $releases = (new ChangelogParser())->parse($release->changelog ?? '');
+            foreach ($releases as &$release) {
+                $date = DateTimeHelper::toDateTime($release['date']);
+                $release['date'] = $date ? $date->format('Y-m-d\TH:i:s') : null;
+            }
+            $changelogData = array_values($releases);
+            Cache::set($cacheKey, $changelogData);
         }
 
         return $this->asJson($changelogData);

@@ -52,52 +52,6 @@ abstract class Cache
     }
 
     /**
-     * Returns a cached value, or sets the value to the result of a callback if it doesn’t exist.
-     *
-     * @param string $key
-     * @param callable $callback
-     * @param string[]|null $tags
-     * @return mixed
-     */
-    public static function getOrSet(string $key, callable $callback, ?array $tags = null)
-    {
-        if (!self::enabled()) {
-            return $callback();
-        }
-
-        if (($value = static::get($key)) !== false) {
-            return $value;
-        }
-
-        // Obtain a lock before we go through the trouble of generating the value,
-        // in case something else is already generating it
-        $mutex = Craft::$app->getMutex();
-        $lockName = "cn-$key";
-        if (!$mutex->acquire($lockName, 5)) {
-            Craft::warning("Unable to obtain a lock for cache key '$key'", __METHOD__);
-            return $callback();
-        }
-
-        // Maybe the value is cached now?
-        if (($value = static::get($key)) !== false) {
-            $mutex->release($lockName);
-            return $value;
-        }
-
-        // Get it and cache it
-        try {
-            $value = $callback();
-        } catch (\Throwable $e) {
-            $mutex->release($lockName);
-            throw $e;
-        }
-
-        static::set($key, $value, $tags);
-        $mutex->release($lockName);
-        return $value;
-    }
-
-    /**
      * Invalidates a cache tag.
      *
      * @param string|string[] $tags
