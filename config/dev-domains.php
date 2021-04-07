@@ -10,6 +10,7 @@ return [
     'berts.space',
     'buildwithcraft.com',
     'builtbymighty.com',
+    'cdwstaging.com',
     'chiefstaging.com',
     'ckstaging.com',
     'clearfiredev.net',
