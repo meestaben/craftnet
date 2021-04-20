@@ -415,13 +415,19 @@ class Plugin extends Element
 
     /**
      * @var bool Whether the plugin was just approved
-     * @see setApproved()
+     * @see approve()
      */
     private $_approved = false;
 
     /**
-     * @var bool Whether the plugin was just rejected
-     * @see setRejected()
+     * @var bool Whether changes have been requested
+     * @see requestChanges()
+     */
+    private $_changesRequested = false;
+
+    /**
+     * @var bool Whether the plugin has been fully rejected
+     * @see reject()
      */
     private $_rejected = false;
 
@@ -721,6 +727,15 @@ class Plugin extends Element
     /**
      *
      */
+    public function requestChanges()
+    {
+        $this->_changesRequested = true;
+        $this->enabled = false;
+    }
+
+    /**
+     *
+     */
     public function reject()
     {
         $this->_rejected = true;
@@ -872,7 +887,7 @@ class Plugin extends Element
     {
         parent::validate($attributeNames, $clearErrors);
 
-        if ($this->_rejected && !$this->devComments) {
+        if (($this->_changesRequested || $this->_rejected) && !$this->devComments) {
             $this->addError('devComments', 'You must explain why the plugin wasn’t approved.');
         }
 
@@ -913,7 +928,7 @@ class Plugin extends Element
 
         $this->packageId = $package->id;
 
-        if ($this->_approved || $this->_rejected || $this->enabled) {
+        if ($this->_approved || $this->_changesRequested || $this->_rejected || $this->enabled) {
             $this->pendingApproval = false;
         }
 
@@ -1003,16 +1018,16 @@ class Plugin extends Element
         } else if ($this->_approved) {
             $this->getHistory()->push(Craft::$app->getUser()->getIdentity()->username . ' approved the plugin', $this->devComments);
             $sendDevEmail = true;
-            $emailSubject = "{$this->name} has been approved!";
+            $emailSubject = "$this->name has been approved!";
             // Any actual licenses yet?
             $published = !empty($packageManager->getAllVersions($this->packageName, null, null, false));
             if ($published) {
                 $emailMessage = <<<EOD
-Congratulations, {$this->name} has been approved, and is now available in the Craft Plugin Store for all to enjoy.
+Congratulations, $this->name has been approved, and is now available in the Craft Plugin Store for all to enjoy.
 EOD;
             } else {
                 $emailMessage = <<<EOD
-Congratulations, {$this->name} has been approved for the Craft Plugin Store!
+Congratulations, $this->name has been approved for the Craft Plugin Store!
 
 Note that before it will show up, you’re going to need to [tag a release](https://docs.craftcms.com/v3/extend/plugin-store.html#plugin-releases) on it. 
 EOD;
@@ -1024,23 +1039,32 @@ EOD;
 
 Thanks for submitting it!
 EOD;
+        } else if ($this->_changesRequested) {
+            $this->getHistory()->push(Craft::$app->getUser()->getIdentity()->username . ' requested changes for the plugin', $this->devComments);
+            $sendDevEmail = true;
+            $emailSubject = "$this->name isn’t quite ready for prime time yet…";
+            $emailMessage = <<<EOD
+Thanks for submitting $this->name to the Craft Plugin Store. We couldn’t accept it quite yet, due to the following reason:
+
+$this->devComments
+
+Once you’ve taken care of that, re-submit your plugin and we’ll give it another look. If you have any questions, reply to this email and we’ll get back to you.
+EOD;
         } else if ($this->_rejected) {
             $this->getHistory()->push(Craft::$app->getUser()->getIdentity()->username . ' rejected the plugin', $this->devComments);
             $sendDevEmail = true;
-            $emailSubject = "{$this->name} isn't quite ready for prime time yet...";
+            $emailSubject = "We couldn’t accept $this->name into the Plugin Store";
             $emailMessage = <<<EOD
-Thanks for submitting {$this->name} to the Craft Plugin Store!
+Thanks for submitting $this->name to the Craft Plugin Store. Unfortunately, we couldn’t accept it, due to the following reason:
 
-Before we can approve it, please fix the following:
+$this->devComments
 
-{$this->devComments}
-
-Once you've taken care of that, re-submit your plugin and we'll give it another look. If you have any questions, just reply to this email and we'll get back to you.
+If you have any questions, reply to this email and we’ll get back to you.
 EOD;
         } else if ($this->devComments) {
             $this->getHistory()->push(Craft::$app->getUser()->getIdentity()->username . ' sent the developer a note', $this->devComments);
             $sendDevEmail = true;
-            $emailSubject = "Quick note about {$this->name}...";
+            $emailSubject = "Quick note about $this->name";
             $emailMessage = $this->devComments;
         }
 
@@ -1048,7 +1072,7 @@ EOD;
             $emailBody = <<<EOD
 Hi {$this->getDeveloper()->getFriendlyName()},
 
-{$emailMessage}
+$emailMessage
 
 –The Craft Team
 EOD;

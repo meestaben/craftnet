@@ -259,6 +259,8 @@ JS;
         if ($isCpRequest) {
             if ($this->request->getBodyParam('approve', false)) {
                 $plugin->approve();
+            } else if ($this->request->getBodyParam('requestChanges', false)) {
+                $plugin->requestChanges();
             } else if ($this->request->getBodyParam('reject', false)) {
                 $plugin->reject();
             } else if (($enabled = $this->request->getBodyParam('enabled')) !== null) {
