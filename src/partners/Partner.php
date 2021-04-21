@@ -116,9 +116,6 @@ class Partner extends Element
         ];
     }
 
-    // Properties
-    // =========================================================================
-
     /**
      * @var bool Whether the element is enabled
      */
