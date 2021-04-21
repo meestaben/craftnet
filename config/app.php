@@ -125,11 +125,6 @@ return [
                 'secret' => App::env('AWS_SECRET_ACCESS_KEY'),
                 'region' => App::env('REGION'),
             ],
-            'partnerQueue' => [
-                'class' => \yii\queue\sqs\Queue::class,
-                'url' => App::env('PARTNER_QUEUE_URL'),
-                'region' => App::env('PARTNER_QUEUE_REGION')
-            ],
             'session' => function() {
                 $config = craft\helpers\App::sessionConfig();
                 $config['class'] = yii\redis\Session::class;
