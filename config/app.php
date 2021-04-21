@@ -140,19 +140,23 @@ return [
             },
             'log' => function() {
                 $logFileName = Craft::$app->getRequest()->getIsConsoleRequest() ? 'console.log' : 'web.log';
-
+                if (!YII_DEBUG) {
+                    $levels = yii\log\Logger::LEVEL_ERROR | yii\log\Logger::LEVEL_WARNING;
+                } else {
+                    $levels = yii\log\Logger::LEVEL_ERROR | yii\log\Logger::LEVEL_WARNING | yii\log\Logger::LEVEL_INFO | yii\log\Logger::LEVEL_TRACE | yii\log\Logger::LEVEL_PROFILE;
+                }
                 return Craft::createObject([
                     'class' => yii\log\Dispatcher::class,
                     'targets' => [
                         [
                             'class' => craftnet\logs\DbTarget::class,
                             'logTable' => 'apilog.logs',
-                            'levels' => !YII_DEBUG ? yii\log\Logger::LEVEL_ERROR | yii\log\Logger::LEVEL_WARNING : yii\log\Logger::LEVEL_ERROR | yii\log\Logger::LEVEL_WARNING | yii\log\Logger::LEVEL_INFO | yii\log\Logger::LEVEL_TRACE | yii\log\Logger::LEVEL_PROFILE,
+                            'levels' => $levels,
                         ],
                         [
                             'class' => craft\log\FileTarget::class,
                             'logFile' => App::env('CRAFT_STORAGE_PATH') . '/logs/' . $logFileName,
-                            'levels' => !YII_DEBUG ? yii\log\Logger::LEVEL_ERROR | yii\log\Logger::LEVEL_WARNING : yii\log\Logger::LEVEL_ERROR | yii\log\Logger::LEVEL_WARNING | yii\log\Logger::LEVEL_INFO | yii\log\Logger::LEVEL_TRACE | yii\log\Logger::LEVEL_PROFILE,
+                            'levels' => $levels,
                         ],
                     ],
                 ]);
