@@ -65,6 +65,7 @@ return [
     'mldev.net',
     'mock-up.ca',
     'modlabdev.com',
+    'ms-stage.co.uk',
     'mstesting.com.au',
     'mystagingsite.org',
     'mystagingsite.us',
