@@ -108,9 +108,9 @@ return [
             'cache' => [
                 'class' => yii\redis\Cache::class,
             ],
-//            'mutex' => [
-//                'class' => \yii\redis\Mutex::class,
-//            ],
+            'mutex' => [
+                'class' => \yii\redis\Mutex::class,
+            ],
             'queue' => [
                 'class' => \yii\queue\sqs\Queue::class,
                 'url' => App::env('SQS_URL'),
