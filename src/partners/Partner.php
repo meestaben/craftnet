@@ -24,9 +24,6 @@ use yii\queue\sqs\Queue;
  */
 class Partner extends Element
 {
-    // Constants
-    // =========================================================================
-
     const STATUS_DRAFTING = 'statusDrafting';
     const STATUS_PENDING_APPROVAL = 'statusPendingApproval';
     const STATUS_APPROVED = 'statusApproved';
@@ -35,9 +32,6 @@ class Partner extends Element
     const SCENARIO_BASE_INFO = 'scenarioBaseInfo';
     const SCENARIO_LOCATIONS = 'scenarioLocations';
     const SCENARIO_PROJECTS = 'scenarioProjects';
-
-    // Static
-    // =========================================================================
 
     /**
      * @return string
@@ -260,13 +254,10 @@ class Partner extends Element
      */
     private $_projects = null;
 
-    // Public Methods
-    // =========================================================================
-
     /**
      * Important: Set a scenario on every rule set. Craft ID needs to validate
      * in chunks: basic info, locations, and projects. Validation errors on an
-     * unlreated chunk will cause problems.
+     * unrelated chunk will cause problems.
      *
      * @inheritdoc
      */
