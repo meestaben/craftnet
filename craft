@@ -37,14 +37,12 @@ if (file_exists($envVars) && is_file($envVars)) {
             continue;
         }
 
-        $new_line = str_replace('export ', '', $line);
-        $first_part = strpos($new_line, '=');
-
-        $last_part = substr($new_line, $first_part, strlen($new_line));
-        $variable_value = str_replace(['=', '"'], '', $last_part);
-
-        $variable_name = substr($new_line, 0, $first_part);
-        putenv($variable_name. '=' .$variable_value);
+        $parts = explode(' ', $line);
+        $newLine = $parts[1];
+        $firstEqual = strpos($newLine, '=');
+        $name = substr($newLine, 0, $firstEqual);
+        $value = substr($newLine, $firstEqual + 1);
+        putenv($name . '=' . $value);
     }
 }
 
