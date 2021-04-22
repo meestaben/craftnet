@@ -130,7 +130,7 @@ class Partner extends Element
                 'verificationStartDate' => [
                     'name' => 'verificationStartDate',
                     'type' => DateTime::getType(),
-                    'description' => 'Date at which partner verification process started.'
+                    'description' => 'Date at which partner was first or most recently considered verified.'
                 ],
                 'region' => [
                     'name' => 'region',
@@ -179,7 +179,6 @@ class Partner extends Element
                     'type' => Type::listOf(self::_getProjectGqlType()),
                     'description' => 'Partner’s portfolio projects.',
                 ],
-                // projects (mysterious matrix-y field)
             ]
         ), self::getName());
     }
