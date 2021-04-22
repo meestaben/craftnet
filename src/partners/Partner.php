@@ -818,6 +818,34 @@ class Partner extends Element
     }
 
     /**
+     * @inheritdoc
+     * @since 3.0
+     */
+    public function getGqlTypeName(): string
+    {
+        return static::gqlTypeNameByContext($this);
+    }
+
+    /**
+     * @inheritdoc
+     * @since 3.0
+     */
+    public static function gqlTypeNameByContext($context): string
+    {
+        return 'Partner';
+    }
+
+    /**
+     * @inheritdoc
+     * @since 3.0
+     */
+    public static function gqlScopesByContext($context): array
+    {
+        /** @var Partner $context */
+        return ['partners.' . $context->uid];
+    }
+
+    /**
      * @param PartnerProject $project
      * @throws \yii\db\Exception
      */

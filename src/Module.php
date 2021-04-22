@@ -21,6 +21,8 @@ use craft\events\DeleteElementEvent;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterCpNavItemsEvent;
 use craft\events\RegisterEmailMessagesEvent;
+use craft\events\RegisterGqlQueriesEvent;
+use craft\events\RegisterGqlTypesEvent;
 use craft\events\RegisterTemplateRootsEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
@@ -31,6 +33,7 @@ use craft\models\FieldLayout;
 use craft\models\SystemMessage;
 use craft\services\Elements;
 use craft\services\Fields;
+use craft\services\Gql;
 use craft\services\SystemMessages;
 use craft\services\UserPermissions;
 use craft\services\Users;
@@ -50,6 +53,7 @@ use craftnet\composer\PackageManager;
 use craftnet\fields\Plugins;
 use craftnet\invoices\InvoiceManager;
 use craftnet\orders\PdfRenderer;
+use craftnet\partners\Partner;
 use craftnet\payouts\PayoutManager;
 use craftnet\plugins\Plugin;
 use craftnet\plugins\PluginEdition;
@@ -88,85 +92,10 @@ class Module extends \yii\base\Module
     {
         Craft::setAlias('@craftnet', __DIR__);
 
-        // define custom behaviors
-        Event::on(Asset::class, Asset::EVENT_DEFINE_BEHAVIORS, function(DefineBehaviorsEvent $e) {
-            $e->behaviors['cn.asset'] = AssetBehavior::class;
-        });
-        Event::on(UserQuery::class, UserQuery::EVENT_DEFINE_BEHAVIORS, function(DefineBehaviorsEvent $e) {
-            $e->behaviors['cn.userQuery'] = UserQueryBehavior::class;
-        });
-        Event::on(User::class, User::EVENT_DEFINE_BEHAVIORS, function(DefineBehaviorsEvent $e) {
-            $e->behaviors['cn.user'] = UserBehavior::class;
-        });
-        Event::on(Order::class, Order::EVENT_DEFINE_BEHAVIORS, function(DefineBehaviorsEvent $e) {
-            $e->behaviors['cn.order'] = OrderBehavior::class;
-        });
-        Event::on(Discount::class, Discount::EVENT_DEFINE_BEHAVIORS, function(DefineBehaviorsEvent $e) {
-            $e->behaviors['cn.discount'] = DiscountBehavior::class;
-        });
-
-        // register custom component types
-        Event::on(Fields::class, Fields::EVENT_REGISTER_FIELD_TYPES, function(RegisterComponentTypesEvent $e) {
-            $e->types[] = Plugins::class;
-        });
-        Event::on(Utilities::class, Utilities::EVENT_REGISTER_UTILITY_TYPES, function(RegisterComponentTypesEvent $e) {
-            $e->types[] = UnavailablePlugins::class;
-            $e->types[] = SalesReport::class;
-            $e->types[] = PullProduction::class;
-        });
-        Event::on(Purchasables::class, Purchasables::EVENT_REGISTER_PURCHASABLE_ELEMENT_TYPES, function(RegisterComponentTypesEvent $e) {
-            $e->types[] = CmsEdition::class;
-            $e->types[] = PluginEdition::class;
-        });
-        Event::on(OrderAdjustments::class, OrderAdjustments::EVENT_REGISTER_ORDER_ADJUSTERS, function(RegisterComponentTypesEvent $e) {
-            $e->types[] = OrderAdjuster::class;
-        });
-
-        // register our custom receipt system message
-        Event::on(SystemMessages::class, SystemMessages::EVENT_REGISTER_MESSAGES, function(RegisterEmailMessagesEvent $e) {
-            $e->messages[] = new SystemMessage([
-                'key' => self::MESSAGE_KEY_RECEIPT,
-                'heading' => 'When someone places an order:',
-                'subject' => 'Your receipt from {{ fromName }}',
-                'body' => file_get_contents(__DIR__ . '/emails/receipt.md'),
-            ]);
-            $e->messages[] = new SystemMessage([
-                'key' => self::MESSAGE_KEY_VERIFY,
-                'heading' => 'When someone wants to claim licenses by an email address:',
-                'subject' => 'Verify your email',
-                'body' => file_get_contents(__DIR__ . '/emails/verify.md'),
-            ]);
-            $e->messages[] = new SystemMessage([
-                'key' => self::MESSAGE_KEY_DEVELOPER_SALE,
-                'heading' => 'When a plugin developer makes a sale:',
-                'subject' => 'Craft Plugin Store Sale',
-                'body' => file_get_contents(__DIR__ . '/emails/developer_sale.md'),
-            ]);
-            $e->messages[] = new SystemMessage([
-                'key' => self::MESSAGE_KEY_LICENSE_REMINDER,
-                'heading' => 'When licenses will be expiring/auto-renewing soon:',
-                'subject' => 'Important license info',
-                'body' => file_get_contents(__DIR__ . '/emails/license_reminder.md'),
-            ]);
-            $e->messages[] = new SystemMessage([
-                'key' => self::MESSAGE_KEY_LICENSE_NOTIFICATION,
-                'heading' => 'When licenses have expired/auto-renewed:',
-                'subject' => 'Important license info',
-                'body' => file_get_contents(__DIR__ . '/emails/license_notification.md'),
-            ]);
-            $e->messages[] = new SystemMessage([
-                'key' => self::MESSAGE_KEY_LICENSE_TRANSFER,
-                'heading' => 'When a license has been transferred to a new plugin/edition:',
-                'subject' => 'Important license info',
-                'body' => file_get_contents(__DIR__ . '/emails/license_transfer.md'),
-            ]);
-            $e->messages[] = new SystemMessage([
-                'key' => self::MESSAGE_KEY_SECURITY_ALERT,
-                'heading' => 'When a critical update is available:',
-                'subject' => 'Urgent: You must update {{ name }} now',
-                'body' => file_get_contents(__DIR__ . '/emails/security_alert.md'),
-            ]);
-        });
+        $this->_defineCustomBehaviors();
+        $this->_registerCustomComponentTypes();
+        $this->_registerCustomReceiptMessages();
+        $this->_registerGql();
 
         // claim Craft/plugin licenses after user activation
         Event::on(Users::class, Users::EVENT_AFTER_ACTIVATE_USER, function(UserEvent $e) {
@@ -266,6 +195,115 @@ class Module extends \yii\base\Module
     public function getPayoutManager(): PayoutManager
     {
         return $this->get('payoutManager');
+    }
+
+    private function _defineCustomBehaviors()
+    {
+        Event::on(Asset::class, Asset::EVENT_DEFINE_BEHAVIORS, function(DefineBehaviorsEvent $e) {
+            $e->behaviors['cn.asset'] = AssetBehavior::class;
+        });
+        Event::on(UserQuery::class, UserQuery::EVENT_DEFINE_BEHAVIORS, function(DefineBehaviorsEvent $e) {
+            $e->behaviors['cn.userQuery'] = UserQueryBehavior::class;
+        });
+        Event::on(User::class, User::EVENT_DEFINE_BEHAVIORS, function(DefineBehaviorsEvent $e) {
+            $e->behaviors['cn.user'] = UserBehavior::class;
+        });
+        Event::on(Order::class, Order::EVENT_DEFINE_BEHAVIORS, function(DefineBehaviorsEvent $e) {
+            $e->behaviors['cn.order'] = OrderBehavior::class;
+        });
+        Event::on(Discount::class, Discount::EVENT_DEFINE_BEHAVIORS, function(DefineBehaviorsEvent $e) {
+            $e->behaviors['cn.discount'] = DiscountBehavior::class;
+        });
+    }
+
+    private function _registerCustomComponentTypes()
+    {
+        // register custom component types
+        Event::on(Fields::class, Fields::EVENT_REGISTER_FIELD_TYPES, function(RegisterComponentTypesEvent $e) {
+            $e->types[] = Plugins::class;
+        });
+        Event::on(Utilities::class, Utilities::EVENT_REGISTER_UTILITY_TYPES, function(RegisterComponentTypesEvent $e) {
+            $e->types[] = UnavailablePlugins::class;
+            $e->types[] = SalesReport::class;
+            $e->types[] = PullProduction::class;
+        });
+        Event::on(Purchasables::class, Purchasables::EVENT_REGISTER_PURCHASABLE_ELEMENT_TYPES, function(RegisterComponentTypesEvent $e) {
+            $e->types[] = CmsEdition::class;
+            $e->types[] = PluginEdition::class;
+        });
+        Event::on(OrderAdjustments::class, OrderAdjustments::EVENT_REGISTER_ORDER_ADJUSTERS, function(RegisterComponentTypesEvent $e) {
+            $e->types[] = OrderAdjuster::class;
+        });
+    }
+
+    private function _registerCustomReceiptMessages()
+    {
+        Event::on(SystemMessages::class, SystemMessages::EVENT_REGISTER_MESSAGES, function(RegisterEmailMessagesEvent $e) {
+            $e->messages[] = new SystemMessage([
+                'key' => self::MESSAGE_KEY_RECEIPT,
+                'heading' => 'When someone places an order:',
+                'subject' => 'Your receipt from {{ fromName }}',
+                'body' => file_get_contents(__DIR__ . '/emails/receipt.md'),
+            ]);
+            $e->messages[] = new SystemMessage([
+                'key' => self::MESSAGE_KEY_VERIFY,
+                'heading' => 'When someone wants to claim licenses by an email address:',
+                'subject' => 'Verify your email',
+                'body' => file_get_contents(__DIR__ . '/emails/verify.md'),
+            ]);
+            $e->messages[] = new SystemMessage([
+                'key' => self::MESSAGE_KEY_DEVELOPER_SALE,
+                'heading' => 'When a plugin developer makes a sale:',
+                'subject' => 'Craft Plugin Store Sale',
+                'body' => file_get_contents(__DIR__ . '/emails/developer_sale.md'),
+            ]);
+            $e->messages[] = new SystemMessage([
+                'key' => self::MESSAGE_KEY_LICENSE_REMINDER,
+                'heading' => 'When licenses will be expiring/auto-renewing soon:',
+                'subject' => 'Important license info',
+                'body' => file_get_contents(__DIR__ . '/emails/license_reminder.md'),
+            ]);
+            $e->messages[] = new SystemMessage([
+                'key' => self::MESSAGE_KEY_LICENSE_NOTIFICATION,
+                'heading' => 'When licenses have expired/auto-renewed:',
+                'subject' => 'Important license info',
+                'body' => file_get_contents(__DIR__ . '/emails/license_notification.md'),
+            ]);
+            $e->messages[] = new SystemMessage([
+                'key' => self::MESSAGE_KEY_LICENSE_TRANSFER,
+                'heading' => 'When a license has been transferred to a new plugin/edition:',
+                'subject' => 'Important license info',
+                'body' => file_get_contents(__DIR__ . '/emails/license_transfer.md'),
+            ]);
+            $e->messages[] = new SystemMessage([
+                'key' => self::MESSAGE_KEY_SECURITY_ALERT,
+                'heading' => 'When a critical update is available:',
+                'subject' => 'Urgent: You must update {{ name }} now',
+                'body' => file_get_contents(__DIR__ . '/emails/security_alert.md'),
+            ]);
+        });
+    }
+
+    private function _registerGql()
+    {
+        Event::on(
+            Gql::class,
+            Gql::EVENT_REGISTER_GQL_TYPES,
+            function(RegisterGqlTypesEvent $event) {
+                $event->types[] = \craftnet\gql\interfaces\elements\Partner::class;
+            }
+        );
+
+        Event::on(
+            Gql::class,
+            Gql::EVENT_REGISTER_GQL_QUERIES,
+            function(RegisterGqlQueriesEvent $event) {
+                $event->queries = array_merge(
+                    $event->queries,
+                    \craftnet\gql\queries\Partner::getQueries()
+                );
+            }
+        );
     }
 
     private function _initConsoleRequset()
