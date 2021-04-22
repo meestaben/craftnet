@@ -11,6 +11,7 @@ use craft\gql\interfaces\elements\Category;
 use craft\gql\interfaces\elements\User;
 use craft\gql\TypeManager;
 use GraphQL\Type\Definition\InterfaceType;
+use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 
 /**
@@ -186,14 +187,21 @@ class Plugin extends Element
                     'type' => Type::int(),
                     'description' => ''
                 ],
-                // editions
-                // allEditions
+                'editions' => [
+                    'name' => 'editions',
+                    'type' => Type::listOf(self::_getEditionGqlType()),
+                    'description' => ''
+                ],
                 'developer' => [
                     'name' => 'developer',
                     'type' => User::getType(),
                     'description' => ''
                 ],
-                // package
+                'package' => [
+                    'name' => 'package',
+                    'type' => self::_getPackageGqlType(),
+                    'description' => ''
+                ],
                 'icon' => [
                     'name' => 'icon',
                     'type' => Asset::getType(),
@@ -226,13 +234,127 @@ class Plugin extends Element
         return [];
     }
 
-    private static function _getEditionsGqlType()
+    private static function _getEditionGqlType()
     {
+        $typeName = 'Plugin_Edition';
+        $featureTypeName = $typeName . '_Feature';
+        $pluginFeatureGqlType = GqlEntityRegistry::getEntity($featureTypeName)
+            ?: GqlEntityRegistry::createEntity($featureTypeName, new ObjectType([
+                'name' => $featureTypeName,
+                'fields' => [
+                    'name' => [
+                        'name' => 'name',
+                        'type' => Type::string(),
+                        'description' => ''
+                    ],
+                    'description' => [
+                        'name' => 'description',
+                        'type' => Type::string(),
+                        'description' => ''
+                    ],
+                ]
+            ])
+        );
 
+        $editionGqlType = GqlEntityRegistry::getEntity($typeName)
+            ?: GqlEntityRegistry::createEntity($typeName, new ObjectType([
+                'name' => $typeName,
+                'fields' => [
+                    'name' => [
+                        'name' => 'name',
+                        'type' => Type::string(),
+                        'description' => ''
+                    ],
+                    'fullName' => [
+                        'name' => 'fullName',
+                        'type' => Type::string(),
+                        'description' => ''
+                    ],
+                    'handle' => [
+                        'name' => 'handle',
+                        'type' => Type::string(),
+                        'description' => ''
+                    ],
+                    'price' => [
+                        'name' => 'price',
+                        'type' => Type::float(),
+                        'description' => ''
+                    ],
+                    'renewalPrice' => [
+                        'name' => 'renewalPrice',
+                        'type' => Type::float(),
+                        'description' => ''
+                    ],
+                    'features' => [
+                        'name' => 'features',
+                        'type' => Type::listOf($pluginFeatureGqlType),
+                        'description' => ''
+                    ],
+                ],
+            ])
+        );
+
+        return $editionGqlType;
     }
 
     private static function _getPackageGqlType()
     {
+        $typeName = 'Plugin_Package';
+        $packageGqlType = GqlEntityRegistry::getEntity($typeName)
+            ?: GqlEntityRegistry::createEntity($typeName, new ObjectType([
+                'name' => $typeName,
+                'fields' => [
+                    'name' => [
+                        'name' => 'name',
+                        'type' => Type::string(),
+                        'description' => ''
+                    ],
+                    'type' => [
+                        'name' => 'type',
+                        'type' => Type::string(),
+                        'description' => ''
+                    ],
+                    'repository' => [
+                        'name' => 'repository',
+                        'type' => Type::string(),
+                        'description' => ''
+                    ],
+                    'managed' => [
+                        'name' => 'managed',
+                        'type' => Type::boolean(),
+                        'description' => ''
+                    ],
+                    'abandoned' => [
+                        'name' => 'abandoned',
+                        'type' => Type::boolean(),
+                        'description' => ''
+                    ],
+                    'replacementPackage' => [
+                        'name' => 'replacementPackage',
+                        'type' => Type::string(),
+                        'description' => ''
+                    ],
+                    'latestVersion' => [
+                        'name' => 'latestVersion',
+                        'type' => Type::string(),
+                        'description' => ''
+                    ],
+                    'webhookId' => [
+                        'name' => 'webhookId',
+                        'type' => Type::int(),
+                        'description' => ''
+                    ],
+//                    'webhookSecret' => [
+//                        'name' => 'webhookSecret',
+//                        'type' => Type::string(),
+//                        'description' => ''
+//                    ],
+                    // vcs
+                ],
+            ])
+        );
+
+        return $packageGqlType;
 
     }
 
