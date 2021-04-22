@@ -12,6 +12,7 @@ use craft\gql\TypeManager;
 use GraphQL\Type\Definition\InterfaceType;
 use GraphQL\Type\Definition\Type;
 use craft\helpers\Gql;
+use GraphQL\Type\Definition\ObjectType;
 
 /**
  * Class Partner
@@ -168,10 +169,146 @@ class Partner extends Element
                     'description' => 'Person responsible for the partner listing.',
                     'complexity' => Gql::eagerLoadComplexity(),
                 ],
-                // locations (mysterious matrix-y field)
+                'locations' => [
+                    'name' => 'locations',
+                    'type' => Type::listOf(self::_getLocationGqlType()),
+                    'description' => 'Partner’s physical locations.',
+                ],
+                'projects' => [
+                    'name' => 'projects',
+                    'type' => Type::listOf(self::_getProjectGqlType()),
+                    'description' => 'Partner’s portfolio projects.',
+                ],
                 // projects (mysterious matrix-y field)
             ]
         ), self::getName());
+    }
+
+    private static function _getLocationGqlType(): ObjectType
+    {
+        $typeName = 'Partner_Location';
+        $locationGqlType = GqlEntityRegistry::getEntity($typeName)
+            ?: GqlEntityRegistry::createEntity($typeName, new ObjectType([
+                'name' => $typeName,
+                'fields' => [
+                    'title' => [
+                        'name' => 'title',
+                        'type' => Type::string(),
+                        'description' => 'Partner location name.'
+                    ],
+                    'addressLine1' => [
+                        'name' => 'addressLine1',
+                        'type' => Type::string(),
+                        'description' => 'First line of partner location street address.'
+                    ],
+                    'addressLine2' => [
+                        'name' => 'addressLine2',
+                        'type' => Type::string(),
+                        'description' => 'Second line of partner location street address.'
+                    ],
+                    'city' => [
+                        'name' => 'city',
+                        'type' => Type::string(),
+                        'description' => 'Partner location city.'
+                    ],
+                    'state' => [
+                        'name' => 'state',
+                        'type' => Type::string(),
+                        'description' => 'Partner location state or province.'
+                    ],
+                    'zip' => [
+                        'name' => 'zip',
+                        'type' => Type::string(),
+                        'description' => 'Partner location postal code.'
+                    ],
+                    'country' => [
+                        'name' => 'country',
+                        'type' => Type::string(),
+                        'description' => 'Partner location country.'
+                    ],
+                    'phone' => [
+                        'name' => 'phone',
+                        'type' => Type::string(),
+                        'description' => 'Partner location phone number.'
+                    ],
+                    'email' => [
+                        'name' => 'email',
+                        'type' => Type::string(),
+                        'description' => 'Partner location email address.'
+                    ],
+                    'dateCreated' => [
+                        'name' => 'dateCreated',
+                        'type' => DateTime::getType(),
+                        'description' => 'When the project was added to the partner profile.'
+                    ],
+                    'dateUpdated' => [
+                        'name' => 'dateUpdated',
+                        'type' => DateTime::getType(),
+                        'description' => 'When the project was last updated in the partner profile.'
+                    ],
+                ],
+            ]));
+
+        return $locationGqlType;
+    }
+
+    private static function _getProjectGqlType(): ObjectType
+    {
+        $typeName = 'Partner_Project';
+        $projectGqlType = GqlEntityRegistry::getEntity($typeName)
+            ?: GqlEntityRegistry::createEntity($typeName, new ObjectType([
+                'name' => $typeName,
+                'fields' => [
+                    'name' => [
+                        'name' => 'name',
+                        'type' => Type::string(),
+                        'description' => 'Project name.'
+                    ],
+                    'url' => [
+                        'name' => 'url',
+                        'type' => Type::string(),
+                        'description' => 'Project URL.'
+                    ],
+                    'linkType' => [
+                        'name' => 'linkType',
+                        'type' => Type::string(),
+                        'description' => 'Project link type; website or case study.'
+                    ],
+                    'role' => [
+                        'name' => 'role',
+                        'type' => Type::string(),
+                        'description' => 'Partner’s role in the project.'
+                    ],
+                    'withCraftCommerce' => [
+                        'name' => 'withCraftCommerce',
+                        'type' => Type::boolean(),
+                        'description' => 'Whether the project included Craft Commerce.'
+                    ],
+                    'dateCreated' => [
+                        'name' => 'dateCreated',
+                        'type' => DateTime::getType(),
+                        'description' => 'When the project was added to the partner profile.'
+                    ],
+                    'dateUpdated' => [
+                        'name' => 'dateUpdated',
+                        'type' => DateTime::getType(),
+                        'description' => 'When the project was last updated in the partner profile.'
+                    ],
+                    'sortOrder' => [
+                        'name' => 'sortOrder',
+                        'type' => Type::int(),
+                        'description' => 'Numeric sort order.'
+                    ],
+                    'screenshots' => [
+                        'name' => 'screenshots',
+                        'type' => Type::listOf(Asset::getType()),
+                        'description' => 'Project screenshots.'
+                    ],
+                ]
+            ])
+        );
+
+        return $projectGqlType;
     }
 
     /**
