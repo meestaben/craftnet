@@ -1167,6 +1167,35 @@ EOD;
         return Plugin::findOne($this->replacementId);
     }
 
+    /**
+     * @inheritdoc
+     * @since 3.0
+     */
+    public function getGqlTypeName(): string
+    {
+        return static::gqlTypeNameByContext($this);
+    }
+
+    /**
+     * @inheritdoc
+     * @since 3.0
+     */
+    public static function gqlTypeNameByContext($context): string
+    {
+        return 'Plugin';
+    }
+
+    /**
+     * @inheritdoc
+     * @since 3.0
+     */
+    public static function gqlScopesByContext($context): array
+    {
+        /** @var Plugin $context */
+        return ['plugins.' . $context->uid];
+    }
+
+
     // Protected Methods
     // =========================================================================
 

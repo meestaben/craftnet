@@ -22,6 +22,7 @@ use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterCpNavItemsEvent;
 use craft\events\RegisterEmailMessagesEvent;
 use craft\events\RegisterGqlQueriesEvent;
+use craft\events\RegisterGqlSchemaComponentsEvent;
 use craft\events\RegisterGqlTypesEvent;
 use craft\events\RegisterTemplateRootsEvent;
 use craft\events\RegisterUrlRulesEvent;
@@ -53,7 +54,6 @@ use craftnet\composer\PackageManager;
 use craftnet\fields\Plugins;
 use craftnet\invoices\InvoiceManager;
 use craftnet\orders\PdfRenderer;
-use craftnet\partners\Partner;
 use craftnet\payouts\PayoutManager;
 use craftnet\plugins\Plugin;
 use craftnet\plugins\PluginEdition;
@@ -284,24 +284,47 @@ class Module extends \yii\base\Module
         });
     }
 
+    /**
+     * Register the bits and pieces that add GraphQL support for custom elements.
+     */
     private function _registerGql()
     {
+        // register element types that should appear in the GraphQL schema
         Event::on(
             Gql::class,
             Gql::EVENT_REGISTER_GQL_TYPES,
             function(RegisterGqlTypesEvent $event) {
                 $event->types[] = \craftnet\gql\interfaces\elements\Partner::class;
+                $event->types[] = \craftnet\gql\interfaces\elements\Plugin::class;
             }
         );
 
+        // register GraphQL queries
         Event::on(
             Gql::class,
             Gql::EVENT_REGISTER_GQL_QUERIES,
             function(RegisterGqlQueriesEvent $event) {
                 $event->queries = array_merge(
                     $event->queries,
-                    \craftnet\gql\queries\Partner::getQueries()
+                    \craftnet\gql\queries\Partner::getQueries(),
+                    \craftnet\gql\queries\Plugin::getQueries()
                 );
+            }
+        );
+
+        // register GraphQL permissions
+        Event::on(
+            Gql::class,
+            Gql::EVENT_REGISTER_GQL_SCHEMA_COMPONENTS,
+            function(RegisterGqlSchemaComponentsEvent $event) {
+                $event->queries = array_merge($event->queries, [
+                    'Partners' => [
+                        'partners:read' => ['label' => 'View Partners']
+                    ],
+                    'Plugins' => [
+                        'plugins:read' => ['label' => 'View Plugins']
+                    ],
+                ]);
             }
         );
     }

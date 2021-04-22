@@ -27,9 +27,6 @@ class PartnerType implements GeneratorInterface
         return [$type->name => $type];
     }
 
-    /**
-     * @inheritdoc
-     */
     public static function generateType($context): ObjectType
     {
         $partnerType = new PartnerElement();

@@ -3,15 +3,15 @@
 namespace craftnet\gql\resolvers\elements;
 
 use craft\gql\base\ElementResolver;
-use craftnet\partners\Partner as PartnerElement;
+use craftnet\plugins\Plugin as PluginElement;
 use craftnet\helpers\Gql as GqlHelper;
 
 /**
- * Class Partner
+ * Class Plugin
  *
  * @author Pixel & Tonic, Inc. <support@pixelandtonic.com>
  */
-class Partner extends ElementResolver
+class Plugin extends ElementResolver
 {
     /**
      * @inheritdoc
@@ -20,7 +20,7 @@ class Partner extends ElementResolver
     {
         // If this is the beginning of a resolver chain, start fresh
         if ($source === null) {
-            $query = PartnerElement::find();
+            $query = PluginElement::find();
             // If not, get the prepared element query
         } else {
             $query = $source->$fieldName;
