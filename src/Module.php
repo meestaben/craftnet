@@ -101,9 +101,9 @@ class Module extends \yii\base\Module
         Event::on(
             Users::class,
             Users::EVENT_AFTER_ACTIVATE_USER,
-            function(UserEvent $e) {
-                $this->getCmsLicenseManager()->claimLicenses($e->user);
-                $this->getPluginLicenseManager()->claimLicenses($e->user);
+            function(UserEvent $event) {
+                $this->getCmsLicenseManager()->claimLicenses($event->user);
+                $this->getPluginLicenseManager()->claimLicenses($event->user);
             }
         );
 
@@ -111,8 +111,8 @@ class Module extends \yii\base\Module
         Event::on(
             Pdfs::class,
             Pdfs::EVENT_BEFORE_RENDER_PDF,
-            function(PdfEvent $e) {
-                $e->pdf = (new PdfRenderer())->render($e->order);
+            function(PdfEvent $event) {
+                $event->pdf = (new PdfRenderer())->render($event->order);
             }
         );
 
@@ -120,9 +120,9 @@ class Module extends \yii\base\Module
         Event::on(
             Elements::class,
             Elements::EVENT_BEFORE_DELETE_ELEMENT,
-            function(DeleteElementEvent $e) {
-                if ($e->element instanceof Plugin) {
-                    $e->hardDelete = true;
+            function(DeleteElementEvent $event) {
+                if ($event->element instanceof Plugin) {
+                    $event->hardDelete = true;
                 }
             }
         );
@@ -214,40 +214,40 @@ class Module extends \yii\base\Module
         Event::on(
             Asset::class,
             Asset::EVENT_DEFINE_BEHAVIORS,
-            function(DefineBehaviorsEvent $e) {
-                $e->behaviors['cn.asset'] = AssetBehavior::class;
+            function(DefineBehaviorsEvent $event) {
+                $event->behaviors['cn.asset'] = AssetBehavior::class;
             }
         );
 
         Event::on(
             UserQuery::class,
             UserQuery::EVENT_DEFINE_BEHAVIORS,
-            function(DefineBehaviorsEvent $e) {
-                $e->behaviors['cn.userQuery'] = UserQueryBehavior::class;
+            function(DefineBehaviorsEvent $event) {
+                $event->behaviors['cn.userQuery'] = UserQueryBehavior::class;
             }
         );
 
         Event::on(
             User::class,
             User::EVENT_DEFINE_BEHAVIORS,
-            function(DefineBehaviorsEvent $e) {
-                $e->behaviors['cn.user'] = UserBehavior::class;
+            function(DefineBehaviorsEvent $event) {
+                $event->behaviors['cn.user'] = UserBehavior::class;
             }
         );
 
         Event::on(
             Order::class,
             Order::EVENT_DEFINE_BEHAVIORS,
-            function(DefineBehaviorsEvent $e) {
-                $e->behaviors['cn.order'] = OrderBehavior::class;
+            function(DefineBehaviorsEvent $event) {
+                $event->behaviors['cn.order'] = OrderBehavior::class;
             }
         );
 
         Event::on(
             Discount::class,
             Discount::EVENT_DEFINE_BEHAVIORS,
-            function(DefineBehaviorsEvent $e) {
-                $e->behaviors['cn.discount'] = DiscountBehavior::class;
+            function(DefineBehaviorsEvent $event) {
+                $event->behaviors['cn.discount'] = DiscountBehavior::class;
             }
         );
     }
@@ -258,35 +258,35 @@ class Module extends \yii\base\Module
         Event::on(
             Fields::class,
             Fields::EVENT_REGISTER_FIELD_TYPES,
-            function(RegisterComponentTypesEvent $e) {
-                $e->types[] = Plugins::class;
+            function(RegisterComponentTypesEvent $event) {
+                $event->types[] = Plugins::class;
             }
         );
 
         Event::on(
             Utilities::class,
             Utilities::EVENT_REGISTER_UTILITY_TYPES,
-            function(RegisterComponentTypesEvent $e) {
-                $e->types[] = UnavailablePlugins::class;
-                $e->types[] = SalesReport::class;
-                $e->types[] = PullProduction::class;
+            function(RegisterComponentTypesEvent $event) {
+                $event->types[] = UnavailablePlugins::class;
+                $event->types[] = SalesReport::class;
+                $event->types[] = PullProduction::class;
             }
         );
 
         Event::on(
             Purchasables::class,
             Purchasables::EVENT_REGISTER_PURCHASABLE_ELEMENT_TYPES,
-            function(RegisterComponentTypesEvent $e) {
-                $e->types[] = CmsEdition::class;
-                $e->types[] = PluginEdition::class;
+            function(RegisterComponentTypesEvent $event) {
+                $event->types[] = CmsEdition::class;
+                $event->types[] = PluginEdition::class;
             }
         );
 
         Event::on(
             OrderAdjustments::class,
             OrderAdjustments::EVENT_REGISTER_ORDER_ADJUSTERS,
-            function(RegisterComponentTypesEvent $e) {
-                $e->types[] = OrderAdjuster::class;
+            function(RegisterComponentTypesEvent $event) {
+                $event->types[] = OrderAdjuster::class;
             }
         );
     }
@@ -299,50 +299,50 @@ class Module extends \yii\base\Module
         Event::on(
             SystemMessages::class,
             SystemMessages::EVENT_REGISTER_MESSAGES,
-            function(RegisterEmailMessagesEvent $e) {
-                $e->messages[] = new SystemMessage([
+            function(RegisterEmailMessagesEvent $event) {
+                $event->messages[] = new SystemMessage([
                     'key' => self::MESSAGE_KEY_RECEIPT,
                     'heading' => 'When someone places an order:',
                     'subject' => 'Your receipt from {{ fromName }}',
                     'body' => file_get_contents(__DIR__ . '/emails/receipt.md'),
                 ]);
 
-                $e->messages[] = new SystemMessage([
+                $event->messages[] = new SystemMessage([
                     'key' => self::MESSAGE_KEY_VERIFY,
                     'heading' => 'When someone wants to claim licenses by an email address:',
                     'subject' => 'Verify your email',
                     'body' => file_get_contents(__DIR__ . '/emails/verify.md'),
                 ]);
 
-                $e->messages[] = new SystemMessage([
+                $event->messages[] = new SystemMessage([
                     'key' => self::MESSAGE_KEY_DEVELOPER_SALE,
                     'heading' => 'When a plugin developer makes a sale:',
                     'subject' => 'Craft Plugin Store Sale',
                     'body' => file_get_contents(__DIR__ . '/emails/developer_sale.md'),
                 ]);
 
-                $e->messages[] = new SystemMessage([
+                $event->messages[] = new SystemMessage([
                     'key' => self::MESSAGE_KEY_LICENSE_REMINDER,
                     'heading' => 'When licenses will be expiring/auto-renewing soon:',
                     'subject' => 'Important license info',
                     'body' => file_get_contents(__DIR__ . '/emails/license_reminder.md'),
                 ]);
 
-                $e->messages[] = new SystemMessage([
+                $event->messages[] = new SystemMessage([
                     'key' => self::MESSAGE_KEY_LICENSE_NOTIFICATION,
                     'heading' => 'When licenses have expired/auto-renewed:',
                     'subject' => 'Important license info',
                     'body' => file_get_contents(__DIR__ . '/emails/license_notification.md'),
                 ]);
 
-                $e->messages[] = new SystemMessage([
+                $event->messages[] = new SystemMessage([
                     'key' => self::MESSAGE_KEY_LICENSE_TRANSFER,
                     'heading' => 'When a license has been transferred to a new plugin/edition:',
                     'subject' => 'Important license info',
                     'body' => file_get_contents(__DIR__ . '/emails/license_transfer.md'),
                 ]);
 
-                $e->messages[] = new SystemMessage([
+                $event->messages[] = new SystemMessage([
                     'key' => self::MESSAGE_KEY_SECURITY_ALERT,
                     'heading' => 'When a critical update is available:',
                     'subject' => 'Urgent: You must update {{ name }} now',
@@ -402,8 +402,8 @@ class Module extends \yii\base\Module
         Event::on(
             ResaveController::class,
             ConsoleController::EVENT_DEFINE_ACTIONS,
-            function(DefineConsoleActionsEvent $e) {
-                $e->actions['plugins'] = [
+            function(DefineConsoleActionsEvent $event) {
+                $event->actions['plugins'] = [
                     'action' => function(): int {
                         /** @var ResaveController $controller */
                         $controller = Craft::$app->controller;
@@ -423,19 +423,19 @@ class Module extends \yii\base\Module
         Event::on(
             Cp::class,
             Cp::EVENT_REGISTER_CP_NAV_ITEMS,
-            function(RegisterCpNavItemsEvent $e) {
-                $e->navItems[] = [
+            function(RegisterCpNavItemsEvent $event) {
+                $event->navItems[] = [
                     'url' => 'cmslicenses',
                     'label' => 'Craft Licenses',
                 ];
 
-                $e->navItems[] = [
+                $event->navItems[] = [
                     'url' => 'plugins',
                     'label' => 'Plugins',
                     'fontIcon' => 'plugin',
                 ];
 
-                $e->navItems[] = [
+                $event->navItems[] = [
                     'url' => 'partners',
                     'label' => 'Partners',
                     'icon' => __DIR__ . '/icons/partner.svg',
@@ -446,8 +446,8 @@ class Module extends \yii\base\Module
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
-            function(RegisterUrlRulesEvent $e) {
-                $e->rules = array_merge($e->rules, [
+            function(RegisterUrlRulesEvent $event) {
+                $event->rules = array_merge($event->rules, [
                     'cmslicenses' => 'craftnet/cms-licenses',
                     'plugins' => ['template' => 'craftnet/plugins/_index'],
                     'plugins/new' => 'craftnet/plugins/edit',
@@ -466,16 +466,16 @@ class Module extends \yii\base\Module
         Event::on(
             View::class,
             View::EVENT_REGISTER_CP_TEMPLATE_ROOTS,
-            function(RegisterTemplateRootsEvent $e) {
-                $e->roots['craftnet'] = __DIR__ . '/templates';
+            function(RegisterTemplateRootsEvent $event) {
+                $event->roots['craftnet'] = __DIR__ . '/templates';
             }
         );
 
         Event::on(
             UserPermissions::class,
             UserPermissions::EVENT_REGISTER_PERMISSIONS,
-            function(RegisterUserPermissionsEvent $e) {
-                $e->permissions['Craftcom'] = [
+            function(RegisterUserPermissionsEvent $event) {
+                $event->permissions['Craftcom'] = [
                     'craftnet:managePlugins' => [
                         'label' => 'Manage plugins',
                     ],
@@ -486,13 +486,13 @@ class Module extends \yii\base\Module
         Event::on(
             FieldLayout::class,
             FieldLayout::EVENT_DEFINE_STANDARD_FIELDS,
-            function(DefineFieldLayoutFieldsEvent $e) {
+            function(DefineFieldLayoutFieldsEvent $event) {
                 /** @var FieldLayout $fieldLayout */
-                $fieldLayout = $e->sender;
+                $fieldLayout = $event->sender;
 
                 switch ($fieldLayout->type) {
                     case User::class:
-                        $e->fields[] = [
+                        $event->fields[] = [
                             'class' => StandardTextField::class,
                             'attribute' => 'payPalEmail',
                             'label' => 'PayPal Email',
