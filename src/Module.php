@@ -98,22 +98,34 @@ class Module extends \yii\base\Module
         $this->_registerGql();
 
         // claim Craft/plugin licenses after user activation
-        Event::on(Users::class, Users::EVENT_AFTER_ACTIVATE_USER, function(UserEvent $e) {
-            $this->getCmsLicenseManager()->claimLicenses($e->user);
-            $this->getPluginLicenseManager()->claimLicenses($e->user);
-        });
+        Event::on(
+            Users::class,
+            Users::EVENT_AFTER_ACTIVATE_USER,
+            function(UserEvent $e) {
+                $this->getCmsLicenseManager()->claimLicenses($e->user);
+                $this->getPluginLicenseManager()->claimLicenses($e->user);
+            }
+        );
 
         // provide custom order receipt PDF generation
-        Event::on(Pdfs::class, Pdfs::EVENT_BEFORE_RENDER_PDF, function(PdfEvent $e) {
-            $e->pdf = (new PdfRenderer())->render($e->order);
-        });
+        Event::on(
+            Pdfs::class,
+            Pdfs::EVENT_BEFORE_RENDER_PDF,
+            function(PdfEvent $e) {
+                $e->pdf = (new PdfRenderer())->render($e->order);
+            }
+        );
 
         // hard-delete plugins
-        Event::on(Elements::class, Elements::EVENT_BEFORE_DELETE_ELEMENT, function(DeleteElementEvent $e) {
-            if ($e->element instanceof Plugin) {
-                $e->hardDelete = true;
+        Event::on(
+            Elements::class,
+            Elements::EVENT_BEFORE_DELETE_ELEMENT,
+            function(DeleteElementEvent $e) {
+                if ($e->element instanceof Plugin) {
+                    $e->hardDelete = true;
+                }
             }
-        });
+        );
 
         // request type-specific stuff
         $request = Craft::$app->getRequest();
