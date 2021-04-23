@@ -209,6 +209,9 @@ class Module extends \yii\base\Module
         return $this->get('payoutManager');
     }
 
+    /**
+     * Register custom behaviors.
+     */
     private function _defineCustomBehaviors(): void
     {
         Event::on(
@@ -252,9 +255,11 @@ class Module extends \yii\base\Module
         );
     }
 
+    /**
+     * Register custom fields, utilities, purchasables, and order adjustments.
+     */
     private function _registerCustomComponentTypes(): void
     {
-        // register custom component types
         Event::on(
             Fields::class,
             Fields::EVENT_REGISTER_FIELD_TYPES,
@@ -397,6 +402,9 @@ class Module extends \yii\base\Module
         );
     }
 
+    /**
+     * Define custom console request actions.
+     */
     private function _initConsoleRequset(): void
     {
         Event::on(
@@ -416,6 +424,10 @@ class Module extends \yii\base\Module
         );
     }
 
+    /**
+     * Define custom control panel nav items, routes, template root, permissions,
+     * and a standard (not custom) PayPal Email field for users.
+     */
     private function _initCpRequest(): void
     {
         $this->controllerNamespace = 'craftnet\\controllers';
@@ -504,6 +516,9 @@ class Module extends \yii\base\Module
         );
     }
 
+    /**
+     * Set `Access-Control-Allow-Origin` according to request source.
+     */
     private function _initSiteRequest(): void
     {
         $idOrigin = rtrim(App::env('URL_ID'), '/');
