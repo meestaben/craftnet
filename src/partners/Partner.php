@@ -7,13 +7,14 @@ use craft\base\Element;
 use craft\elements\actions\SetStatus;
 use craft\elements\Asset;
 use craft\elements\db\ElementQueryInterface;
+use craft\helpers\App;
 use craft\helpers\DateTimeHelper;
+use craft\helpers\Queue;
 use craft\helpers\UrlHelper;
-use craftcom\jobs\UpdatePartner;
+use craftnet\partners\jobs\UpdatePartner;
 use craftnet\partners\validators\ModelsValidator;
 use craftnet\partners\validators\PartnerSlugValidator;
 use yii\helpers\Inflector;
-use yii\queue\sqs\Queue;
 
 /**
  * Class Partner
@@ -413,11 +414,9 @@ class Partner extends Element
                 break;
         }
 
-        // Add it to the queue?
-        if (Craft::$app->has('partnerQueue')) {
-            /** @var Queue $queue */
-            $queue = Craft::$app->get('partnerQueue');
-            $queue->push(new UpdatePartner([
+        // Send it to craftcom?
+        if (App::env('CRAFTCOM_PARTNER_ENDPOINT')) {
+            Queue::push(new UpdatePartner([
                 'partnerId' => $this->id,
             ]));
         }
