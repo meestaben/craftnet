@@ -3,6 +3,7 @@
 namespace craft\contentmigrations;
 
 use craft\db\Migration;
+use craftnet\db\Table;
 
 /**
  * m181019_210735_drop_column_minimumbudget migration.
@@ -14,7 +15,7 @@ class m181019_210735_drop_column_minimumbudget extends Migration
      */
     public function safeUp()
     {
-        $this->dropColumn('craftnet_partners', 'minimumBudget');
+        $this->dropColumn(Table::PARTNERS, 'minimumBudget');
     }
 
     /**
@@ -22,7 +23,7 @@ class m181019_210735_drop_column_minimumbudget extends Migration
      */
     public function safeDown()
     {
-        $this->addColumn('craftnet_partners', 'minimumBudget', $this->integer());
+        $this->addColumn(Table::PARTNERS, 'minimumBudget', $this->integer());
 
         return true;
     }

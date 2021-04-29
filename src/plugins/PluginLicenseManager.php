@@ -7,6 +7,8 @@ use craft\db\Query;
 use craft\elements\User;
 use craft\errors\InvalidPluginException;
 use craft\helpers\Db;
+use craftnet\db\Table;
+use craft\commerce\db\Table as CommerceTable;
 use craftnet\errors\LicenseNotFoundException;
 use craftnet\helpers\LicenseHelper;
 use craftnet\helpers\OrderHelper;
@@ -19,9 +21,6 @@ use yii\helpers\ArrayHelper;
 
 class PluginLicenseManager extends Component
 {
-    // Public Methods
-    // =========================================================================
-
     /**
      * Normalizes a license key by trimming whitespace and removing dashes.
      *
@@ -114,8 +113,8 @@ class PluginLicenseManager extends Component
     public function getLicensesByOrder(int $orderId): array
     {
         $results = $this->_createLicenseQuery()
-            ->innerJoin('craftnet_pluginlicenses_lineitems l_li', '[[l_li.licenseId]] = [[l.id]]')
-            ->innerJoin('commerce_lineitems li', '[[li.id]] = [[l_li.lineItemId]]')
+            ->innerJoin(Table::PLUGINLICENSES_LINEITEMS . ' l_li', '[[l_li.licenseId]] = [[l.id]]')
+            ->innerJoin(CommerceTable::LINEITEMS . ' li', '[[li.id]] = [[l_li.lineItemId]]')
             ->andWhere(['li.orderId' => $orderId])
             ->all();
 
@@ -189,7 +188,7 @@ class PluginLicenseManager extends Component
 
         if ($handle !== null) {
             $query
-                ->innerJoin('craftnet_plugins p', '[[p.id]] = [[l.pluginId]]')
+                ->innerJoin(Table::PLUGINS . ' p', '[[p.id]] = [[l.pluginId]]')
                 ->andWhere(['p.handle' => $handle]);
         }
 
@@ -240,7 +239,7 @@ class PluginLicenseManager extends Component
     public function getLicensesByDeveloper(int $developerId, int $offset = null, int $limit = null, int &$total = null): array
     {
         $query = $this->_createLicenseQuery()
-            ->innerJoin('craftnet_plugins p', '[[p.id]] = [[l.pluginId]]')
+            ->innerJoin(Table::PLUGINS . ' p', '[[p.id]] = [[l.pluginId]]')
             ->andWhere(['p.developerId' => $developerId]);
 
         $total = $query->count();
@@ -268,7 +267,7 @@ class PluginLicenseManager extends Component
     public function getLicensesByPlugin(int $pluginId, ?int $editionId = null, bool $includeFreeEditions = false): array
     {
         $query = $this->_createLicenseQuery(false, false, $includeFreeEditions)
-            ->innerJoin('craftnet_plugins p', '[[p.id]] = [[l.pluginId]]')
+            ->innerJoin(Table::PLUGINS . ' p', '[[p.id]] = [[l.pluginId]]')
             ->andWhere(['l.pluginId' => $pluginId]);
 
         if ($editionId !== null) {
@@ -451,17 +450,17 @@ class PluginLicenseManager extends Component
 
         if (!$license->id) {
             $success = (bool)Craft::$app->getDb()->createCommand()
-                ->insert('craftnet_pluginlicenses', $data)
+                ->insert(Table::PLUGINLICENSES, $data)
                 ->execute();
 
             // set the ID on the model
-            $license->id = (int)Craft::$app->getDb()->getLastInsertID('craftnet_pluginlicenses');
+            $license->id = (int)Craft::$app->getDb()->getLastInsertID(Table::PLUGINLICENSES);
         } else {
             if ($attributes !== null) {
                 $data = ArrayHelper::filter($data, array_keys($attributes));
             }
             $success = (bool)Craft::$app->getDb()->createCommand()
-                ->update('craftnet_pluginlicenses', $data, ['id' => $license->id])
+                ->update(Table::PLUGINLICENSES, $data, ['id' => $license->id])
                 ->execute();
         }
 
@@ -482,7 +481,7 @@ class PluginLicenseManager extends Component
     public function addHistory(int $licenseId, string $note, string $timestamp = null)
     {
         Craft::$app->getDb()->createCommand()
-            ->insert('craftnet_pluginlicensehistory', [
+            ->insert(Table::PLUGINLICENSEHISTORY, [
                 'licenseId' => $licenseId,
                 'note' => $note,
                 'timestamp' => $timestamp ?? Db::prepareDateForDb(new \DateTime()),
@@ -500,7 +499,7 @@ class PluginLicenseManager extends Component
     {
         return (new Query())
             ->select(['note', 'timestamp'])
-            ->from('craftnet_pluginlicensehistory')
+            ->from(Table::PLUGINLICENSEHISTORY)
             ->where(['licenseId' => $licenseId])
             ->orderBy(['timestamp' => SORT_ASC])
             ->all();
@@ -558,7 +557,7 @@ class PluginLicenseManager extends Component
     public function claimLicenses(User $user, string $email = null): int
     {
         return Craft::$app->getDb()->createCommand()
-            ->update('craftnet_pluginlicenses', [
+            ->update(Table::PLUGINLICENSES, [
                 'ownerId' => $user->id,
             ], [
                 'and',
@@ -696,7 +695,7 @@ class PluginLicenseManager extends Component
     public function deleteLicenseById(int $id)
     {
         $rows = Craft::$app->getDb()->createCommand()
-            ->delete('craftnet_pluginlicenses', ['id' => $id])
+            ->delete(Table::PLUGINLICENSES, ['id' => $id])
             ->execute();
 
         if ($rows === 0) {
@@ -719,7 +718,7 @@ class PluginLicenseManager extends Component
         }
 
         $rows = Craft::$app->getDb()->createCommand()
-            ->delete('craftnet_pluginlicenses', ['key' => $key])
+            ->delete(Table::PLUGINLICENSES, ['key' => $key])
             ->execute();
 
         if ($rows === 0) {
@@ -749,9 +748,6 @@ class PluginLicenseManager extends Component
 
         return $licenseQuery->count();
     }
-
-    // Private Methods
-    // =========================================================================
 
     /**
      * @param bool $anyStatus whether to include licenses for disabled editions
@@ -790,9 +786,9 @@ class PluginLicenseManager extends Component
                 'l.dateUpdated',
                 'l.uid',
             ])
-            ->from(['craftnet_pluginlicenses l'])
+            ->from([Table::PLUGINLICENSES . ' l'])
             // exclude licenses for plugin editions that are now free
-            ->leftJoin('craftnet_plugineditions e', ['and', '[[e.id]] = [[l.editionId]]'])
+            ->leftJoin(Table::PLUGINEDITIONS . ' e', ['and', '[[e.id]] = [[l.editionId]]'])
             ->where(array_filter([
                 'or',
                 ['not', ['e.id' => null]],

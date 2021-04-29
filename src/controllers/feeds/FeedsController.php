@@ -8,6 +8,8 @@ use craft\helpers\DateTimeHelper;
 use craft\helpers\Db;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
+use craftnet\db\Table;
+use craft\db\Table as CraftTable;
 use craftnet\Module;
 use craftnet\plugins\Plugin;
 use DateTime;
@@ -41,8 +43,8 @@ class FeedsController extends Controller
             ->withLatestReleaseInfo()
             ->with(['developer'])
             ->limit(20)
-            ->andWhere(['not', ['craftnet_plugins.dateApproved' => null]])
-            ->orderBy(['craftnet_plugins.dateApproved' => SORT_DESC])
+            ->andWhere(['not', [Table::PLUGINS . '.dateApproved' => null]])
+            ->orderBy([Table::PLUGINS . '.dateApproved' => SORT_DESC])
             ->all();
 
         return $this->_asFeed('New Plugins', array_map(function(Plugin $plugin): array {
@@ -112,9 +114,9 @@ class FeedsController extends Controller
                 'u.lastName',
                 'u.username',
             ])
-            ->innerJoin('craftnet_plugins pl', '[[pl.packageId]] = [[p.id]]')
-            ->innerJoin('content dc', '[[dc.elementId]] = [[pl.developerId]]')
-            ->innerJoin('users u', '[[u.id]] = [[pl.developerId]]')
+            ->innerJoin(Table::PLUGINS . ' pl', '[[pl.packageId]] = [[p.id]]')
+            ->innerJoin(CraftTable::CONTENT . ' dc', '[[dc.elementId]] = [[pl.developerId]]')
+            ->innerJoin(CraftTable::USERS . ' u', '[[u.id]] = [[pl.developerId]]')
             ->andWhere(['not', ['pv.time' => null]])
             ->andWhere(['not', ['pl.dateApproved' => null]])
             ->orderBy(['pv.time' => SORT_DESC])

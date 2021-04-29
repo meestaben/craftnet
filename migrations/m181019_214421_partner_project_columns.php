@@ -3,6 +3,7 @@
 namespace craft\contentmigrations;
 
 use craft\db\Migration;
+use craftnet\db\Table;
 
 /**
  * m181019_214421_partner_project_columns migration.
@@ -14,9 +15,9 @@ class m181019_214421_partner_project_columns extends Migration
      */
     public function safeUp()
     {
-        $this->addColumn('craftnet_partnerprojects', 'name', $this->string()->after('partnerId'));
-        $this->addColumn('craftnet_partnerprojects', 'role', $this->string()->after('name'));
-        $this->dropColumn('craftnet_partnerprojects', 'private');
+        $this->addColumn(Table::PARTNERPROJECTS, 'name', $this->string()->after('partnerId'));
+        $this->addColumn(Table::PARTNERPROJECTS, 'role', $this->string()->after('name'));
+        $this->dropColumn(Table::PARTNERPROJECTS, 'private');
     }
 
     /**
@@ -24,9 +25,9 @@ class m181019_214421_partner_project_columns extends Migration
      */
     public function safeDown()
     {
-        $this->dropColumn('craftnet_partnerprojects', 'name');
-        $this->dropColumn('craftnet_partnerprojects', 'role');
-        $this->addColumn('craftnet_partnerprojects', 'private', $this->boolean()->after('url'));
+        $this->dropColumn(Table::PARTNERPROJECTS, 'name');
+        $this->dropColumn(Table::PARTNERPROJECTS, 'role');
+        $this->addColumn(Table::PARTNERPROJECTS, 'private', $this->boolean()->after('url'));
 
         return true;
     }

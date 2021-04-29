@@ -7,6 +7,7 @@ use craft\db\Query;
 use craft\elements\User;
 use craft\i18n\Locale;
 use craftnet\behaviors\UserBehavior;
+use craftnet\db\Table;
 use craftnet\Module;
 use yii\console\Controller;
 use yii\console\ExitCode;
@@ -164,7 +165,7 @@ class FundsController extends Controller
 
         $records = (new Query())
             ->select(['dateCreated', 'note', 'type', 'credit', 'debit', 'balance'])
-            ->from(['craftnet_developerledger'])
+            ->from([Table::DEVELOPERLEDGER])
             ->where(['developerId' => $account->id])
             ->orderBy(['id' => SORT_ASC])
             ->all();

@@ -3,6 +3,8 @@
 namespace craft\contentmigrations;
 
 use craft\db\Migration;
+use craftnet\db\Table;
+use craft\db\Table as CraftTable;
 
 /**
  * m181218_202516_package_developers migration.
@@ -14,8 +16,8 @@ class m181218_202516_package_developers extends Migration
      */
     public function safeUp()
     {
-        $this->addColumn('craftnet_packages', 'developerId', $this->integer());
-        $this->addForeignKey(null, 'craftnet_packages', ['developerId'], 'users', ['id'], 'SET NULL');
+        $this->addColumn(Table::PACKAGES, 'developerId', $this->integer());
+        $this->addForeignKey(null, Table::PACKAGES, ['developerId'], CraftTable::USERS, ['id'], 'SET NULL');
 
         // Populate the new developerId column with plugins' developerId's
         $sql = <<<SQL

@@ -3,6 +3,7 @@
 namespace craft\contentmigrations;
 
 use craft\db\Migration;
+use craftnet\db\Table;
 
 /**
  * m181018_162119_add__more_partner_columns migration.
@@ -15,25 +16,25 @@ class m181018_162119_add__more_partner_columns extends Migration
     public function safeUp()
     {
         $this->addColumn(
-            'craftnet_partners',
+            Table::PARTNERS,
             'hasFullTimeDev',
             $this->boolean()->defaultValue(false)->after('minimumBudget')
         );
 
         $this->addColumn(
-            'craftnet_partners',
+            Table::PARTNERS,
             'isCraftVerified',
             $this->boolean()->defaultValue(false)->after('hasFullTimeDev')
         );
 
         $this->addColumn(
-            'craftnet_partners',
+            Table::PARTNERS,
             'isCommerceVerified',
             $this->boolean()->defaultValue(false)->after('isCraftVerified')
         );
 
         $this->addColumn(
-            'craftnet_partners',
+            Table::PARTNERS,
             'isEnterpriseVerified',
             $this->boolean()->defaultValue(false)->after('isCommerceVerified')
         );
@@ -44,10 +45,10 @@ class m181018_162119_add__more_partner_columns extends Migration
      */
     public function safeDown()
     {
-        $this->dropColumn('craftnet_partners', 'hasFullTimeDev');
-        $this->dropColumn('craftnet_partners', 'isCraftVerified');
-        $this->dropColumn('craftnet_partners', 'isCommerceVerified');
-        $this->dropColumn('craftnet_partners', 'isEnterpriseVerified');
+        $this->dropColumn(Table::PARTNERS, 'hasFullTimeDev');
+        $this->dropColumn(Table::PARTNERS, 'isCraftVerified');
+        $this->dropColumn(Table::PARTNERS, 'isCommerceVerified');
+        $this->dropColumn(Table::PARTNERS, 'isEnterpriseVerified');
 
         return true;
     }

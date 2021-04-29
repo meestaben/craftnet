@@ -5,6 +5,7 @@ namespace craftnet\console\controllers;
 use Craft;
 use craft\db\Query;
 use craft\helpers\Console;
+use craftnet\db\Table;
 use craftnet\errors\LicenseNotFoundException;
 use craftnet\Module;
 use yii\console\Controller;
@@ -25,7 +26,7 @@ class MigrateInstalledPluginsController extends Controller
 
         $query = (new Query())
             ->select(['craftLicenseKey', 'pluginId', 'lastActivity'])
-            ->from(['craftnet_installedplugins'])
+            ->from([Table::INSTALLEDPLUGINS])
             ->orderBy(['lastActivity' => SORT_ASC]);
 
         foreach ($query->each() as $row) {
@@ -54,7 +55,7 @@ class MigrateInstalledPluginsController extends Controller
                 $data[] = [$license->id, $pluginId, $timestamp];
             }
             $db->createCommand()
-                ->batchInsert('craftnet_cmslicense_plugins', ['licenseId', 'pluginId', 'timestamp'], $data, false)
+                ->batchInsert(Table::CMSLICENSE_PLUGINS, ['licenseId', 'pluginId', 'timestamp'], $data, false)
                 ->execute();
             $this->stdout('done' . PHP_EOL, Console::FG_GREEN);
         }

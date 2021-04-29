@@ -8,6 +8,7 @@ use craft\db\Query;
 use craft\helpers\Console;
 use craft\helpers\Json;
 use craftnet\cms\CmsLicense;
+use craftnet\db\Table;
 use craftnet\Module;
 
 /**
@@ -27,7 +28,7 @@ class m180912_040313_reactivate_all_cmslicenses extends Migration
 
         $query = (new Query())
             ->select(['key', 'data'])
-            ->from(['craftnet_inactivecmslicenses'])
+            ->from([Table::INACTIVECMSLICENSES])
             ->limit(1000);
 
         $cmsLicenseManager = Module::getInstance()->getCmsLicenseManager();
@@ -47,7 +48,7 @@ class m180912_040313_reactivate_all_cmslicenses extends Migration
                 Console::stdout('deleting inactive row ... ');
 
                 Craft::$app->getDb()->createCommand()
-                    ->delete('craftnet_inactivecmslicenses', [
+                    ->delete(Table::INACTIVECMSLICENSES, [
                         'key' => $result['key']
                     ])
                     ->execute();
@@ -64,7 +65,7 @@ class m180912_040313_reactivate_all_cmslicenses extends Migration
             }
         } while (!empty($results));
 
-        $this->dropTable('craftnet_inactivecmslicenses');
+        $this->dropTable(Table::INACTIVECMSLICENSES);
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace craft\contentmigrations;
 
 use craft\db\Migration;
+use craftnet\db\Table;
 
 /**
  * m201120_235906_nullable_plugin_license_edition migration.
@@ -16,7 +17,7 @@ class m201120_235906_nullable_plugin_license_edition extends Migration
     {
         $this->execute('alter table craftnet_pluginlicenses alter column "editionId" drop not null');
         $this->execute('alter table craftnet_pluginlicenses alter column "edition" drop not null');
-        $this->addColumn('craftnet_pluginlicenses', 'trial', $this->boolean()->notNull()->defaultValue(false));
+        $this->addColumn(Table::PLUGINLICENSES, 'trial', $this->boolean()->notNull()->defaultValue(false));
     }
 
     /**

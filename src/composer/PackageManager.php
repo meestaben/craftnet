@@ -13,6 +13,7 @@ use craft\helpers\Db;
 use craft\helpers\Json;
 use craftnet\ChangelogParser;
 use craftnet\composer\jobs\UpdatePackage;
+use craftnet\db\Table;
 use craftnet\errors\MissingTokenException;
 use craftnet\errors\VcsException;
 use craftnet\Module;
@@ -74,7 +75,7 @@ class PackageManager extends Component
     public function packageExists(string $name): bool
     {
         return (new Query())
-            ->from(['craftnet_packages'])
+            ->from([Table::PACKAGES])
             ->where(['name' => $name])
             ->exists();
     }
@@ -90,8 +91,8 @@ class PackageManager extends Component
         $versions = (new Query())
             ->select(['version'])
             ->distinct()
-            ->from(['craftnet_packageversions pv'])
-            ->innerJoin(['craftnet_packages p'], '[[p.id]] = [[pv.packageId]]')
+            ->from([Table::PACKAGEVERSIONS . ' pv'])
+            ->innerJoin([Table::PACKAGES . ' p'], '[[p.id]] = [[pv.packageId]]')
             ->where([
                 'p.name' => $name,
                 'pv.valid' => true,
@@ -147,8 +148,8 @@ class PackageManager extends Component
         $query = (new Query())
             ->select(['pv.version'])
             ->distinct()
-            ->from(['craftnet_packageversions pv'])
-            ->innerJoin(['craftnet_packages p'], '[[p.id]] = [[pv.packageId]]')
+            ->from([Table::PACKAGEVERSIONS . ' pv'])
+            ->innerJoin([Table::PACKAGES . ' p'], '[[p.id]] = [[pv.packageId]]')
             ->where([
                 'p.name' => $name,
                 'pv.valid' => true,
@@ -413,7 +414,7 @@ class PackageManager extends Component
         $constraints = (new Query())
             ->select(['constraints'])
             ->distinct()
-            ->from(['craftnet_packagedeps'])
+            ->from([Table::PACKAGEDEPS])
             ->where(['name' => $name])
             ->column();
 
@@ -445,12 +446,12 @@ class PackageManager extends Component
 
         if ($package->id === null) {
             $db->createCommand()
-                ->insert('craftnet_packages', $data)
+                ->insert(Table::PACKAGES, $data)
                 ->execute();
-            $package->id = (int)$db->getLastInsertID('craftnet_packages');
+            $package->id = (int)$db->getLastInsertID(Table::PACKAGES);
         } else {
             $db->createCommand()
-                ->update('craftnet_packages', $data, ['id' => $package->id])
+                ->update(Table::PACKAGES, $data, ['id' => $package->id])
                 ->execute();
         }
     }
@@ -470,7 +471,7 @@ class PackageManager extends Component
         }
 
         Craft::$app->getDb()->createCommand()
-            ->delete('craftnet_packages', ['name' => $package->name])
+            ->delete(Table::PACKAGES, ['name' => $package->name])
             ->execute();
     }
 
@@ -563,7 +564,7 @@ class PackageManager extends Component
         // Store the secret first so we're ready for the VCS's test hook request
         Craft::$app->getDb()->createCommand()
             ->update(
-                '{{%craftnet_packages}}',
+                Table::PACKAGES,
                 ['webhookSecret' => $package->webhookSecret],
                 ['id' => $package->id])
             ->execute();
@@ -582,7 +583,7 @@ class PackageManager extends Component
             $package->webhookSecret = null;
             Craft::$app->getDb()->createCommand()
                 ->update(
-                    '{{%craftnet_packages}}',
+                    Table::PACKAGES,
                     ['webhookSecret' => null],
                     ['id' => $package->id])
                 ->execute();
@@ -593,7 +594,7 @@ class PackageManager extends Component
         // Store the new ID
         Craft::$app->getDb()->createCommand()
             ->update(
-                '{{%craftnet_packages}}',
+                Table::PACKAGES,
                 ['webhookId' => $package->webhookId],
                 ['id' => $package->id])
             ->execute();
@@ -638,7 +639,7 @@ class PackageManager extends Component
         // Remove our record of it
         Craft::$app->getDb()->createCommand()
             ->update(
-                '{{%craftnet_packages}}',
+                Table::PACKAGES,
                 [
                     'webhookId' => null,
                     'webhookSecret' => null,
@@ -688,8 +689,8 @@ class PackageManager extends Component
                 'pv.critical',
                 'pv.notes',
             ])
-            ->from(['craftnet_packageversions pv'])
-            ->innerJoin(['craftnet_packages p'], '[[p.id]] = [[pv.packageId]]')
+            ->from([Table::PACKAGEVERSIONS . ' pv'])
+            ->innerJoin([Table::PACKAGES . ' p'], '[[p.id]] = [[pv.packageId]]')
             ->where(['pv.valid' => true]);
 
         if ($name !== null) {
@@ -776,7 +777,7 @@ class PackageManager extends Component
             // Get all of the already known versions (including invalid releases)
             $storedVersionInfo = (new Query())
                 ->select(['id', 'version', 'normalizedVersion', 'sha'])
-                ->from(['craftnet_packageversions'])
+                ->from([Table::PACKAGEVERSIONS])
                 ->where(['packageId' => $package->id])
                 ->indexBy('normalizedVersion')
                 ->all();
@@ -863,7 +864,7 @@ class PackageManager extends Component
                 }
 
                 $db->createCommand()
-                    ->delete('craftnet_packageversions', ['id' => $versionIdsToDelete])
+                    ->delete(Table::PACKAGEVERSIONS, ['id' => $versionIdsToDelete])
                     ->execute();
 
                 if ($isConsole) {
@@ -933,7 +934,7 @@ class PackageManager extends Component
                             }
                         }
                         $db->createCommand()
-                            ->batchInsert('craftnet_packagedeps', ['packageId', 'versionId', 'name', 'constraints'], $depValues)
+                            ->batchInsert(Table::PACKAGEDEPS, ['packageId', 'versionId', 'name', 'constraints'], $depValues)
                             ->execute();
                     }
 
@@ -1066,7 +1067,7 @@ class PackageManager extends Component
         // Delete existing release order data
         $db = Craft::$app->getDb();
         $db->createCommand()
-            ->delete('craftnet_pluginversionorder', ['pluginId' => $plugin->id])
+            ->delete(Table::PLUGINVERSIONORDER, ['pluginId' => $plugin->id])
             ->execute();
 
         // Get the new plugin releases
@@ -1114,7 +1115,7 @@ class PackageManager extends Component
         }
 
         $db->createCommand()
-            ->batchInsert('craftnet_pluginversionorder', [
+            ->batchInsert(Table::PLUGINVERSIONORDER, [
                 'versionId',
                 'pluginId',
                 'order',
@@ -1139,9 +1140,9 @@ class PackageManager extends Component
         // fetch all plugin releases ever, sorted by newest to oldest
         $pluginData = (new Query())
             ->select(['v.packageId', 'v.id as versionId', 'v.version', 'd.constraints'])
-            ->from(['craftnet_packageversions v'])
-            ->innerJoin(['craftnet_pluginversionorder o'], '[[o.versionId]] = [[v.id]]')
-            ->innerJoin(['craftnet_packagedeps d'], [
+            ->from([Table::PACKAGEVERSIONS . ' v'])
+            ->innerJoin([Table::PLUGINVERSIONORDER . ' o'], '[[o.versionId]] = [[v.id]]')
+            ->innerJoin([Table::PACKAGEDEPS . ' d'], [
                 'and',
                 '[[d.versionId]] = [[v.id]]',
                 ['d.name' => 'craftcms/cms'],
@@ -1166,7 +1167,7 @@ class PackageManager extends Component
         }
 
         Craft::$app->getDb()->createCommand()
-            ->batchInsert('craftnet_pluginversioncompat', [
+            ->batchInsert(Table::PLUGINVERSIONCOMPAT, [
                 'pluginVersionId',
                 'cmsVersionId',
             ], $compatData, false)
@@ -1202,7 +1203,7 @@ class PackageManager extends Component
         }
 
         Craft::$app->getDb()->createCommand()
-            ->batchInsert('craftnet_pluginversioncompat', [
+            ->batchInsert(Table::PLUGINVERSIONCOMPAT, [
                 'pluginVersionId',
                 'cmsVersionId',
             ], $compatData, false)
@@ -1216,7 +1217,7 @@ class PackageManager extends Component
     {
         $db = Craft::$app->getDb();
         $db->createCommand()
-            ->insert('craftnet_packageversions', [
+            ->insert(Table::PACKAGEVERSIONS, [
                 'packageId' => $release->packageId,
                 'sha' => $release->sha,
                 'description' => $release->description,
@@ -1245,7 +1246,7 @@ class PackageManager extends Component
                 'valid' => $release->valid,
             ])
             ->execute();
-        $release->id = (int)$db->getLastInsertID('craftnet_packageversions');
+        $release->id = (int)$db->getLastInsertID(Table::PACKAGEVERSIONS);
     }
 
     /**
@@ -1293,7 +1294,7 @@ class PackageManager extends Component
                 $release->notes !== $info['notes']
             ) {
                 $db->createCommand()
-                    ->update('craftnet_packageversions', [
+                    ->update(Table::PACKAGEVERSIONS, [
                         'date' => Db::prepareDateForDb($info['date']),
                         'critical' => $info['critical'],
                         'notes' => $info['notes'],
@@ -1387,6 +1388,6 @@ class PackageManager extends Component
     {
         return (new Query())
             ->select(['id', 'developerId', 'name', 'type', 'repository', 'managed', 'abandoned', 'replacementPackage', 'webhookId', 'webhookSecret'])
-            ->from(['craftnet_packages']);
+            ->from([Table::PACKAGES]);
     }
 }

@@ -4,6 +4,8 @@ namespace craft\contentmigrations;
 
 use craft\db\Migration;
 use craft\elements\User;
+use craftnet\db\Table;
+use craft\db\Table as CraftTable;
 
 /**
  * m180318_222228_developer_tables migration.
@@ -16,7 +18,7 @@ class m180318_222228_developer_tables extends Migration
     public function safeUp()
     {
         // developers table
-        $this->createTable('craftnet_developers', [
+        $this->createTable(Table::DEVELOPERS, [
             'id' => $this->integer()->notNull(),
             'country' => $this->char(2)->null(),
             'balance' => $this->decimal(14, 4)->notNull()->defaultValue(0),
@@ -27,10 +29,10 @@ class m180318_222228_developer_tables extends Migration
             'PRIMARY KEY([[id]])',
         ]);
 
-        $this->addForeignKey(null, 'craftnet_developers', ['id'], '{{%users}}', ['id'], 'CASCADE', null);
+        $this->addForeignKey(null, Table::DEVELOPERS, ['id'], CraftTable::USERS, ['id'], 'CASCADE', null);
 
         // developerledger
-        $this->createTable('craftnet_developerledger', [
+        $this->createTable(Table::DEVELOPERLEDGER, [
             'id' => $this->bigPrimaryKey(),
             'developerId' => $this->integer(),
             'note' => $this->string(),
@@ -41,7 +43,7 @@ class m180318_222228_developer_tables extends Migration
             'dateCreated' => $this->dateTime()->notNull(),
         ]);
 
-        $this->addForeignKey(null, 'craftnet_developerledger', ['developerId'], 'craftnet_developers', ['id'], 'CASCADE', null);
+        $this->addForeignKey(null, Table::DEVELOPERLEDGER, ['developerId'], Table::DEVELOPERS, ['id'], 'CASCADE', null);
 
         // add initial rows
         $developerIds = User::find()
@@ -55,7 +57,7 @@ class m180318_222228_developer_tables extends Migration
             $developerValues[] = [$id];
         }
 
-        $this->batchInsert('craftnet_developers', ['id'], $developerValues, false);
+        $this->batchInsert(Table::DEVELOPERS, ['id'], $developerValues, false);
     }
 
     /**

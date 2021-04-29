@@ -3,6 +3,7 @@
 namespace craftnet\controllers\api\v1;
 
 use craftnet\controllers\api\BaseApiController;
+use craftnet\db\Table;
 use craftnet\plugins\Plugin;
 use yii\web\Response;
 
@@ -11,9 +12,6 @@ use yii\web\Response;
  */
 class PluginsController extends BaseApiController
 {
-    // Public Methods
-    // =========================================================================
-
     /**
      * Handles /v1/plugins requests.
      *
@@ -29,7 +27,7 @@ class PluginsController extends BaseApiController
         $ids = explode(',', $ids);
 
         if ($ids) {
-            $pluginQuery->andWhere(['craftnet_plugins.id' => $ids]);
+            $pluginQuery->andWhere([Table::PLUGINS . '.id' => $ids]);
         }
 
         $plugins = $pluginQuery->all();
@@ -38,9 +36,6 @@ class PluginsController extends BaseApiController
 
         return $this->asJson($data);
     }
-
-    // Private Methods
-    // =========================================================================
 
     /**
      * @return \craft\elements\db\ElementQueryInterface|\craftnet\plugins\PluginQuery

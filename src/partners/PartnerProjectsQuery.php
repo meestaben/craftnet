@@ -2,8 +2,8 @@
 
 namespace craftnet\partners;
 
-
 use craft\db\Query;
+use craftnet\db\Table;
 
 class PartnerProjectsQuery extends Query
 {
@@ -32,7 +32,7 @@ class PartnerProjectsQuery extends Query
     {
         $this
             ->select('*')
-            ->from('craftnet_partnerprojects p')
+            ->from(Table::PARTNERPROJECTS . ' p')
             ->orderBy(['p.sortOrder' => SORT_ASC]);
 
         if (isset($this->_partnerId)) {

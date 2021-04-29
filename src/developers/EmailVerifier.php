@@ -11,6 +11,7 @@ use craft\helpers\Db;
 use craft\helpers\Template;
 use craft\helpers\UrlHelper;
 use craftnet\behaviors\UserBehavior;
+use craftnet\db\Table;
 use craftnet\Module;
 use yii\base\BaseObject;
 use yii\base\InvalidArgumentException;
@@ -50,7 +51,7 @@ class EmailVerifier extends BaseObject
         $code = $securityService->generateRandomString(32);
 
         Craft::$app->getDb()->createCommand()
-            ->insert('craftnet_emailcodes', [
+            ->insert(Table::EMAILCODES, [
                 'userId' => $this->user->id,
                 'email' => $email,
                 'code' => $securityService->hashPassword($code),
@@ -96,14 +97,14 @@ class EmailVerifier extends BaseObject
         $interval = DateTimeHelper::secondsToInterval(Craft::$app->getConfig()->getGeneral()->verificationCodeDuration);
         $minCodeIssueDate = (new \DateTime('now', new \DateTimeZone('UTC')))->sub($interval);
         $db->createCommand()
-            ->delete('craftnet_emailcodes', ['<', 'dateIssued', Db::prepareDateForDb($minCodeIssueDate)])
+            ->delete(Table::EMAILCODES, ['<', 'dateIssued', Db::prepareDateForDb($minCodeIssueDate)])
             ->execute();
 
         // get all the codes for this user and email
         $condition = ['userId' => $this->user->id, 'email' => $email];
         $codes = (new Query())
             ->select(['code'])
-            ->from(['craftnet_emailcodes'])
+            ->from([Table::EMAILCODES])
             ->where($condition)
             ->column();
 
@@ -137,7 +138,7 @@ class EmailVerifier extends BaseObject
 
         // remove all verification codes for this user + email
         $db->createCommand()
-            ->delete('craftnet_emailcodes', $condition)
+            ->delete(Table::EMAILCODES, $condition)
             ->execute();
 
         return $num;

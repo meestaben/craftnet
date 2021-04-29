@@ -6,6 +6,7 @@ use Craft;
 use craft\base\Utility;
 use craft\commerce\elements\Order;
 use craft\db\Query;
+use craftnet\db\Table;
 
 class SalesReport extends Utility
 {
@@ -105,7 +106,7 @@ class SalesReport extends Utility
         foreach ($orders as $order) {
             $payments = (new Query())
                 ->select(['*'])
-                ->from(['craftnet_developerledger dl'])
+                ->from([Table::DEVELOPERLEDGER . ' dl'])
                 ->where(['ilike', 'note', $order['number']])
                 ->orderBy('dateCreated')
                 ->all();

@@ -4,6 +4,7 @@ namespace craftnet\behaviors;
 
 use craft\elements\db\ElementQuery;
 use craft\elements\db\UserQuery;
+use craftnet\db\Table;
 use yii\base\Behavior;
 
 /**
@@ -38,7 +39,7 @@ class UserQueryBehavior extends Behavior
             'developers.apiToken',
         ]);
 
-        $this->owner->query->leftJoin('craftnet_developers developers', '[[developers.id]] = [[users.id]]');
-        $this->owner->subQuery->leftJoin('craftnet_developers developers', '[[developers.id]] = [[users.id]]');
+        $this->owner->query->leftJoin(Table::DEVELOPERS . ' developers', '[[developers.id]] = [[users.id]]');
+        $this->owner->subQuery->leftJoin(Table::DEVELOPERS . ' developers', '[[developers.id]] = [[users.id]]');
     }
 }

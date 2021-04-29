@@ -12,6 +12,7 @@ use craft\helpers\ArrayHelper;
 use craft\helpers\Json;
 use craftnet\base\EditionInterface;
 use craftnet\base\RenewalInterface;
+use craftnet\db\Table;
 use craftnet\errors\LicenseNotFoundException;
 use craftnet\helpers\OrderHelper;
 use craftnet\Module;
@@ -24,14 +25,8 @@ use yii\validators\CompareValidator;
  */
 class PluginEdition extends PluginPurchasable implements EditionInterface
 {
-    // Constants
-    // =========================================================================
-
     const SCENARIO_CP = 'cp';
     const SCENARIO_SITE = 'site';
-
-    // Static
-    // =========================================================================
 
     /**
      * @inheritdoc
@@ -69,7 +64,7 @@ class PluginEdition extends PluginPurchasable implements EditionInterface
         if ($handle === 'plugin') {
             $query = (new Query())
                 ->select(['id as source', 'pluginId as target'])
-                ->from(['craftnet_plugineditions'])
+                ->from([Table::PLUGINEDITIONS])
                 ->where(['id' => ArrayHelper::getColumn($sourceElements, 'id')]);
             return ['elementType' => Plugin::class, 'map' => $query->all()];
         }
@@ -113,9 +108,6 @@ class PluginEdition extends PluginPurchasable implements EditionInterface
         ];
     }
 
-    // Properties
-    // =========================================================================
-
     /**
      * @var string The edition name
      */
@@ -140,9 +132,6 @@ class PluginEdition extends PluginPurchasable implements EditionInterface
      * @var array|null Edition feature list
      */
     public $features;
-
-    // Public Methods
-    // =========================================================================
 
     /**
      * @return string
@@ -359,11 +348,11 @@ class PluginEdition extends PluginPurchasable implements EditionInterface
 
         if ($isNew) {
             Craft::$app->getDb()->createCommand()
-                ->insert('craftnet_plugineditions', $data, false)
+                ->insert(Table::PLUGINEDITIONS, $data, false)
                 ->execute();
         } else {
             Craft::$app->getDb()->createCommand()
-                ->update('craftnet_plugineditions', $data, ['id' => $this->id], [], false)
+                ->update(Table::PLUGINEDITIONS, $data, ['id' => $this->id], [], false)
                 ->execute();
         }
 
@@ -551,7 +540,7 @@ class PluginEdition extends PluginPurchasable implements EditionInterface
 
             // relate the license to the line item
             Craft::$app->getDb()->createCommand()
-                ->insert('craftnet_pluginlicenses_lineitems', [
+                ->insert(Table::PLUGINLICENSES_LINEITEMS, [
                     'licenseId' => $license->id,
                     'lineItemId' => $lineItem->id,
                 ], false)

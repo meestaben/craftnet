@@ -4,6 +4,7 @@ namespace craft\contentmigrations;
 
 use Craft;
 use craft\db\Migration;
+use craftnet\db\Table;
 
 /**
  * m181024_213825_remove_partner_msa migration.
@@ -15,7 +16,7 @@ class m181024_213825_remove_partner_msa extends Migration
      */
     public function safeUp()
     {
-        $this->dropColumn('craftnet_partners', 'msaAssetId');
+        $this->dropColumn(Table::PARTNERS, 'msaAssetId');
 
         $volumes = Craft::$app->getVolumes();
         $volume = $volumes->getVolumeByHandle('partnerDocuments');
@@ -30,7 +31,7 @@ class m181024_213825_remove_partner_msa extends Migration
      */
     public function safeDown()
     {
-        $this->addColumn('craftnet_partners', 'msaAssetId', $this->integer());
+        $this->addColumn(Table::PARTNERS, 'msaAssetId', $this->integer());
         return true;
     }
 }

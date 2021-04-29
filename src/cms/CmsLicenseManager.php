@@ -7,6 +7,8 @@ use craft\db\Query;
 use craft\elements\User;
 use craft\helpers\Db;
 use craft\helpers\StringHelper;
+use craftnet\db\Table;
+use craft\commerce\db\Table as CommerceTable;
 use craftnet\errors\LicenseNotFoundException;
 use craftnet\helpers\LicenseHelper;
 use craftnet\helpers\OrderHelper;
@@ -23,14 +25,8 @@ use yii\helpers\ArrayHelper;
 
 class CmsLicenseManager extends Component
 {
-    // Constants
-    // =========================================================================
-
     const EDITION_SOLO = 'solo';
     const EDITION_PRO = 'pro';
-
-    // Properties
-    // =========================================================================
 
     /**
      * @var array Domains that we treat as private, because they are only used for dev/testing/staging purposes
@@ -49,9 +45,6 @@ class CmsLicenseManager extends Component
      * @see normalizeDomain()
      */
     public $devSubdomainWords = [];
-
-    // Public Methods
-    // =========================================================================
 
     /**
      * Normalizes a license key by trimming whitespace and removing newlines.
@@ -168,8 +161,8 @@ class CmsLicenseManager extends Component
     public function getLicensesByOrder(int $orderId): array
     {
         $results = $this->_createLicenseQuery()
-            ->innerJoin('craftnet_cmslicenses_lineitems l_li', '[[l_li.licenseId]] = [[l.id]]')
-            ->innerJoin('commerce_lineitems li', '[[li.id]] = [[l_li.lineItemId]]')
+            ->innerJoin(Table::CMSLICENSES_LINEITEMS . ' l_li', '[[l_li.licenseId]] = [[l.id]]')
+            ->innerJoin(CommerceTable::LINEITEMS . ' li', '[[li.id]] = [[l_li.lineItemId]]')
             ->where(['li.orderId' => $orderId])
             ->all();
 
@@ -357,17 +350,17 @@ class CmsLicenseManager extends Component
 
         if (!$license->id) {
             $success = (bool)Craft::$app->getDb()->createCommand()
-                ->insert('craftnet_cmslicenses', $data)
+                ->insert(Table::CMSLICENSES, $data)
                 ->execute();
 
             // set the ID an UID on the model
-            $license->id = (int)Craft::$app->getDb()->getLastInsertID('craftnet_cmslicenses');
+            $license->id = (int)Craft::$app->getDb()->getLastInsertID(Table::CMSLICENSES);
         } else {
             if ($attributes !== null) {
                 $data = ArrayHelper::filter($data, array_keys($attributes));
             }
             $success = (bool)Craft::$app->getDb()->createCommand()
-                ->update('craftnet_cmslicenses', $data, ['id' => $license->id])
+                ->update(Table::CMSLICENSES, $data, ['id' => $license->id])
                 ->execute();
         }
 
@@ -388,7 +381,7 @@ class CmsLicenseManager extends Component
     public function addHistory(int $licenseId, string $note, string $timestamp = null)
     {
         Craft::$app->getDb()->createCommand()
-            ->insert('craftnet_cmslicensehistory', [
+            ->insert(Table::CMSLICENSEHISTORY, [
                 'licenseId' => $licenseId,
                 'note' => $note,
                 'timestamp' => $timestamp ?? Db::prepareDateForDb(new \DateTime()),
@@ -406,7 +399,7 @@ class CmsLicenseManager extends Component
     {
         return (new Query())
             ->select(['note', 'timestamp'])
-            ->from('craftnet_cmslicensehistory')
+            ->from(Table::CMSLICENSEHISTORY)
             ->where(['licenseId' => $licenseId])
             ->orderBy(['timestamp' => SORT_ASC])
             ->all();
@@ -454,7 +447,7 @@ class CmsLicenseManager extends Component
     public function claimLicenses(User $user, string $email = null): int
     {
         return Craft::$app->getDb()->createCommand()
-            ->update('craftnet_cmslicenses', [
+            ->update(Table::CMSLICENSES, [
                 'ownerId' => $user->id,
             ], [
                 'and',
@@ -658,7 +651,7 @@ class CmsLicenseManager extends Component
         }
 
         $rows = Craft::$app->getDb()->createCommand()
-            ->delete('craftnet_cmslicenses', ['key' => $key])
+            ->delete(Table::CMSLICENSES, ['key' => $key])
             ->execute();
 
         if ($rows === 0) {
@@ -724,7 +717,7 @@ class CmsLicenseManager extends Component
                 'l.dateUpdated',
                 'l.uid',
             ])
-            ->from(['craftnet_cmslicenses l']);
+            ->from([Table::CMSLICENSES . ' l']);
 
         return $query;
     }

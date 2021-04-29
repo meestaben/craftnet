@@ -7,6 +7,7 @@ use craft\elements\User;
 use craft\helpers\App;
 use craft\helpers\Db;
 use craftnet\behaviors\UserBehavior;
+use craftnet\db\Table;
 use craftnet\developers\FundsManager;
 use craftnet\errors\InaccessibleFundsException;
 use PayPal\Api\Currency;
@@ -227,7 +228,7 @@ class PayoutManager extends BaseObject
         Craft::warning("Unsuccessful PayPal connection: {$e->getMessage()}");
         Craft::$app->getErrorHandler()->logException($e);
 
-        Db::insert('craftnet_payout_errors', [
+        Db::insert(Table::PAYOUT_ERRORS, [
             'payoutId' => $payoutId,
             'message' => $e->getMessage(),
             'data' => $e->getData(),

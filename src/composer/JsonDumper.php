@@ -17,6 +17,7 @@ use craft\helpers\FileHelper;
 use craft\helpers\Json;
 use craftnet\composer\jobs\DeletePaths;
 use craftnet\composer\jobs\DumpJson;
+use craftnet\db\Table;
 use craftnet\Module;
 use yii\base\Component;
 
@@ -74,7 +75,7 @@ class JsonDumper extends Component
         // Fetch all the data
         $packages = (new Query())
             ->select(['id', 'name', 'abandoned', 'replacementPackage'])
-            ->from(['craftnet_packages'])
+            ->from([Table::PACKAGES])
             ->indexBy('id')
             ->all();
 
@@ -104,7 +105,7 @@ class JsonDumper extends Component
                 //'source',
                 'dist',
             ])
-            ->from(['craftnet_packageversions'])
+            ->from([Table::PACKAGEVERSIONS])
             ->where([
                 'packageId' => array_keys($packages),
                 'valid' => true,
@@ -117,7 +118,7 @@ class JsonDumper extends Component
 
         $deps = (new Query())
             ->select(['versionId', 'name', 'constraints'])
-            ->from(['craftnet_packagedeps'])
+            ->from([Table::PACKAGEDEPS])
             ->all();
 
         if ($isConsole) {

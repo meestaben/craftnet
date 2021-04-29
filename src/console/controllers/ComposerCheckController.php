@@ -6,6 +6,7 @@ use Craft;
 use craft\db\Query;
 use craft\helpers\FileHelper;
 use craft\helpers\Json;
+use craftnet\db\Table;
 use craftnet\Module;
 use craftnet\plugins\Plugin;
 use Symfony\Component\Process\Process;
@@ -171,7 +172,7 @@ class ComposerCheckController extends Controller
 
                 $package = (new Query())
                     ->select(['id', 'repository'])
-                    ->from('craftnet_packages')
+                    ->from(Table::PACKAGES)
                     ->where(['name' => $packageName])
                     ->one();
 

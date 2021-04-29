@@ -4,6 +4,7 @@ namespace craftnet\partners;
 
 use craft\elements\db\ElementQuery;
 use craft\helpers\Db;
+use craftnet\db\Table;
 use yii\db\Connection;
 
 /**
@@ -81,25 +82,25 @@ class PartnerQuery extends ElementQuery
         $this->joinElementTable('craftnet_partners');
 
         $this->query->select([
-            'craftnet_partners.ownerId',
-            'craftnet_partners.businessName',
-            'craftnet_partners.primaryContactName',
-            'craftnet_partners.primaryContactEmail',
-            'craftnet_partners.primaryContactPhone',
-            'craftnet_partners.fullBio',
-            'craftnet_partners.shortBio',
-            'craftnet_partners.agencySize',
-            'craftnet_partners.hasFullTimeDev',
-            'craftnet_partners.isCraftVerified',
-            'craftnet_partners.isCommerceVerified',
-            'craftnet_partners.isEnterpriseVerified',
-            'craftnet_partners.verificationStartDate',
-            'craftnet_partners.isRegisteredBusiness',
-            'craftnet_partners.region',
-            'craftnet_partners.expertise',
-            'craftnet_partners.websiteSlug',
-            'craftnet_partners.logoAssetId',
-            'craftnet_partners.website',
+            Table::PARTNERS . '.ownerId',
+            Table::PARTNERS . '.businessName',
+            Table::PARTNERS . '.primaryContactName',
+            Table::PARTNERS . '.primaryContactEmail',
+            Table::PARTNERS . '.primaryContactPhone',
+            Table::PARTNERS . '.fullBio',
+            Table::PARTNERS . '.shortBio',
+            Table::PARTNERS . '.agencySize',
+            Table::PARTNERS . '.hasFullTimeDev',
+            Table::PARTNERS . '.isCraftVerified',
+            Table::PARTNERS . '.isCommerceVerified',
+            Table::PARTNERS . '.isEnterpriseVerified',
+            Table::PARTNERS . '.verificationStartDate',
+            Table::PARTNERS . '.isRegisteredBusiness',
+            Table::PARTNERS . '.region',
+            Table::PARTNERS . '.expertise',
+            Table::PARTNERS . '.websiteSlug',
+            Table::PARTNERS . '.logoAssetId',
+            Table::PARTNERS . '.website',
         ]);
 
         $andWhereColumns = [
@@ -113,7 +114,9 @@ class PartnerQuery extends ElementQuery
 
         foreach ($andWhereColumns as $column) {
             if (isset($this->{$column})) {
-                $this->subQuery->andWhere(Db::parseParam('craftnet_partners.' . $column, $this->{$column}));
+                $this->subQuery->andWhere(
+                    Db::parseParam(Table::PARTNERS . '.' . $column, $this->{$column})
+                );
             }
         }
 

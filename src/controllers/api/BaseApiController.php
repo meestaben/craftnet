@@ -15,6 +15,7 @@ use craft\web\Controller;
 use craftnet\behaviors\UserBehavior;
 use craftnet\cms\CmsLicense;
 use craftnet\cms\CmsLicenseManager;
+use craftnet\db\Table;
 use craftnet\errors\ExpiredTokenException;
 use craftnet\errors\LicenseNotFoundException;
 use craftnet\errors\ValidationException;
@@ -521,7 +522,7 @@ abstract class BaseApiController extends Controller
         if ($this->cmsVersion !== null && $cmsLicense !== null) {
             // delete any cmslicense_plugins rows for this license
             $db->createCommand()
-                ->delete('craftnet_cmslicense_plugins', [
+                ->delete(Table::CMSLICENSE_PLUGINS, [
                     'licenseId' => $cmsLicense->id,
                 ])
                 ->execute();
@@ -532,7 +533,7 @@ abstract class BaseApiController extends Controller
             }
             try {
                 $db->createCommand()
-                    ->batchInsert('craftnet_cmslicense_plugins', ['licenseId', 'pluginId', 'timestamp'], $licensePluginsData, false)
+                    ->batchInsert(Table::CMSLICENSE_PLUGINS, ['licenseId', 'pluginId', 'timestamp'], $licensePluginsData, false)
                     ->execute();
             } catch (\Throwable $exception) {
                 // don't let that ruin our day

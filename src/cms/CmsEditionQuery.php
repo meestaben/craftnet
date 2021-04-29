@@ -4,6 +4,7 @@ namespace craftnet\cms;
 
 use craft\elements\db\ElementQuery;
 use craft\helpers\Db;
+use craftnet\db\Table;
 use yii\db\Connection;
 
 /**
@@ -46,14 +47,14 @@ class CmsEditionQuery extends ElementQuery
         $this->joinElementTable('craftnet_cmseditions');
 
         $this->query->select([
-            'craftnet_cmseditions.name',
-            'craftnet_cmseditions.handle',
-            'craftnet_cmseditions.price',
-            'craftnet_cmseditions.renewalPrice',
+            Table::CMSEDITIONS . '.name',
+            Table::CMSEDITIONS . '.handle',
+            Table::CMSEDITIONS . '.price',
+            Table::CMSEDITIONS . '.renewalPrice',
         ]);
 
         if ($this->handle) {
-            $this->subQuery->andWhere(Db::parseParam('craftnet_cmseditions.handle', $this->handle));
+            $this->subQuery->andWhere(Db::parseParam(Table::CMSEDITIONS . '.handle', $this->handle));
         }
 
         return parent::beforePrepare();

@@ -3,6 +3,7 @@
 namespace craft\contentmigrations;
 
 use craft\db\Migration;
+use craftnet\db\Table;
 
 /**
  * m181106_195542_add_column_logoassetid migration.
@@ -14,7 +15,7 @@ class m181106_195542_add_column_logoassetid extends Migration
      */
     public function safeUp()
     {
-        $this->addColumn('craftnet_partners', 'logoAssetId', $this->integer());
+        $this->addColumn(Table::PARTNERS, 'logoAssetId', $this->integer());
     }
 
     /**
@@ -22,7 +23,7 @@ class m181106_195542_add_column_logoassetid extends Migration
      */
     public function safeDown()
     {
-        $this->dropColumn('craftnet_partners', 'logoAssetId');
+        $this->dropColumn(Table::PARTNERS, 'logoAssetId');
 
         return false;
     }

@@ -3,6 +3,7 @@
 namespace craft\contentmigrations;
 
 use craft\db\Migration;
+use craftnet\db\Table;
 
 /**
  * m181115_204831_add_column_partnerproject_linktype migration.
@@ -14,7 +15,7 @@ class m181115_204831_add_column_partnerproject_linktype extends Migration
      */
     public function safeUp()
     {
-        $this->addColumn('craftnet_partnerprojects', 'linkType', $this->text()->defaultValue('website'));
+        $this->addColumn(Table::PARTNERPROJECTS, 'linkType', $this->text()->defaultValue('website'));
     }
 
     /**
@@ -22,7 +23,7 @@ class m181115_204831_add_column_partnerproject_linktype extends Migration
      */
     public function safeDown()
     {
-        $this->dropColumn('craftnet_partnerprojects', 'linkType');
+        $this->dropColumn(Table::PARTNERPROJECTS, 'linkType');
 
         return true;
     }

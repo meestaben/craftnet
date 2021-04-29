@@ -5,6 +5,7 @@ namespace craftnet\controllers\api\v1;
 use Composer\Semver\Comparator;
 use craft\db\Query;
 use craftnet\controllers\api\BaseApiController;
+use craftnet\db\Table;
 use craftnet\Module;
 use yii\web\BadRequestHttpException;
 use yii\web\Response;
@@ -89,7 +90,7 @@ class OptimizeComposerReqsController extends BaseApiController
             //->select(['pd.name', 'pd.constraints'])
             ->select(['pd.name'])
             ->distinct()
-            ->from(['craftnet_packagedeps pd'])
+            ->from([Table::PACKAGEDEPS . ' pd'])
             ->where([
                 'and',
                 [
@@ -130,7 +131,7 @@ class OptimizeComposerReqsController extends BaseApiController
         // Get their package IDs
         $packageIds = (new Query())
             ->select(['id'])
-            ->from(['craftnet_packages'])
+            ->from([Table::PACKAGES])
             ->where(['name' => $deps])
             ->column();
 

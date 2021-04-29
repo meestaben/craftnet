@@ -7,6 +7,7 @@ use craft\commerce\Plugin as Commerce;
 use craft\elements\User;
 use craft\helpers\ArrayHelper;
 use craftnet\behaviors\UserBehavior;
+use craftnet\db\Table;
 use craftnet\Module;
 use yii\console\Controller;
 use yii\db\Query;
@@ -64,14 +65,14 @@ class ClaimLicensesController extends Controller
             ];
             $cmsLicenses = (new Query())
                 ->select(['email', 'count(*) as total'])
-                ->from(['craftnet_cmslicenses'])
+                ->from([Table::CMSLICENSES])
                 ->where($condition)
                 ->groupBy('email')
                 ->indexBy('email')
                 ->all();
             $pluginLicenses = (new Query())
                 ->select(['email', 'count(*) as total'])
-                ->from(['craftnet_pluginlicenses'])
+                ->from([Table::PLUGINLICENSES])
                 ->where($condition)
                 ->groupBy('email')
                 ->indexBy('email')

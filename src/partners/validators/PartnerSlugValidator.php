@@ -2,10 +2,10 @@
 
 namespace craftnet\partners\validators;
 
-
 use Craft;
 use craft\db\Query;
 use craft\validators\SlugValidator;
+use craftnet\db\Table;
 use craftnet\partners\Partner;
 
 class PartnerSlugValidator extends SlugValidator
@@ -22,7 +22,7 @@ class PartnerSlugValidator extends SlugValidator
         if (!$model->hasErrors()) {
             $query = (new Query())
                 ->select('COUNT(*)')
-                ->from('craftnet_partners')
+                ->from(Table::PARTNERS)
                 ->where(['websiteSlug' => $model->$attribute])
                 ->andWhere(['<>', 'id', $model->id]);
 

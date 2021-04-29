@@ -7,6 +7,7 @@ use craft\commerce\elements\Order;
 use craft\commerce\models\LineItem;
 use craft\elements\db\ElementQueryInterface;
 use craftnet\base\RenewalInterface;
+use craftnet\db\Table;
 use craftnet\errors\LicenseNotFoundException;
 use craftnet\helpers\OrderHelper;
 use craftnet\Module;
@@ -18,9 +19,6 @@ use yii\base\InvalidConfigException;
  */
 class CmsRenewal extends CmsPurchasable implements RenewalInterface
 {
-    // Static
-    // =========================================================================
-
     /**
      * @return string
      */
@@ -37,9 +35,6 @@ class CmsRenewal extends CmsPurchasable implements RenewalInterface
         return new CmsRenewalQuery(static::class);
     }
 
-    // Properties
-    // =========================================================================
-
     /**
      * @var int The CMS edition ID
      */
@@ -49,9 +44,6 @@ class CmsRenewal extends CmsPurchasable implements RenewalInterface
      * @var float The renewal price
      */
     public $price;
-
-    // Public Methods
-    // =========================================================================
 
     /**
      * @inheritdoc
@@ -86,11 +78,11 @@ class CmsRenewal extends CmsPurchasable implements RenewalInterface
 
         if ($isNew) {
             Craft::$app->getDb()->createCommand()
-                ->insert('craftnet_cmsrenewals', $data, false)
+                ->insert(Table::CMSRENEWALS, $data, false)
                 ->execute();
         } else {
             Craft::$app->getDb()->createCommand()
-                ->update('craftnet_cmsrenewals', $data, ['id' => $this->id], [], false)
+                ->update(Table::CMSRENEWALS, $data, ['id' => $this->id], [], false)
                 ->execute();
         }
 
@@ -163,9 +155,6 @@ class CmsRenewal extends CmsPurchasable implements RenewalInterface
         parent::afterOrderComplete($order, $lineItem);
     }
 
-    // Private Methods
-    // =========================================================================
-
     /**
      * @param Order $order
      * @param LineItem $lineItem
@@ -197,7 +186,7 @@ class CmsRenewal extends CmsPurchasable implements RenewalInterface
 
             // relate the license to the line item
             Craft::$app->getDb()->createCommand()
-                ->insert('craftnet_cmslicenses_lineitems', [
+                ->insert(Table::CMSLICENSES_LINEITEMS, [
                     'licenseId' => $license->id,
                     'lineItemId' => $lineItem->id,
                 ], false)

@@ -4,6 +4,7 @@ namespace craft\contentmigrations;
 
 use craft\db\Migration;
 use craft\helpers\MigrationHelper;
+use craftnet\db\Table;
 
 /**
  * m210330_200103_index_pl_datecreated migration.
@@ -15,8 +16,8 @@ class m210330_200103_index_pl_datecreated extends Migration
      */
     public function safeUp()
     {
-        if (!MigrationHelper::doesIndexExist('craftnet_pluginlicenses', ['dateCreated'])) {
-            $this->createIndex(null, 'craftnet_pluginlicenses', ['dateCreated']);
+        if (!MigrationHelper::doesIndexExist(Table::PLUGINLICENSES, ['dateCreated'])) {
+            $this->createIndex(null, Table::PLUGINLICENSES, ['dateCreated']);
         }
     }
 
@@ -25,8 +26,8 @@ class m210330_200103_index_pl_datecreated extends Migration
      */
     public function safeDown()
     {
-        if (MigrationHelper::doesIndexExist('craftnet_pluginlicenses', ['dateCreated'])) {
-            $this->dropIndex($this->db->getIndexName('craftnet_pluginlicenses', ['dateCreated']), 'craftnet_pluginlicenses');
+        if (MigrationHelper::doesIndexExist(Table::PLUGINLICENSES, ['dateCreated'])) {
+            $this->dropIndex($this->db->getIndexName(Table::PLUGINLICENSES, ['dateCreated']), Table::PLUGINLICENSES);
         }
     }
 }

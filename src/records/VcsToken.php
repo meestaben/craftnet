@@ -9,6 +9,7 @@ namespace craftnet\records;
 
 use craft\db\ActiveRecord;
 use craft\records\User;
+use craftnet\db\Table;
 use yii\db\ActiveQueryInterface;
 
 /**
@@ -25,9 +26,6 @@ use yii\db\ActiveQueryInterface;
  */
 class VcsToken extends ActiveRecord
 {
-    // Public Methods
-    // =========================================================================
-
     /**
      * @inheritdoc
      *
@@ -35,7 +33,7 @@ class VcsToken extends ActiveRecord
      */
     public static function tableName(): string
     {
-        return 'craftnet_vcstokens';
+        return Table::VCSTOKENS;
     }
 
     /**

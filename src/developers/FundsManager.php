@@ -10,6 +10,7 @@ use craft\helpers\App;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Db;
 use craftnet\behaviors\UserBehavior;
+use craftnet\db\Table;
 use craftnet\errors\InaccessibleFundsException;
 use craftnet\errors\InsufficientFundsException;
 use craftnet\errors\MissingStripeAccountException;
@@ -62,7 +63,7 @@ class FundsManager extends BaseObject
     {
         return (new Query())
             ->select(['balance'])
-            ->from('craftnet_developers')
+            ->from(Table::DEVELOPERS)
             ->where(['id' => $this->developer->id])
             ->scalar(Craft::$app->getDb()->getPrimary());
     }
@@ -305,7 +306,7 @@ class FundsManager extends BaseObject
 
         if ($adjustment !== false) {
             $db->createCommand()
-                ->update('craftnet_developers',
+                ->update(Table::DEVELOPERS,
                     [
                         'balance' => new Expression("[[balance]] {$operator} :adjustment", [':adjustment' => $adjustment]),
                     ],
@@ -357,6 +358,6 @@ SQL;
             'dateCreated' => Db::prepareDateForDb(new \DateTime()),
         ])->execute();
 
-        return $db->getLastInsertID('craftnet_developerledger');
+        return $db->getLastInsertID(Table::DEVELOPERLEDGER);
     }
 }
