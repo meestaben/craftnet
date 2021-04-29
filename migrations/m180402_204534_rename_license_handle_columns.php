@@ -3,6 +3,7 @@
 namespace craft\contentmigrations;
 
 use craft\db\Migration;
+use craftnet\db\Table;
 
 /**
  * m180402_204534_rename_license_handle_columns migration.
@@ -14,8 +15,8 @@ class m180402_204534_rename_license_handle_columns extends Migration
      */
     public function safeUp()
     {
-        $this->renameColumn('craftnet_cmslicenses', 'edition', 'editionHandle');
-        $this->renameColumn('craftnet_pluginlicenses', 'plugin', 'pluginHandle');
+        $this->renameColumn(Table::CMSLICENSES, 'edition', 'editionHandle');
+        $this->renameColumn(Table::PLUGINLICENSES, 'plugin', 'pluginHandle');
     }
 
     /**

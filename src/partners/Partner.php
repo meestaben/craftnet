@@ -11,6 +11,7 @@ use craft\helpers\App;
 use craft\helpers\DateTimeHelper;
 use craft\helpers\Queue;
 use craft\helpers\UrlHelper;
+use craftnet\db\Table;
 use craftnet\partners\jobs\UpdatePartner;
 use craftnet\partners\validators\ModelsValidator;
 use craftnet\partners\validators\PartnerSlugValidator;
@@ -391,7 +392,7 @@ class Partner extends Element
         parent::afterDelete();
 
         Craft::$app->getDb()->createCommand()
-            ->delete('craftnet_partners', ['id' => $this->id])
+            ->delete(Table::PARTNERS, ['id' => $this->id])
             ->execute();
 
         return true;
@@ -476,18 +477,18 @@ class Partner extends Element
 
         if ($isNew) {
             $db->createCommand()
-                ->insert('craftnet_partners', $partnerData)
+                ->insert(Table::PARTNERS, $partnerData)
                 ->execute();
         } else {
             $db->createCommand()
-                ->update('craftnet_partners', $partnerData, ['id' => $this->id])
+                ->update(Table::PARTNERS, $partnerData, ['id' => $this->id])
                 ->execute();
         }
 
         // Capabilities
 
         $db->createCommand()
-            ->delete('craftnet_partners_partnercapabilities', ['partnerId' => $this->id])
+            ->delete(Table::PARTNERCAPABILITIES, ['partnerId' => $this->id])
             ->execute();
 
         if (is_array($this->_capabilities) && count($this->_capabilities) > 0) {
@@ -500,7 +501,7 @@ class Partner extends Element
 
             $db->createCommand()
                 ->batchInsert(
-                    'craftnet_partners_partnercapabilities',
+                    Table::PARTNERCAPABILITIES,
                     ['partnerId', 'partnercapabilitiesId'],
                     $rows,
                     false
@@ -514,7 +515,7 @@ class Partner extends Element
      */
     protected function saveLocations()
     {
-        $this->_saveOneToManyRelations($this->_locations ?? [], 'craftnet_partnerlocations');
+        $this->_saveOneToManyRelations($this->_locations ?? [], Table::PARTNERLOCATIONS);
     }
 
     /**
@@ -526,7 +527,7 @@ class Partner extends Element
     {
         $projects = $this->_projects ?? [];
 
-        $this->_saveOneToManyRelations($projects, 'craftnet_partnerprojects', true, ['screenshots']);
+        $this->_saveOneToManyRelations($projects, Table::PARTNERPROJECTS, true, ['screenshots']);
 
         foreach ($projects as $project) {
             $this->_saveProjectScreenshots($project);
@@ -769,7 +770,7 @@ class Partner extends Element
             if (!$model->id) {
                 $data = $model->getAttributes(null, array_merge($without, ['id']));
 
-                if ($table === 'craftnet_partnerprojects') {
+                if ($table === Table::PARTNERPROJECTS) {
                     $data['sortOrder'] = $key;
                 }
 
@@ -782,7 +783,7 @@ class Partner extends Element
             } else {
                 $data = $model->getAttributes(null, $without);
 
-                if ($table === 'craftnet_partnerprojects') {
+                if ($table === Table::PARTNERPROJECTS) {
                     $data['sortOrder'] = $key;
                 }
 
@@ -835,10 +836,9 @@ class Partner extends Element
     private function _saveProjectScreenshots($project)
     {
         $db = Craft::$app->getDb();
-        $table = 'craftnet_partnerprojectscreenshots';
 
         $db->createCommand()
-            ->delete($table, ['projectId' => $project->id])
+            ->delete(Table::PARTNERPROJECTSCREENSHOTS, ['projectId' => $project->id])
             ->execute();
 
         if (count($project->screenshots) === 0) {
@@ -853,7 +853,7 @@ class Partner extends Element
         }
 
         $db->createCommand()
-            ->batchInsert($table, $columns, $rows)
+            ->batchInsert(Table::PARTNERPROJECTSCREENSHOTS, $columns, $rows)
             ->execute();
     }
 

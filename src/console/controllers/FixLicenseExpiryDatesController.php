@@ -9,6 +9,7 @@ use craft\helpers\DateTimeHelper;
 use craft\helpers\Json;
 use craftnet\base\LicenseInterface;
 use craftnet\cms\CmsLicense;
+use craftnet\db\Table;
 use craftnet\helpers\OrderHelper;
 use craftnet\Module;
 use yii\console\Controller;
@@ -97,12 +98,12 @@ SQL;
                     // See if we can determine the previous expiry date for this license
                     /** @var LicenseInterface $license */
                     if ($lineItem['cmsLicenseId']) {
-                        $joinTable = 'craftnet_cmslicenses_lineitems';
+                        $joinTable = Table::CMSLICENSES_LINEITEMS;
                         $licenseId = $lineItem['cmsLicenseId'];
                         $license = $cmsLicenseManager->getLicenseById($licenseId);
                         $itemName = 'Craft Pro';
                     } else {
-                        $joinTable = 'craftnet_pluginlicenses_lineitems';
+                        $joinTable = Table::PLUGINLICENSES_LINEITEMS;
                         $licenseId = $lineItem['pluginLicenseId'];
                         $license = $pluginLicenseManager->getLicenseById($licenseId);
                         $itemName = $license->getPlugin()->name;

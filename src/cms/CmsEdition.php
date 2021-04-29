@@ -9,6 +9,7 @@ use craft\commerce\Plugin as Commerce;
 use craft\elements\db\ElementQueryInterface;
 use craftnet\base\EditionInterface;
 use craftnet\base\RenewalInterface;
+use craftnet\db\Table;
 use craftnet\errors\LicenseNotFoundException;
 use craftnet\helpers\OrderHelper;
 use craftnet\Module;
@@ -148,11 +149,11 @@ class CmsEdition extends CmsPurchasable implements EditionInterface
 
         if ($isNew) {
             Craft::$app->getDb()->createCommand()
-                ->insert('craftnet_cmseditions', $data, false)
+                ->insert(Table::CMSEDITIONS, $data, false)
                 ->execute();
         } else {
             Craft::$app->getDb()->createCommand()
-                ->update('craftnet_cmseditions', $data, ['id' => $this->id], [], false)
+                ->update(Table::CMSEDITIONS, $data, ['id' => $this->id], [], false)
                 ->execute();
         }
 
@@ -292,7 +293,7 @@ class CmsEdition extends CmsPurchasable implements EditionInterface
 
             // relate the license to the line item
             Craft::$app->getDb()->createCommand()
-                ->insert('craftnet_cmslicenses_lineitems', [
+                ->insert(Table::CMSLICENSES_LINEITEMS, [
                     'licenseId' => $license->id,
                     'lineItemId' => $lineItem->id,
                 ], false)

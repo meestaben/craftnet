@@ -5,6 +5,8 @@ namespace craftnet\plugins;
 use craft\db\Query;
 use craft\elements\db\ElementQuery;
 use craft\helpers\Db;
+use craftnet\db\Table;
+use craft\db\Table as CraftTable;
 use craftnet\Module;
 use yii\db\Connection;
 
@@ -77,7 +79,7 @@ class PluginQuery extends ElementQuery
     {
         // Default orderBy
         if (!isset($config['orderBy'])) {
-            $config['orderBy'] = 'craftnet_plugins.name';
+            $config['orderBy'] = Table::PLUGINS . '.name';
         }
 
         parent::__construct($elementType, $config);
@@ -185,46 +187,46 @@ class PluginQuery extends ElementQuery
         $this->joinElementTable('craftnet_plugins');
 
         $this->query->select([
-            'craftnet_plugins.developerId',
-            'craftnet_plugins.packageId',
-            'craftnet_plugins.iconId',
-            'craftnet_plugins.packageName',
-            'craftnet_plugins.repository',
-            'craftnet_plugins.name',
-            'craftnet_plugins.handle',
-            'craftnet_plugins.license',
-            'craftnet_plugins.shortDescription',
-            'craftnet_plugins.longDescription',
-            'craftnet_plugins.documentationUrl',
-            'craftnet_plugins.changelogPath',
-            'craftnet_plugins.activeInstalls',
-            'craftnet_plugins.pendingApproval',
-            'craftnet_plugins.keywords',
-            'craftnet_plugins.dateApproved',
-            'craftnet_plugins.published',
-            'craftnet_plugins.abandoned',
-            'craftnet_plugins.replacementId',
+            Table::PLUGINS . '.developerId',
+            Table::PLUGINS . '.packageId',
+            Table::PLUGINS . '.iconId',
+            Table::PLUGINS . '.packageName',
+            Table::PLUGINS . '.repository',
+            Table::PLUGINS . '.name',
+            Table::PLUGINS . '.handle',
+            Table::PLUGINS . '.license',
+            Table::PLUGINS . '.shortDescription',
+            Table::PLUGINS . '.longDescription',
+            Table::PLUGINS . '.documentationUrl',
+            Table::PLUGINS . '.changelogPath',
+            Table::PLUGINS . '.activeInstalls',
+            Table::PLUGINS . '.pendingApproval',
+            Table::PLUGINS . '.keywords',
+            Table::PLUGINS . '.dateApproved',
+            Table::PLUGINS . '.published',
+            Table::PLUGINS . '.abandoned',
+            Table::PLUGINS . '.replacementId',
         ]);
 
         if ($this->handle) {
-            $this->subQuery->andWhere(Db::parseParam('craftnet_plugins.handle', $this->handle));
+            $this->subQuery->andWhere(Db::parseParam(Table::PLUGINS . '.handle', $this->handle));
         }
 
         if ($this->license) {
-            $this->subQuery->andWhere(Db::parseParam('craftnet_plugins.license', $this->license));
+            $this->subQuery->andWhere(Db::parseParam(Table::PLUGINS . '.license', $this->license));
         }
 
         if ($this->developerId) {
-            $this->subQuery->andWhere(Db::parseParam('craftnet_plugins.developerId', $this->developerId));
+            $this->subQuery->andWhere(Db::parseParam(Table::PLUGINS . '.developerId', $this->developerId));
         }
 
         if ($this->packageId) {
-            $this->subQuery->andWhere(Db::parseParam('craftnet_plugins.packageId', $this->packageId));
+            $this->subQuery->andWhere(Db::parseParam(Table::PLUGINS . '.packageId', $this->packageId));
         }
 
         if ($this->categoryId) {
             $this->subQuery
-                ->innerJoin(['craftnet_plugincategories pc'], '[[pc.pluginId]] = [[elements.id]]')
+                ->innerJoin([Table::PLUGINCATEGORIES . ' pc'], '[[pc.pluginId]] = [[elements.id]]')
                 ->andWhere(Db::parseParam('pc.categoryId', $this->categoryId));
         }
 
@@ -232,8 +234,8 @@ class PluginQuery extends ElementQuery
             $maxCol = $this->preferStable ? 'stableOrder' : 'order';
             $latestReleaseQuery = (new Query())
                 ->select(["max([[s_vo.{$maxCol}]])"])
-                ->from(['craftnet_pluginversionorder s_vo'])
-                ->innerJoin(['craftnet_packageversions s_v'], '[[s_v.id]] = [[s_vo.versionId]]')
+                ->from([Table::PLUGINVERSIONORDER . ' s_vo'])
+                ->innerJoin([Table::PACKAGEVERSIONS . ' s_v'], '[[s_v.id]] = [[s_vo.versionId]]')
                 ->where('[[s_v.packageId]] = [[craftnet_plugins.packageId]]')
                 ->groupBy(['s_v.packageId']);
 
@@ -243,7 +245,7 @@ class PluginQuery extends ElementQuery
                 $cmsRelease = $packageManager->getRelease('craftcms/cms', $this->cmsVersion);
                 if ($cmsRelease) {
                     $latestReleaseQuery
-                        ->innerJoin(['craftnet_pluginversioncompat s_vc'], '[[s_vc.pluginVersionId]] = [[s_v.id]]')
+                        ->innerJoin([Table::PLUGINVERSIONCOMPAT . ' s_vc'], '[[s_vc.pluginVersionId]] = [[s_v.id]]')
                         ->andWhere(['s_vc.cmsVersionId' => $cmsRelease->id]);
                 }
             }
@@ -256,8 +258,8 @@ class PluginQuery extends ElementQuery
 
             $this->subQuery
                 ->addSelect(['v.version as latestVersion', 'v.time as latestVersionTime'])
-                ->innerJoin(['craftnet_packageversions v'], '[[v.packageId]] = [[craftnet_plugins.packageId]]')
-                ->innerJoin(['craftnet_pluginversionorder vo'], '[[vo.versionId]] = [[v.id]]')
+                ->innerJoin([Table::PACKAGEVERSIONS . ' v'], '[[v.packageId]] = [[craftnet_plugins.packageId]]')
+                ->innerJoin([Table::PLUGINVERSIONORDER . ' vo'], '[[vo.versionId]] = [[v.id]]')
                 ->andWhere(["vo.{$maxCol}" => $latestReleaseQuery]);
             $this->query
                 ->addSelect(['latestVersion', 'latestVersionTime']);
@@ -266,9 +268,9 @@ class PluginQuery extends ElementQuery
         if ($this->withTotalPurchases) {
             $totalPurchasesSubquery = (new Query())
                 ->select(['count(*)'])
-                ->from(['craftnet_plugins p'])
-                ->innerJoin('craftnet_pluginlicenses pl', '[[pl.pluginId]] = [[p.id]]')
-                ->innerJoin('craftnet_pluginlicenses_lineitems pl_li', '[[pl_li.licenseId]] = [[pl.id]]')
+                ->from([Table::PLUGINS . ' p'])
+                ->innerJoin(Table::PLUGINLICENSES . ' pl', '[[pl.pluginId]] = [[p.id]]')
+                ->innerJoin(Table::PLUGINLICENSES_LINEITEMS . ' pl_li', '[[pl_li.licenseId]] = [[pl.id]]')
                 ->where('[[p.id]] = [[craftnet_plugins.id]]');
 
             if ($this->totalPurchasesSince) {
@@ -292,7 +294,7 @@ class PluginQuery extends ElementQuery
     protected function statusCondition(string $status)
     {
         if ($status === Plugin::STATUS_PENDING) {
-            return ['elements.enabled' => false, 'craftnet_plugins.pendingApproval' => true];
+            return [CraftTable::ELEMENTS . '.enabled' => false, Table::PLUGINS . '.pendingApproval' => true];
         }
 
         return parent::statusCondition($status);

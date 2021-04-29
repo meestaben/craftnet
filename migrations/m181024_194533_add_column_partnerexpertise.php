@@ -3,6 +3,7 @@
 namespace craft\contentmigrations;
 
 use craft\db\Migration;
+use craftnet\db\Table;
 
 /**
  * m181024_194533_add_column_partnerexpertise migration.
@@ -14,7 +15,7 @@ class m181024_194533_add_column_partnerexpertise extends Migration
      */
     public function safeUp()
     {
-        $this->addColumn('craftnet_partners', 'expertise', $this->text());
+        $this->addColumn(Table::PARTNERS, 'expertise', $this->text());
     }
 
     /**
@@ -23,7 +24,7 @@ class m181024_194533_add_column_partnerexpertise extends Migration
     public function safeDown()
     {
 
-        $this->dropColumn('craftnet_partners', 'expertise');
+        $this->dropColumn(Table::PARTNERS, 'expertise');
 
         return true;
     }

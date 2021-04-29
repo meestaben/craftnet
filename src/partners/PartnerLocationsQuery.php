@@ -2,8 +2,8 @@
 
 namespace craftnet\partners;
 
-
 use craft\db\Query;
+use craftnet\db\Table;
 
 class PartnerLocationsQuery extends Query
 {
@@ -32,7 +32,7 @@ class PartnerLocationsQuery extends Query
     {
         $this
             ->select('*')
-            ->from('craftnet_partnerlocations l');
+            ->from(Table::PARTNERLOCATIONS . ' l');
 
         if (isset($this->_partnerId)) {
             $this->where(['l.partnerId' => $this->_partnerId]);

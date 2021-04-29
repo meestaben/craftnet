@@ -10,6 +10,7 @@ use craft\db\Query;
 use craft\elements\User;
 use craft\helpers\ArrayHelper;
 use craft\helpers\DateTimeHelper;
+use craftnet\db\Table;
 use craftnet\errors\LicenseNotFoundException;
 use craftnet\helpers\KeyHelper;
 use craftnet\Module;
@@ -126,7 +127,7 @@ class PluginLicensesController extends Controller
             $key = $this->select('Which line item?', $lineItemOptions);
             $lineItem = $lineItems[$key];
             Craft::$app->getDb()->createCommand()
-                ->insert('craftnet_pluginlicenses_lineitems', [
+                ->insert(Table::PLUGINLICENSES_LINEITEMS, [
                     'licenseId' => $license->id,
                     'lineItemId' => $lineItem->id,
                 ], false)
@@ -196,7 +197,7 @@ class PluginLicensesController extends Controller
                 'ownerId' => 'old.ownerId',
                 'cmsLicenseId' => 'old.cmsLicenseId',
             ])
-            ->from('craftnet_pluginlicenses old')
+            ->from(Table::PLUGINLICENSES . ' old')
             ->where(['old.editionId' => $oldEdition->id]);
 
         if ($liteEdition->price != 0) {
@@ -204,7 +205,7 @@ class PluginLicensesController extends Controller
                 ->addSelect([
                     'liteId' => 'lite.id',
                 ])
-                ->leftJoin('craftnet_pluginlicenses lite', [
+                ->leftJoin(Table::PLUGINLICENSES . ' lite', [
                     'and',
                     ['lite.editionId' => $liteEdition->id],
                     '[[lite.cmsLicenseId]] = [[old.cmsLicenseId]]',

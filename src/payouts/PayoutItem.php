@@ -3,6 +3,7 @@
 namespace craftnet\payouts;
 
 use craft\db\ActiveRecord;
+use craftnet\db\Table;
 use yii\db\ActiveQueryInterface;
 
 /**
@@ -24,7 +25,7 @@ class PayoutItem extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'craftnet_payout_items';
+        return Table::PAYOUT_ITEMS;
     }
 
     /**

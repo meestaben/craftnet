@@ -2,8 +2,8 @@
 
 namespace craft\contentmigrations;
 
-use Craft;
 use craft\db\Migration;
+use craftnet\db\Table;
 
 /**
  * m200610_222854_drop_installedplugins_table migration.
@@ -15,7 +15,7 @@ class m200610_222854_drop_installedplugins_table extends Migration
      */
     public function safeUp()
     {
-        $this->dropTable('craftnet_installedplugins');
+        $this->dropTable(Table::INSTALLEDPLUGINS);
     }
 
     /**

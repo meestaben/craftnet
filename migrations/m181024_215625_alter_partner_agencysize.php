@@ -3,6 +3,7 @@
 namespace craft\contentmigrations;
 
 use craft\db\Migration;
+use craftnet\db\Table;
 
 /**
  * m181024_215625_alter_partner_agencysize migration.
@@ -14,7 +15,7 @@ class m181024_215625_alter_partner_agencysize extends Migration
      */
     public function safeUp()
     {
-        $this->alterColumn('craftnet_partners', 'agencySize', 'string');
+        $this->alterColumn(Table::PARTNERS, 'agencySize', 'string');
     }
 
     /**

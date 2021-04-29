@@ -16,6 +16,7 @@ use craft\helpers\UrlHelper;
 use craft\validators\UniqueValidator;
 use craftnet\behaviors\UserBehavior;
 use craftnet\composer\Package;
+use craftnet\db\Table;
 use craftnet\Module;
 use craftnet\records\Plugin as PluginRecord;
 use DateTime;
@@ -33,18 +34,12 @@ use yii\helpers\Markdown;
  */
 class Plugin extends Element
 {
-    // Constants
-    // =========================================================================
-
     const STATUS_PENDING = 'pending';
 
     /**
      * @event Event The event that is triggered when the plugin is first published to the Plugin Store.
      */
     const EVENT_PUBLISHED = 'published';
-
-    // Static
-    // =========================================================================
 
     /**
      * @return string
@@ -112,7 +107,7 @@ class Plugin extends Element
             case 'editions':
                 $query = (new Query())
                     ->select(['pluginId as source', 'id as target'])
-                    ->from(['craftnet_plugineditions'])
+                    ->from([Table::PLUGINEDITIONS])
                     ->where(['pluginId' => ArrayHelper::getColumn($sourceElements, 'id')])
                     ->orderBy(['price' => SORT_ASC]);
                 return ['elementType' => PluginEdition::class, 'map' => $query->all()];
@@ -120,14 +115,14 @@ class Plugin extends Element
             case 'developer':
                 $query = (new Query())
                     ->select(['id as source', 'developerId as target'])
-                    ->from(['craftnet_plugins'])
+                    ->from([Table::PLUGINS])
                     ->where(['id' => ArrayHelper::getColumn($sourceElements, 'id')]);
                 return ['elementType' => User::class, 'map' => $query->all()];
 
             case 'icon':
                 $query = (new Query())
                     ->select(['id as source', 'iconId as target'])
-                    ->from(['craftnet_plugins'])
+                    ->from([Table::PLUGINS])
                     ->where(['id' => ArrayHelper::getColumn($sourceElements, 'id')])
                     ->andWhere(['not', ['iconId' => null]]);
                 return ['elementType' => Asset::class, 'map' => $query->all()];
@@ -136,8 +131,8 @@ class Plugin extends Element
             case 'primaryCategory':
                 $query = (new Query())
                     ->select(['p.id as source', 'pc.categoryId as target'])
-                    ->from(['craftnet_plugins p'])
-                    ->innerJoin(['craftnet_plugincategories pc'], '[[pc.pluginId]] = [[p.id]]')
+                    ->from([Table::PLUGINS . ' p'])
+                    ->innerJoin([Table::PLUGINCATEGORIES . ' pc'], '[[pc.pluginId]] = [[p.id]]')
                     ->where(['p.id' => ArrayHelper::getColumn($sourceElements, 'id')])
                     ->orderBy(['pc.sortOrder' => SORT_ASC]);
                 if ($handle === 'primaryCategory') {
@@ -148,8 +143,8 @@ class Plugin extends Element
             case 'screenshots':
                 $query = (new Query())
                     ->select(['p.id as source', 'ps.assetId as target'])
-                    ->from(['craftnet_plugins p'])
-                    ->innerJoin(['craftnet_pluginscreenshots ps'], '[[ps.pluginId]] = [[p.id]]')
+                    ->from([Table::PLUGINS . ' p'])
+                    ->innerJoin([Table::PLUGINSCREENSHOTS . ' ps'], '[[ps.pluginId]] = [[p.id]]')
                     ->where(['p.id' => ArrayHelper::getColumn($sourceElements, 'id')])
                     ->orderBy(['ps.sortOrder' => SORT_ASC]);
                 return ['elementType' => Asset::class, 'map' => $query->all()];
@@ -249,9 +244,6 @@ class Plugin extends Element
             'primaryCategory',
         ];
     }
-
-    // Properties
-    // =========================================================================
 
     /**
      * @var bool Whether the element is enabled
@@ -435,9 +427,6 @@ class Plugin extends Element
      * @var PluginHistory|null
      */
     private $_history;
-
-    // Public Methods
-    // =========================================================================
 
     /**
      * @return string
@@ -662,7 +651,7 @@ class Plugin extends Element
             return $this->_categories;
         }
         return $this->_categories = Category::find()
-            ->innerJoin(['craftnet_plugincategories pc'], [
+            ->innerJoin([Table::PLUGINCATEGORIES . ' pc'], [
                 'and',
                 '[[pc.categoryId]] = [[categories.id]]',
                 ['pc.pluginId' => $this->id],
@@ -688,7 +677,7 @@ class Plugin extends Element
             return $this->_screenshots;
         }
         return $this->_screenshots = Asset::find()
-            ->innerJoin(['craftnet_pluginscreenshots ps'], [
+            ->innerJoin([Table::PLUGINSCREENSHOTS . ' ps'], [
                 'and',
                 '[[ps.assetId]] = [[assets.id]]',
                 ['ps.pluginId' => $this->id],
@@ -971,29 +960,29 @@ class Plugin extends Element
         if ($isNew) {
             // Save a new row in the plugins table
             $db->createCommand()
-                ->insert('craftnet_plugins', $pluginData)
+                ->insert(Table::PLUGINS, $pluginData)
                 ->execute();
         } else {
             // Update the plugins table row
             $db->createCommand()
-                ->update('craftnet_plugins', $pluginData, ['id' => $this->id])
+                ->update(Table::PLUGIN, $pluginData, ['id' => $this->id])
                 ->execute();
 
             // Also delete any existing category/screenshot relations
             $db->createCommand()
-                ->delete('craftnet_plugincategories', ['pluginId' => $this->id])
+                ->delete(Table::PLUGINCATEGORIES, ['pluginId' => $this->id])
                 ->execute();
             $db->createCommand()
-                ->delete('craftnet_pluginscreenshots', ['pluginId' => $this->id])
+                ->delete(Table::PLUGINSCREENSHOTS, ['pluginId' => $this->id])
                 ->execute();
         }
 
         // Save the new category/screenshot relations
         $db->createCommand()
-            ->batchInsert('craftnet_plugincategories', ['pluginId', 'categoryId', 'sortOrder'], $categoryData)
+            ->batchInsert(Table::PLUGINCATEGORIES, ['pluginId', 'categoryId', 'sortOrder'], $categoryData)
             ->execute();
         $db->createCommand()
-            ->batchInsert('craftnet_pluginscreenshots', ['pluginId', 'assetId', 'sortOrder'], $screenshotData)
+            ->batchInsert(Table::PLUGINSCREENSHOTS, ['pluginId', 'assetId', 'sortOrder'], $screenshotData)
             ->execute();
 
         // Save the editions
@@ -1113,7 +1102,7 @@ EOD;
         }
 
         Craft::$app->getDb()->createCommand()
-            ->update('craftnet_plugins', ['published' => true], ['id' => $this->id])
+            ->update(Table::PLUGINS, ['published' => true], ['id' => $this->id])
             ->execute();
 
         $this->published = true;
@@ -1166,9 +1155,6 @@ EOD;
         }
         return Plugin::findOne($this->replacementId);
     }
-
-    // Protected Methods
-    // =========================================================================
 
     /**
      * @inheritdoc

@@ -7,6 +7,7 @@ use Composer\Semver\Semver;
 use craft\db\Migration;
 use craft\db\Query;
 use craft\helpers\ArrayHelper;
+use craftnet\db\Table;
 use craftnet\Module;
 
 /**
@@ -26,28 +27,28 @@ class m181205_190818_craft_plugin_compatibility extends Migration
      */
     public function safeUp()
     {
-        $this->dropColumn('craftnet_packages', 'latestVersion');
-        $this->dropColumn('craftnet_plugins', 'latestVersion');
+        $this->dropColumn(Table::PACKAGES, 'latestVersion');
+        $this->dropColumn(Table::PLUGINS, 'latestVersion');
 
-        $this->createTable('craftnet_pluginversionorder', [
+        $this->createTable(Table::PLUGINVERSIONORDER, [
             'versionId' => $this->integer()->notNull(),
             'pluginId' => $this->integer()->notNull(),
             'order' => $this->smallInteger()->unsigned()->notNull(),
             'stableOrder' => $this->smallInteger()->unsigned()->notNull(),
             'PRIMARY KEY([[versionId]])',
         ]);
-        $this->createIndex(null, 'craftnet_pluginversionorder', ['versionId', 'order']);
-        $this->createIndex(null, 'craftnet_pluginversionorder', ['versionId', 'stableOrder']);
-        $this->createIndex(null, 'craftnet_pluginversionorder', ['pluginId']);
-        $this->addForeignKey(null, 'craftnet_pluginversionorder', ['versionId'], 'craftnet_packageversions', ['id'], 'CASCADE');
+        $this->createIndex(null, Table::PLUGINVERSIONORDER, ['versionId', 'order']);
+        $this->createIndex(null, Table::PLUGINVERSIONORDER, ['versionId', 'stableOrder']);
+        $this->createIndex(null, Table::PLUGINVERSIONORDER, ['pluginId']);
+        $this->addForeignKey(null, Table::PLUGINVERSIONORDER, ['versionId'], Table::PACKAGEVERSIONS, ['id'], 'CASCADE');
 
-        $this->createTable('craftnet_pluginversioncompat', [
+        $this->createTable(Table::PLUGINVERSIONCOMPAT, [
             'pluginVersionId' => $this->integer()->notNull(),
             'cmsVersionId' => $this->integer()->notNull(),
             'PRIMARY KEY([[pluginVersionId]], [[cmsVersionId]])',
         ]);
-        $this->addForeignKey(null, 'craftnet_pluginversioncompat', ['cmsVersionId'], 'craftnet_packageversions', ['id'], 'CASCADE');
-        $this->addForeignKey(null, 'craftnet_pluginversioncompat', ['pluginVersionId'], 'craftnet_packageversions', ['id'], 'CASCADE');
+        $this->addForeignKey(null, Table::PLUGINVERSIONCOMPAT, ['cmsVersionId'], Table::PACKAGEVERSIONS, ['id'], 'CASCADE');
+        $this->addForeignKey(null, Table::PLUGINVERSIONCOMPAT, ['pluginVersionId'], Table::PACKAGEVERSIONS, ['id'], 'CASCADE');
 
         // get all the Craft releases
         echo '    > fetching Craft releases ... ';
@@ -58,9 +59,9 @@ class m181205_190818_craft_plugin_compatibility extends Migration
         echo '    > fetching plugin releases ... ';
         $pluginData = (new Query())
             ->select(['p.id as pluginId', 'v.id as versionId', 'v.normalizedVersion as version', 'v.stability', 'd.constraints'])
-            ->from(['craftnet_packageversions v'])
-            ->innerJoin(['craftnet_plugins p'], '[[p.packageId]] = [[v.packageId]]')
-            ->leftJoin(['craftnet_packagedeps d'], [
+            ->from([Table::PACKAGEVERSIONS . ' v'])
+            ->innerJoin([Table::PLUGINS . ' p'], '[[p.packageId]] = [[v.packageId]]')
+            ->leftJoin([Table::PACKAGEDEPS . ' d'], [
                 'and',
                 '[[d.versionId]] = [[v.id]]',
                 ['d.name' => 'craftcms/cms']
@@ -104,14 +105,14 @@ class m181205_190818_craft_plugin_compatibility extends Migration
         }
 
         // insert the data
-        $this->batchInsert('craftnet_pluginversionorder', [
+        $this->batchInsert(Table::PLUGINVERSIONORDER, [
             'versionId',
             'pluginId',
             'order',
             'stableOrder',
         ], $orderData, false);
 
-        $this->batchInsert('craftnet_pluginversioncompat', [
+        $this->batchInsert(Table::PLUGINVERSIONCOMPAT, [
             'pluginVersionId',
             'cmsVersionId',
         ], $compatData, false);

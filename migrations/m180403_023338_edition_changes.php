@@ -6,6 +6,7 @@ use Craft;
 use craft\db\Migration;
 use craft\db\Query;
 use craftnet\cms\CmsEdition;
+use craftnet\db\Table;
 use craftnet\Module;
 
 /**
@@ -34,7 +35,7 @@ class m180403_023338_edition_changes extends Migration
 
         echo "    > updating Solo licenses' edition handles ...";
         Craft::$app->getDb()->createCommand()
-            ->update('craftnet_cmslicenses', [
+            ->update(Table::CMSLICENSES, [
                 'editionHandle' => 'solo'
             ], [
                 'editionId' => $editions['personal']->id
@@ -44,7 +45,7 @@ class m180403_023338_edition_changes extends Migration
 
         $clientLicenseQuery = (new Query())
             ->select(['id'])
-            ->from(['craftnet_cmslicenses'])
+            ->from([Table::CMSLICENSES])
             ->where(['editionId' => $editions['client']->id]);
         echo "    > upgrading {$clientLicenseQuery->count()} Client licenses ...\n";
 

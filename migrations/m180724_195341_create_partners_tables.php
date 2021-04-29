@@ -3,6 +3,7 @@
 namespace craft\contentmigrations;
 
 use craft\db\Migration;
+use craftnet\db\Table;
 
 /**
  * m180724_195341_create_partners_tables migration.
@@ -14,7 +15,7 @@ class m180724_195341_create_partners_tables extends Migration
      */
     public function safeUp()
     {
-        $this->createTable('craftnet_partners', [
+        $this->createTable(Table::PARTNERS, [
             'id' => $this->integer()->notNull(),
             'ownerId' => $this->integer()->notNull(),
             'businessName' => $this->string(),
@@ -33,52 +34,52 @@ class m180724_195341_create_partners_tables extends Migration
         // Sizes ---------------------------------------------------------------
 
         // Holds available options
-        $this->createTable('craftnet_partnersizes', [
+        $this->createTable(Table::PARTNERSIZES, [
             'id' => $this->primaryKey(),
             'title' => $this->string()->notNull(),
         ]);
 
-        $this->batchInsert('craftnet_partnersizes', ['id', 'title'], [
+        $this->batchInsert(Table::PARTNERSIZES, ['id', 'title'], [
             [1, 'Boutique'],
             [2, 'Agency'],
             [3, 'Large Agency'],
         ], false);
 
         // Join table
-        $this->createTable('craftnet_partners_partnersizes', [
+        $this->createTable(Table::PARTNERS_PARTNERSIZES, [
             'partnerId' => $this->integer()->notNull(),
             'partnerSizesId' => $this->integer()->notNull(),
             'PRIMARY KEY([[partnerId]], [[partnerSizesId]])',
         ]);
 
-        $this->addForeignKey('craftnet_partners_partnersizes_partnerId_fk', 'craftnet_partners_partnersizes', ['partnerId'], 'craftnet_partners', ['id'], 'CASCADE');
+        $this->addForeignKey('craftnet_partners_partnersizes_partnerId_fk', Table::PARTNERS_PARTNERSIZES, ['partnerId'], Table::PARTNERS, ['id'], 'CASCADE');
 
         // Capabilities --------------------------------------------------------
 
-        $this->createTable('craftnet_partnercapabilities', [
+        $this->createTable(Table::PARTNERCAPABILITIES, [
             'id' => $this->primaryKey(),
             'title' => $this->string()->notNull(),
         ]);
 
-        $this->batchInsert('craftnet_partnercapabilities', ['id', 'title'], [
+        $this->batchInsert(Table::PARTNERCAPABILITIES, ['id', 'title'], [
             [1, 'Commerce'],
             [2, 'Full Service'],
             [3, 'Custom Development'],
             [4, 'Contract Work'],
         ], false);
 
-        $this->createTable('craftnet_partners_partnercapabilities', [
+        $this->createTable(Table::PARTNERS_PARTNERCAPABILITIES, [
             'partnerId' => $this->integer()->notNull(),
             'partnercapabilitiesId' => $this->integer()->notNull(),
             'PRIMARY KEY([[partnerId]], [[partnercapabilitiesId]])',
         ]);
 
-        $this->addForeignKey('partners_capabilities_partnerId_fk', 'craftnet_partners_partnercapabilities', ['partnerId'], 'craftnet_partners', ['id'], 'CASCADE');
-        $this->addForeignKey('partners_capabilities_partnercapabilitiesId_fk', 'craftnet_partners_partnercapabilities', ['partnercapabilitiesId'], 'craftnet_partnercapabilities', ['id'], 'CASCADE');
+        $this->addForeignKey('partners_capabilities_partnerId_fk', Table::PARTNERS_PARTNERCAPABILITIES, ['partnerId'], Table::PARTNERS, ['id'], 'CASCADE');
+        $this->addForeignKey('partners_capabilities_partnercapabilitiesId_fk', Table::PARTNERS_PARTNERCAPABILITIES, ['partnercapabilitiesId'], Table::PARTNERCAPABILITIES, ['id'], 'CASCADE');
 
         // Locations -----------------------------------------------------------
 
-        $this->createTable('craftnet_partnerlocations', [
+        $this->createTable(Table::PARTNERLOCATIONS, [
             'id' => $this->primaryKey(),
             'partnerId' => $this->integer()->notNull(),
             'title' => $this->string(),
@@ -95,11 +96,11 @@ class m180724_195341_create_partners_tables extends Migration
             'uid' => $this->uid(),
         ]);
 
-        $this->addForeignKey('craftnet_partnerlocations_partnerId_fk', 'craftnet_partnerlocations', ['partnerId'], 'craftnet_partners', ['id'], 'CASCADE');
+        $this->addForeignKey('craftnet_partnerlocations_partnerId_fk', Table::PARTNERLOCATIONS, ['partnerId'], Table::PARTNERS, ['id'], 'CASCADE');
 
         // Projects ------------------------------------------------------------
 
-        $this->createTable('craftnet_partnerprojects', [
+        $this->createTable(Table::PARTNERPROJECTS, [
             'id' => $this->primaryKey(),
             'partnerId' => $this->integer()->notNull(),
             'url' => $this->string(),
@@ -109,9 +110,9 @@ class m180724_195341_create_partners_tables extends Migration
             'uid' => $this->uid(),
         ]);
 
-        $this->addForeignKey('craftnet_partnerprojects_partnerId_fk', 'craftnet_partnerprojects', ['partnerId'], 'craftnet_partners', ['id'], 'CASCADE');
+        $this->addForeignKey('craftnet_partnerprojects_partnerId_fk', Table::PARTNERPROJECTS, ['partnerId'], Table::PARTNERS, ['id'], 'CASCADE');
 
-        $this->createTable('craftnet_partnerprojectscreenshots', [
+        $this->createTable(Table::PARTNERPROJECTSCREENSHOTS, [
             'id' => $this->primaryKey(),
             'projectId' => $this->integer()->notNull(),
             'assetId' => $this->integer()->notNull(),
@@ -121,7 +122,7 @@ class m180724_195341_create_partners_tables extends Migration
             'uid' => $this->uid(),
         ]);
 
-        $this->addForeignKey('craftnet_partnerprojectscreenshots_projectId_fk', 'craftnet_partnerprojectscreenshots', ['projectId'], 'craftnet_partnerprojects', ['id'], 'CASCADE');
+        $this->addForeignKey('craftnet_partnerprojectscreenshots_projectId_fk', Table::PARTNERPROJECTSCREENSHOTS, ['projectId'], Table::PARTNERPROJECTS, ['id'], 'CASCADE');
     }
 
     /**
@@ -133,13 +134,13 @@ class m180724_195341_create_partners_tables extends Migration
 //        return false;
 
         // TODO: remove droptables when ready
-        $this->dropTable('craftnet_partners_partnersizes');
-        $this->dropTable('craftnet_partnersizes');
-        $this->dropTable('craftnet_partners_partnercapabilities');
-        $this->dropTable('craftnet_partnercapabilities');
-        $this->dropTable('craftnet_partnerlocations');
-        $this->dropTable('craftnet_partnerprojectscreenshots');
-        $this->dropTable('craftnet_partnerprojects');
-        $this->dropTable('craftnet_partners');
+        $this->dropTable(Table::PARTNERS_PARTNERSIZES);
+        $this->dropTable(Table::PARTNERSIZES);
+        $this->dropTable(Table::PARTNERS_PARTNERCAPABILITIES);
+        $this->dropTable(Table::PARTNERCAPABILITIES);
+        $this->dropTable(Table::PARTNERLOCATIONS);
+        $this->dropTable(Table::PARTNERPROJECTSCREENSHOTS);
+        $this->dropTable(Table::PARTNERPROJECTS);
+        $this->dropTable(Table::PARTNERS);
     }
 }

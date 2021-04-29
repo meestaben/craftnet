@@ -3,6 +3,7 @@
 namespace craft\contentmigrations;
 
 use craft\db\Migration;
+use craftnet\db\Table;
 
 /**
  * m181019_211606_partner_bio_columns migration.
@@ -15,12 +16,12 @@ class m181019_211606_partner_bio_columns extends Migration
     public function safeUp()
     {
         $this->addColumn(
-            'craftnet_partners',
+            Table::PARTNERS,
             'shortBio',
             $this->string()->after('businessSummary')
         );
 
-        $this->renameColumn('craftnet_partners', 'businessSummary', 'fullBio');
+        $this->renameColumn(Table::PARTNERS, 'businessSummary', 'fullBio');
     }
 
     /**
@@ -28,8 +29,8 @@ class m181019_211606_partner_bio_columns extends Migration
      */
     public function safeDown()
     {
-        $this->dropColumn('craftnet_partners', 'shortBio');
-        $this->renameColumn('craftnet_partners', 'fullBio', 'businessSummary');
+        $this->dropColumn(Table::PARTNERS, 'shortBio');
+        $this->renameColumn(Table::PARTNERS, 'fullBio', 'businessSummary');
 
         return true;
     }

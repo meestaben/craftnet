@@ -5,12 +5,13 @@ namespace craftnet\partners;
 use Craft;
 use craft\base\Model;
 use craft\db\Query;
+use craftnet\db\Table;
 use JsonSerializable;
 use yii\helpers\ArrayHelper;
 
 class PartnerHistory extends Model implements JsonSerializable
 {
-    protected static $table = 'craftnet_partnerhistory';
+    protected static $table = Table::PARTNERHISTORY;
 
     public $id;
     public $partnerId;

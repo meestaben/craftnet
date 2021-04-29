@@ -6,6 +6,7 @@ use Craft;
 use craft\base\Element;
 use craft\elements\User;
 use craft\events\DefineRulesEvent;
+use craftnet\db\Table;
 use craftnet\developers\EmailVerifier;
 use craftnet\developers\FundsManager;
 use craftnet\helpers\KeyHelper;
@@ -213,7 +214,7 @@ class UserBehavior extends Behavior
     public function saveDeveloperInfo()
     {
         Craft::$app->getDb()->createCommand()
-            ->upsert('craftnet_developers', [
+            ->upsert(Table::DEVELOPERS, [
                 'id' => $this->owner->id,
             ], [
                 'country' => $this->country,

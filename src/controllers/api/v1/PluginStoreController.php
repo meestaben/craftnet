@@ -9,6 +9,7 @@ use craft\elements\Category;
 use craft\elements\db\EntryQuery;
 use craft\elements\Entry;
 use craftnet\controllers\api\BaseApiController;
+use craftnet\db\Table;
 use craftnet\helpers\Cache;
 use craftnet\Module;
 use craftnet\plugins\Plugin;
@@ -23,9 +24,6 @@ use yii\web\Response;
  */
 class PluginStoreController extends BaseApiController
 {
-    // Public Methods
-    // =========================================================================
-
     public function runAction($id, $params = []): Response
     {
         if (!in_array($id, [
@@ -198,15 +196,15 @@ class PluginStoreController extends BaseApiController
             if ($cmsRelease) {
                 $data['latestCompatibleVersion'] = (new Query)
                     ->select(['v.version'])
-                    ->from(['v' => 'craftnet_packageversions'])
-                    ->innerJoin(['craftnet_pluginversionorder vo'], '[[vo.versionId]] = [[v.id]]')
+                    ->from(['v' => Table::PACKAGEVERSIONS])
+                    ->innerJoin([Table::PLUGINVERSIONORDER . ' vo'], '[[vo.versionId]] = [[v.id]]')
                     ->where(['v.packageId' => $data['packageId']])
                     ->andWhere([
                         'vo.stableOrder' => (new Query())
                             ->select(['max([[s_vo.stableOrder]])'])
-                            ->from(['s_vo' => 'craftnet_pluginversionorder'])
-                            ->innerJoin(['craftnet_packageversions s_v'], '[[s_v.id]] = [[s_vo.versionId]]')
-                            ->innerJoin(['craftnet_pluginversioncompat s_vc'], '[[s_vc.pluginVersionId]] = [[s_v.id]]')
+                            ->from(['s_vo' => Table::PLUGINVERSIONORDER])
+                            ->innerJoin([Table::PACKAGEVERSIONS . ' s_v'], '[[s_v.id]] = [[s_vo.versionId]]')
+                            ->innerJoin([Table::PLUGINVERSIONCOMPAT . ' s_vc'], '[[s_vc.pluginVersionId]] = [[s_v.id]]')
                             ->where(['s_v.packageId' => $data['packageId']])
                             ->andWhere(['s_vc.cmsVersionId' => $cmsRelease->id])
                             ->groupBy(['s_v.packageId']),
@@ -222,7 +220,7 @@ class PluginStoreController extends BaseApiController
                 ) {
                     $cmsConstraints = (new Query())
                         ->select(['constraints'])
-                        ->from(['craftnet_packagedeps'])
+                        ->from([Table::PACKAGEDEPS])
                         ->where([
                             'versionId' => $latestRelease->id,
                             'name' => 'craftcms/cms',
@@ -405,7 +403,7 @@ class PluginStoreController extends BaseApiController
             $pluginHandles = explode(',', $pluginHandles);
 
             $plugins = $this->_createPluginQuery()
-                ->andWhere(['craftnet_plugins.handle' => $pluginHandles])
+                ->andWhere([Table::PLUGINS . '.handle' => $pluginHandles])
                 ->all();
 
             $data = $this->transformPlugins($plugins);
@@ -414,9 +412,6 @@ class PluginStoreController extends BaseApiController
 
         return $this->asJson($data);
     }
-
-    // Private Methods
-    // =========================================================================
 
     /**
      * @return EntryQuery
@@ -527,11 +522,11 @@ class PluginStoreController extends BaseApiController
                 return $query;
             case 'dynamic':
                 $query = $this->_createPluginQuery()
-                    ->andWhere(['not', ['craftnet_plugins.dateApproved' => null]])
+                    ->andWhere(['not', [Table::PLUGINS . '.dateApproved' => null]])
                     ->limit(20);
                 switch ($entry->slug) {
                     case 'recently-added':
-                        $query->orderBy(['craftnet_plugins.dateApproved' => SORT_DESC]);
+                        $query->orderBy([Table::PLUGINS . '.dateApproved' => SORT_DESC]);
                         break;
                     case 'recently-updated':
                         $query->orderBy(['latestVersionTime' => SORT_DESC]);

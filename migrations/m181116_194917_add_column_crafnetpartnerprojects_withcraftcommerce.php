@@ -3,6 +3,7 @@
 namespace craft\contentmigrations;
 
 use craft\db\Migration;
+use craftnet\db\Table;
 
 /**
  * m181116_194917_add_column_crafnetpartnerprojects_withcraftcommerce migration.
@@ -15,7 +16,7 @@ class m181116_194917_add_column_crafnetpartnerprojects_withcraftcommerce extends
     public function safeUp()
     {
         $this->addColumn(
-            'craftnet_partnerprojects',
+            Table::PARTNERPROJECTS,
             'withCraftCommerce',
             $this->boolean()->defaultValue(false)->notNull()
         );
@@ -26,7 +27,7 @@ class m181116_194917_add_column_crafnetpartnerprojects_withcraftcommerce extends
      */
     public function safeDown()
     {
-        $this->dropColumn('craftnet_partnerprojects', 'withCraftCommerce');
+        $this->dropColumn(Table::PARTNERPROJECTS, 'withCraftCommerce');
 
         return true;
     }

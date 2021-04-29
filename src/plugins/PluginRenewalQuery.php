@@ -4,6 +4,7 @@ namespace craftnet\plugins;
 
 use craft\elements\db\ElementQuery;
 use craft\helpers\Db;
+use craftnet\db\Table;
 use yii\db\Connection;
 
 /**
@@ -36,13 +37,13 @@ class PluginRenewalQuery extends ElementQuery
         $this->joinElementTable('craftnet_pluginrenewals');
 
         $this->query->select([
-            'craftnet_pluginrenewals.pluginId',
-            'craftnet_pluginrenewals.editionId',
-            'craftnet_pluginrenewals.price',
+            Table::PLUGINRENEWALS . '.pluginId',
+            Table::PLUGINRENEWALS . '.editionId',
+            Table::PLUGINRENEWALS . '.price',
         ]);
 
         if ($this->editionId) {
-            $this->subQuery->andWhere(Db::parseParam('craftnet_pluginrenewals.editionId', $this->editionId));
+            $this->subQuery->andWhere(Db::parseParam(Table::PLUGINRENEWALS . '.editionId', $this->editionId));
         }
 
         return parent::beforePrepare();

@@ -13,6 +13,8 @@ use craftnet\plugins\Plugin;
 use yii\console\Controller;
 use yii\console\ExitCode;
 use yii\helpers\Console;
+use craftnet\db\Table;
+use craft\commerce\db\Table as CommerceTable;
 
 /**
  * Show information about accounts
@@ -95,21 +97,21 @@ class AccountsController extends Controller
         $db = Craft::$app->getDb();
 
         $customerTables = [
-            'commerce_customer_discountuses',
-            'commerce_customers_addresses',
-            'commerce_orderhistories',
-            'commerce_orders',
+            CommerceTable::CUSTOMER_DISCOUNTUSES,
+            CommerceTable::CUSTOMERS_ADDRESSES,
+            CommerceTable::ORDERHISTORIES,
+            CommerceTable::ORDERS,
         ];
 
         $userTables = [
-            'commerce_paymentsources',
-            'commerce_subscriptions',
-            'commerce_transactions',
-            'craftnet_cmslicenses' => 'ownerId',
-            'craftnet_pluginlicenses' => 'ownerId',
-            'craftnet_plugins' => 'developerId',
-            'craftnet_developerledger' => 'developerId',
-            'craftnet_packages' => 'developerId',
+            CommerceTable::PAYMENTSOURCES,
+            CommerceTable::SUBSCRIPTIONS,
+            CommerceTable::TRANSACTIONS,
+            Table::CMSLICENSES => 'ownerId',
+            Table::PLUGINLICENSES => 'ownerId',
+            Table::PLUGINS => 'developerId',
+            Table::DEVELOPERLEDGER => 'developerId',
+            Table::PACKAGES => 'developerId',
         ];
 
         $customer1 = $commerce->getCustomers()->getCustomerByUserId($id1);
@@ -128,7 +130,7 @@ class AccountsController extends Controller
             $commerce->getCustomers()->deleteCustomer($customer1);
             $this->stdout('done' . PHP_EOL . PHP_EOL, Console::FG_GREEN);
         } else if ($customer1) {
-            $userTables[] = 'commerce_customers';
+            $userTables[] = CommerceTable::CUSTOMERS;
         }
 
         foreach ($userTables as $table => $column) {

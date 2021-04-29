@@ -7,6 +7,7 @@ use craft\db\Query;
 use craft\helpers\DateTimeHelper;
 use craft\helpers\Db;
 use craft\helpers\Json;
+use craftnet\db\Table;
 
 /**
  * m180502_180541_fix_plugin_license_expiry_dates migration.
@@ -30,7 +31,7 @@ class m180502_180541_fix_plugin_license_expiry_dates extends Migration
             $body = Json::decode($request['body']);
             $licenseId = (new Query())
                 ->select(['id'])
-                ->from('craftnet_pluginlicenses')
+                ->from(Table::PLUGINLICENSES)
                 ->where([
                     'pluginHandle' => $body['plugin'],
                     'email' => $body['email'],
@@ -48,7 +49,7 @@ class m180502_180541_fix_plugin_license_expiry_dates extends Migration
             $expiresOn = DateTimeHelper::toDateTime($body['expiresOn']);
             $expiresOnSql = Db::prepareDateForDb($expiresOn);
             echo "    > setting expiry date for license {$licenseId} to {$expiresOnSql}\n";
-            $this->update('craftnet_pluginlicenses', [
+            $this->update(Table::PLUGINLICENSES, [
                 'expiresOn' => $expiresOnSql
             ], [
                 'id' => $licenseId,

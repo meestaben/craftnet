@@ -3,6 +3,7 @@
 namespace craft\contentmigrations;
 
 use craft\db\Migration;
+use craftnet\db\Table;
 
 /**
  * m200703_222854_add_license_status migration.
@@ -14,12 +15,12 @@ class m200703_222854_add_license_status extends Migration
      */
     public function safeUp()
     {
-        if (!$this->db->columnExists('{{%craftnet_cmslicenses}}', 'lastStatus')) {
-            $this->addColumn('{{%craftnet_cmslicenses}}', 'lastStatus', $this->string());
+        if (!$this->db->columnExists(Table::CMSLICENSES, 'lastStatus')) {
+            $this->addColumn(Table::CMSLICENSES, 'lastStatus', $this->string());
         }
 
-        if (!$this->db->columnExists('{{%craftnet_pluginlicenses}}', 'lastStatus')) {
-            $this->addColumn('{{%craftnet_pluginlicenses}}', 'lastStatus', $this->string());
+        if (!$this->db->columnExists(Table::PLUGINLICENSES, 'lastStatus')) {
+            $this->addColumn(Table::PLUGINLICENSES, 'lastStatus', $this->string());
         }
     }
 

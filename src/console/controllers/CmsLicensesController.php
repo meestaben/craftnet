@@ -8,6 +8,7 @@ use craft\elements\User;
 use craft\helpers\DateTimeHelper;
 use craftnet\behaviors\UserBehavior;
 use craftnet\cms\CmsLicense;
+use craftnet\db\Table;
 use craftnet\errors\LicenseNotFoundException;
 use craftnet\helpers\KeyHelper;
 use craftnet\Module;
@@ -205,7 +206,7 @@ class CmsLicensesController extends Controller
         } catch (InvalidArgumentException $e) {
             $licenses = (new Query())
                 ->select(['key', 'domain'])
-                ->from(['craftnet_cmslicenses'])
+                ->from([Table::CMSLICENSES])
                 ->where(['like', 'key', $key . '%', false])
                 ->all();
 

@@ -3,6 +3,7 @@
 namespace craft\contentmigrations;
 
 use craft\db\Migration;
+use craftnet\db\Table;
 
 /**
  * m190612_121546_published_plugins migration.
@@ -14,7 +15,7 @@ class m190612_121546_published_plugins extends Migration
      */
     public function safeUp()
     {
-        $this->addColumn('craftnet_plugins', 'published', $this->boolean()->defaultValue(false)->notNull());
+        $this->addColumn(Table::PLUGINS, 'published', $this->boolean()->defaultValue(false)->notNull());
         $sql = <<<SQL
 update craftnet_plugins p
 SET published = true

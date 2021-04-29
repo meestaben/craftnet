@@ -7,6 +7,8 @@ use craft\db\Query;
 use craft\helpers\DateTimeHelper;
 use craft\helpers\Db;
 use craftnet\cms\CmsLicenseManager;
+use craftnet\db\Table;
+use craft\commerce\db\Table as CommerceTable;
 
 /**
  * m180417_212548_fix_expiresOn_values migration.
@@ -20,9 +22,9 @@ class m180417_212548_fix_expiresOn_values extends Migration
     {
         $cmsLicenses = (new Query())
             ->select(['l.id', 'l.key', 'li.dateCreated'])
-            ->from(['craftnet_cmslicenses l'])
-            ->innerJoin('craftnet_cmslicenses_lineitems l_li', '[[l_li.licenseId]] = [[l.id]]')
-            ->innerJoin('commerce_lineitems li', '[[li.id]] = [[l_li.lineItemId]]')
+            ->from([Table::CMSLICENSES . ' l'])
+            ->innerJoin(Table::CMSLICENSES_LINEITEMS . ' l_li', '[[l_li.licenseId]] = [[l.id]]')
+            ->innerJoin(CommerceTable::LINEITEMS . ' li', '[[li.id]] = [[l_li.lineItemId]]')
             ->where(['l.editionHandle' => CmsLicenseManager::EDITION_PRO, 'l.expirable' => true, 'expiresOn' => null])
             ->all();
 
@@ -30,7 +32,7 @@ class m180417_212548_fix_expiresOn_values extends Migration
             $shortKey = substr($license['key'], 0, 10);
             $expiresOn = DateTimeHelper::toDateTime($license['dateCreated'])->modify('+1 year');
             echo "    > setting expiry date for {$shortKey} ...\n  ";
-            $this->update('craftnet_cmslicenses', [
+            $this->update(Table::CMSLICENSES, [
                 'expiresOn' => Db::prepareDateForDb($expiresOn),
             ], [
                 'id' => $license['id'],
@@ -39,14 +41,14 @@ class m180417_212548_fix_expiresOn_values extends Migration
 
         $pluginLicenses = (new Query())
             ->select(['id', 'key', 'dateCreated'])
-            ->from(['craftnet_pluginlicenses'])
+            ->from([Table::PLUGINLICENSES])
             ->where(['expirable' => true, 'expiresOn' => null])
             ->all();
 
         foreach ($pluginLicenses as $license) {
             $expiresOn = DateTimeHelper::toDateTime($license['dateCreated'])->modify('+1 year');
             echo "    > setting expiry date for {$license['key']} ...\n  ";
-            $this->update('craftnet_pluginlicenses', [
+            $this->update(Table::PLUGINLICENSES, [
                 'expiresOn' => Db::prepareDateForDb($expiresOn),
             ], [
                 'id' => $license['id'],
