@@ -1,4 +1,4 @@
-dateModified: 1619731846
+dateModified: 1619733051
 email:
   fromEmail: support@pixelandtonic.com
   fromName: 'Pixel & Tonic'
@@ -74,7 +74,7 @@ plugins:
   webhooks:
     enabled: true
     licenseKey: null
-    schemaVersion: 2.3.0
+    schemaVersion: 2.3.1
     settings: null
 system:
   edition: pro
