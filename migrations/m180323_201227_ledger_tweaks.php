@@ -3,6 +3,7 @@
 namespace craft\contentmigrations;
 
 use craft\db\Migration;
+use craftnet\db\Table;
 
 /**
  * m180323_201227_ledger_tweaks migration.
@@ -14,9 +15,9 @@ class m180323_201227_ledger_tweaks extends Migration
      */
     public function safeUp()
     {
-        $this->addColumn('craftnet_developerledger', 'type', $this->string()->null());
-        $this->addColumn('craftnet_developerledger', 'country', $this->char(2)->null());
-        $this->addColumn('craftnet_developerledger', 'isEuMember', $this->boolean()->null());
+        $this->addColumn(Table::DEVELOPERLEDGER, 'type', $this->string()->null());
+        $this->addColumn(Table::DEVELOPERLEDGER, 'country', $this->char(2)->null());
+        $this->addColumn(Table::DEVELOPERLEDGER, 'isEuMember', $this->boolean()->null());
     }
 
     /**

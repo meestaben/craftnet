@@ -5,6 +5,7 @@ namespace craftnet\controllers\api\v1;
 use Composer\Semver\Comparator;
 use craft\db\Query;
 use craftnet\controllers\api\BaseApiController;
+use craftnet\db\Table;
 use craftnet\Module;
 use yii\web\BadRequestHttpException;
 use yii\web\Response;
@@ -102,7 +103,7 @@ class ComposerWhitelistController extends BaseApiController
             //->select(['pd.name', 'pd.constraints'])
             ->select(['pd.name'])
             ->distinct()
-            ->from(['craftnet_packagedeps pd'])
+            ->from([Table::PACKAGEDEPS . ' pd'])
             ->where([
                 'and',
                 ['not in', 'pd.name', array_keys($this->_ignoreDeps)],
@@ -137,7 +138,7 @@ class ComposerWhitelistController extends BaseApiController
 
         // Add their deps to the mix as well
         $deps = $this->_createDepQuery()
-            ->innerJoin('craftnet_packages p', '[[p.id]] = [[pd.packageId]]')
+            ->innerJoin(Table::PACKAGES . ' p', '[[p.id]] = [[pd.packageId]]')
             ->andWhere(['p.name' => $deps])
             ->column();
 

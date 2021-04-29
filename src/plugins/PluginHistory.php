@@ -4,14 +4,12 @@ namespace craftnet\plugins;
 
 use Craft;
 use craft\db\Query;
+use craftnet\db\Table;
 use yii\base\BaseObject;
 use yii\base\NotSupportedException;
 
 class PluginHistory extends BaseObject implements \IteratorAggregate, \ArrayAccess, \Countable
 {
-    // Properties
-    // =========================================================================
-
     /**
      * @var Plugin
      */
@@ -21,9 +19,6 @@ class PluginHistory extends BaseObject implements \IteratorAggregate, \ArrayAcce
      * @var array|null
      */
     private $_history;
-
-    // Public Methods
-    // =========================================================================
 
     /**
      * @param Plugin $plugin
@@ -46,7 +41,7 @@ class PluginHistory extends BaseObject implements \IteratorAggregate, \ArrayAcce
     public function push(string $note, string $devComments = null)
     {
         Craft::$app->getDb()->createCommand()
-            ->insert('craftnet_pluginhistory', [
+            ->insert(Table::PLUGINHISTORY, [
                 'pluginId' => $this->_plugin->id,
                 'note' => $note,
                 'devComments' => $devComments,
@@ -105,9 +100,6 @@ class PluginHistory extends BaseObject implements \IteratorAggregate, \ArrayAcce
         return count($this->_getHistory());
     }
 
-    // Private Methods
-    // =========================================================================
-
     /**
      * Returns the history data.
      *
@@ -125,7 +117,7 @@ class PluginHistory extends BaseObject implements \IteratorAggregate, \ArrayAcce
 
         return $this->_history = (new Query())
             ->select(['note', 'devComments', 'dateCreated'])
-            ->from(['craftnet_pluginhistory'])
+            ->from([Table::PLUGINHISTORY])
             ->where(['pluginId' => $this->_plugin->id])
             ->orderBy(['dateCreated' => SORT_DESC])
             ->all();

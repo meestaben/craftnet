@@ -3,6 +3,7 @@
 namespace craft\contentmigrations;
 
 use craft\db\Migration;
+use craftnet\db\Table;
 
 /**
  * m181019_015807_add_column_isregisteredbusiness migration.
@@ -15,7 +16,7 @@ class m181019_015807_add_column_isregisteredbusiness extends Migration
     public function safeUp()
     {
         $this->addColumn(
-            'craftnet_partners',
+            Table::PARTNERS,
             'isRegisteredBusiness',
             $this->boolean()->defaultValue(false)->after('isEnterpriseVerified')
         );
@@ -26,7 +27,7 @@ class m181019_015807_add_column_isregisteredbusiness extends Migration
      */
     public function safeDown()
     {
-        $this->dropcolumn('craftnet_partners', 'isRegisteredBusiness');
+        $this->dropcolumn(Table::PARTNERS, 'isRegisteredBusiness');
 
         return true;
     }

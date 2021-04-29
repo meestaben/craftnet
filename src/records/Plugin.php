@@ -10,6 +10,7 @@ namespace craftnet\records;
 use craft\db\ActiveRecord;
 use craft\records\Asset;
 use craft\records\User;
+use craftnet\db\Table;
 use yii\db\ActiveQueryInterface;
 
 /**
@@ -37,9 +38,6 @@ use yii\db\ActiveQueryInterface;
  */
 class Plugin extends ActiveRecord
 {
-    // Public Methods
-    // =========================================================================
-
     /**
      * @inheritdoc
      *
@@ -47,7 +45,7 @@ class Plugin extends ActiveRecord
      */
     public static function tableName(): string
     {
-        return 'craftnet_plugins';
+        return Table::PLUGINS;
     }
 
     /**

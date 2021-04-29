@@ -3,6 +3,7 @@
 namespace craft\contentmigrations;
 
 use craft\db\Migration;
+use craftnet\db\Table;
 
 /**
  * m181108_155858_insert_partner_capability migration.
@@ -14,7 +15,7 @@ class m181108_155858_insert_partner_capability extends Migration
      */
     public function safeUp()
     {
-        $this->insert('craftnet_partnercapabilities', [
+        $this->insert(Table::PARTNERCAPABILITIES, [
             'id' => 5,
             'title' => 'Ongoing Maintenance'
         ], false);
@@ -25,7 +26,7 @@ class m181108_155858_insert_partner_capability extends Migration
      */
     public function safeDown()
     {
-        $this->delete('craftnet_partnercapabilities', ['id' => 5]);
+        $this->delete(Table::PARTNERCAPABILITIES, ['id' => 5]);
         return true;
     }
 }

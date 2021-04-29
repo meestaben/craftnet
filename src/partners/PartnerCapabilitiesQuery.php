@@ -5,6 +5,7 @@ namespace craftnet\partners;
 
 use craft\db\Query;
 use craft\helpers\ArrayHelper;
+use craftnet\db\Table;
 
 /**
  * Class PartnerCapabilites
@@ -54,11 +55,11 @@ class PartnerCapabilitiesQuery extends Query
     {
         $this
             ->select(['pc.id id', 'pc.title title'])
-            ->from('craftnet_partnercapabilities pc');
+            ->from(Table::PARTNERCAPABILITIES . ' pc');
 
         if (isset($this->_partnerId)) {
             $this
-                ->innerJoin('craftnet_partners_partnercapabilities p_pc', '[[p_pc.partnercapabilitiesId]] = [[pc.id]]')
+                ->innerJoin(Table::PARTNERS_PARTNERCAPABILITIES . ' p_pc', '[[p_pc.partnercapabilitiesId]] = [[pc.id]]')
                 ->where(['p_pc.partnerId' => $this->_partnerId])
                 ->andWhere('[[pc.id]] = [[p_pc.partnercapabilitiesId]]');
         }

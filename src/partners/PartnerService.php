@@ -13,6 +13,7 @@ use craft\helpers\ElementHelper;
 use craft\helpers\StringHelper;
 use craft\web\Request;
 use craft\web\UploadedFile;
+use craftnet\db\Table;
 use yii\base\Exception;
 use yii\helpers\ArrayHelper;
 
@@ -40,7 +41,7 @@ class PartnerService
 
         $screenshots = Asset::find()
             ->addSelect(['pps.projectId'])
-            ->innerJoin(['pps' => 'craftnet_partnerprojectscreenshots'], '[[pps.assetId]] = [[elements.id]]')
+            ->innerJoin(['pps' => Table::PARTNERPROJECTSCREENSHOTS], '[[pps.assetId]] = [[elements.id]]')
             ->andWhere(['pps.projectId' => ArrayHelper::getColumn($projects, 'id')])
             ->orderBy(['pps.sortOrder' => SORT_ASC])
             ->all();

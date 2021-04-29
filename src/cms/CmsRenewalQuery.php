@@ -4,6 +4,7 @@ namespace craftnet\cms;
 
 use craft\elements\db\ElementQuery;
 use craft\helpers\Db;
+use craftnet\db\Table;
 use yii\db\Connection;
 
 /**
@@ -36,12 +37,12 @@ class CmsRenewalQuery extends ElementQuery
         $this->joinElementTable('craftnet_cmsrenewals');
 
         $this->query->select([
-            'craftnet_cmsrenewals.editionId',
-            'craftnet_cmsrenewals.price',
+            Table::CMSRENEWALS . '.editionId',
+            Table::CMSRENEWALS . '.price',
         ]);
 
         if ($this->editionId) {
-            $this->subQuery->andWhere(Db::parseParam('craftnet_cmsrenewals.editionId', $this->editionId));
+            $this->subQuery->andWhere(Db::parseParam(Table::CMSRENEWALS . '.editionId', $this->editionId));
         }
 
         return parent::beforePrepare();

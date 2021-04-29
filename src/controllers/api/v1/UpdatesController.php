@@ -9,6 +9,7 @@ use craft\helpers\ArrayHelper;
 use craft\models\Update;
 use craftnet\composer\PackageRelease;
 use craftnet\controllers\api\BaseApiController;
+use craftnet\db\Table;
 use craftnet\errors\ValidationException;
 use craftnet\plugins\Plugin;
 use yii\web\BadRequestHttpException;
@@ -145,7 +146,7 @@ class UpdatesController extends BaseApiController
         if ($latest !== null && version_compare($this->cmsVersion, '3.5.15', '>=')) {
             $info['phpConstraint'] = (new Query())
                 ->select(['constraints'])
-                ->from(['craftnet_packagedeps'])
+                ->from([Table::PACKAGEDEPS])
                 ->where(['versionId' => $latest->id, 'name' => 'php'])
                 ->scalar() ?: null;
         }

@@ -19,6 +19,7 @@ use craft\helpers\Json;
 use craft\web\Controller;
 use craftnet\behaviors\UserBehavior;
 use craftnet\cms\CmsLicense;
+use craftnet\db\Table;
 use yii\db\Expression;
 use yii\web\BadRequestHttpException;
 use yii\web\Response;
@@ -155,7 +156,7 @@ class FrontController extends Controller
         }
 
         $results = (new Query())
-            ->from(['craftnet_cmslicenses'])
+            ->from([Table::CMSLICENSES])
             ->where($emailCondition)
             ->andWhere(['editionHandle' => 'pro'])
             ->orderBy(['dateCreated' => SORT_DESC])
@@ -187,7 +188,7 @@ class FrontController extends Controller
 
         $licenses = (new Query())
             ->select(['*'])
-            ->from('{{%craftnet_cmslicenses}}')
+            ->from(Table::CMSLICENSES)
             ->where([
                 'or',
                 ['key' => $key],

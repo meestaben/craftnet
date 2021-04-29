@@ -3,6 +3,7 @@
 namespace craft\contentmigrations;
 
 use craft\db\Migration;
+use craftnet\db\Table;
 
 /**
  * m181024_164339_add_column_partnerregion migration.
@@ -14,7 +15,7 @@ class m181024_164339_add_column_partnerregion extends Migration
      */
     public function safeUp()
     {
-        $this->addColumn('craftnet_partners', 'region', $this->string());
+        $this->addColumn(Table::PARTNERS, 'region', $this->string());
     }
 
     /**
@@ -22,7 +23,7 @@ class m181024_164339_add_column_partnerregion extends Migration
      */
     public function safeDown()
     {
-        $this->dropColumn('craftnet_partners', 'region');
+        $this->dropColumn(Table::PARTNERS, 'region');
 
         return true;
     }

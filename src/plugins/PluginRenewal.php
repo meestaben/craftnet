@@ -7,6 +7,7 @@ use craft\commerce\elements\Order;
 use craft\commerce\models\LineItem;
 use craft\elements\db\ElementQueryInterface;
 use craftnet\base\RenewalInterface;
+use craftnet\db\Table;
 use craftnet\errors\LicenseNotFoundException;
 use craftnet\helpers\OrderHelper;
 use craftnet\Module;
@@ -18,9 +19,6 @@ use yii\base\InvalidConfigException;
  */
 class PluginRenewal extends PluginPurchasable implements RenewalInterface
 {
-    // Static
-    // =========================================================================
-
     /**
      * @return string
      */
@@ -37,9 +35,6 @@ class PluginRenewal extends PluginPurchasable implements RenewalInterface
         return new PluginRenewalQuery(static::class);
     }
 
-    // Properties
-    // =========================================================================
-
     /**
      * @var int The plugin edition ID
      */
@@ -49,9 +44,6 @@ class PluginRenewal extends PluginPurchasable implements RenewalInterface
      * @var float The renewal price
      */
     public $price;
-
-    // Public Methods
-    // =========================================================================
 
     /**
      * @inheritdoc
@@ -87,11 +79,11 @@ class PluginRenewal extends PluginPurchasable implements RenewalInterface
 
         if ($isNew) {
             Craft::$app->getDb()->createCommand()
-                ->insert('craftnet_pluginrenewals', $data, false)
+                ->insert(Table::PLUGINRENEWALS, $data, false)
                 ->execute();
         } else {
             Craft::$app->getDb()->createCommand()
-                ->update('craftnet_pluginrenewals', $data, ['id' => $this->id], [], false)
+                ->update(Table::PLUGINRENEWALS, $data, ['id' => $this->id], [], false)
                 ->execute();
         }
 
@@ -164,9 +156,6 @@ class PluginRenewal extends PluginPurchasable implements RenewalInterface
         parent::afterOrderComplete($order, $lineItem);
     }
 
-    // Private Methods
-    // =========================================================================
-
     /**
      * @param Order $order
      * @param LineItem $lineItem
@@ -198,7 +187,7 @@ class PluginRenewal extends PluginPurchasable implements RenewalInterface
 
             // relate the license to the line item
             Craft::$app->getDb()->createCommand()
-                ->insert('craftnet_pluginlicenses_lineitems', [
+                ->insert(Table::PLUGINLICENSES_LINEITEMS, [
                     'licenseId' => $license->id,
                     'lineItemId' => $lineItem->id,
                 ], false)

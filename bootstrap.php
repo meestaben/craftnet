@@ -8,6 +8,7 @@ use craft\helpers\App;
 switch ($_SERVER['HTTP_HOST']) {
     case 'api.craftcms.com':
     case 'api.craftcms.test':
+    case 'api.craftcms.nitro':
     case 'api.craftcms.next':
     case 'staging.api.craftcms.com':
     case 'craftcmsapi.com':
@@ -15,10 +16,12 @@ switch ($_SERVER['HTTP_HOST']) {
         break;
     case 'composer.craftcms.com':
     case 'composer.craftcms.test':
+    case 'composer.craftcms.niro':
         define('CRAFT_SITE', 'composer');
         break;
     case 'id.craftcms.com':
     case 'id.craftcms.test':
+    case 'id.craftcms.nitro':
     case 'id.craftcms.next':
     case 'staging.id.craftcms.com':
         define('CRAFT_SITE', 'craftId');
@@ -26,6 +29,7 @@ switch ($_SERVER['HTTP_HOST']) {
     case 'plugins.craftcms.com':
     case 'staging.plugins.craftcms.com':
     case 'plugins.craftcms.test':
+    case 'plugins.craftcms.nitro':
     case 'plugins.craftcms.next':
         define('CRAFT_SITE', 'plugins');
         break;

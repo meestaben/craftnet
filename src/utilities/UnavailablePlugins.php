@@ -5,6 +5,7 @@ namespace craftnet\utilities;
 use Craft;
 use craft\base\Utility;
 use craft\db\Query;
+use craftnet\db\Table;
 
 class UnavailablePlugins extends Utility
 {
@@ -51,7 +52,7 @@ class UnavailablePlugins extends Utility
 
         $plugins = (new Query())
             ->select(['plugin', 'hits'])
-            ->from(['craftnet_craft2pluginhits'])
+            ->from([Table::CRAFT2PLUGINHITS])
             ->where(['available' => false])
             ->andWhere(['not', ['plugin' => $ignore]])
             ->orderBy(['hits' => SORT_DESC])

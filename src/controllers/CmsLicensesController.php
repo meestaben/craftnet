@@ -9,6 +9,7 @@ use craft\elements\User;
 use craft\web\Controller;
 use craft\web\twig\variables\Paginate;
 use craftnet\cms\CmsLicense;
+use craftnet\db\Table;
 use yii\helpers\ArrayHelper;
 use yii\web\Response;
 
@@ -20,7 +21,7 @@ class CmsLicensesController extends Controller
     public function actionIndex(): Response
     {
         $query = (new Query())
-            ->from(['l' => 'craftnet_cmslicenses'])
+            ->from(['l' => Table::CMSLICENSES])
             ->orderBy(['dateCreated' => SORT_DESC]);
 
         if ($edition = $this->request->getQueryParam('edition', 'pro')) {

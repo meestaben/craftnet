@@ -3,6 +3,7 @@
 namespace craft\contentmigrations;
 
 use craft\db\Migration;
+use craftnet\db\Table;
 
 /**
  * m200609_230952_cmslicense_plugins migration.
@@ -14,15 +15,15 @@ class m200609_230952_cmslicense_plugins extends Migration
      */
     public function safeUp()
     {
-        $this->createTable('craftnet_cmslicense_plugins', [
+        $this->createTable(Table::CMSLICENSE_PLUGINS, [
             'licenseId' => $this->integer()->notNull(),
             'pluginId' => $this->integer()->notNull(),
             'timestamp' => $this->dateTime()->notNull(),
             'PRIMARY KEY([[licenseId]], [[pluginId]])',
         ]);
-        $this->createIndex(null, 'craftnet_cmslicense_plugins', ['pluginId', 'timestamp']);
-        $this->addForeignKey(null, 'craftnet_cmslicense_plugins', ['licenseId'], 'craftnet_cmslicenses', ['id'], 'CASCADE');
-        $this->addForeignKey(null, 'craftnet_cmslicense_plugins', ['pluginId'], 'craftnet_plugins', ['id'], 'CASCADE');
+        $this->createIndex(null, Table::CMSLICENSE_PLUGINS, ['pluginId', 'timestamp']);
+        $this->addForeignKey(null, Table::CMSLICENSE_PLUGINS, ['licenseId'], Table::CMSLICENSES, ['id'], 'CASCADE');
+        $this->addForeignKey(null, Table::CMSLICENSE_PLUGINS, ['pluginId'], Table::PLUGINS, ['id'], 'CASCADE');
     }
 
     /**

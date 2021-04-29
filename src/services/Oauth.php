@@ -4,6 +4,7 @@ namespace craftnet\services;
 
 use Craft;
 use craft\db\Query;
+use craftnet\db\Table;
 use Github\Client as GithubClient;
 use Github\Exception\RuntimeException;
 use Github\ResultPager;
@@ -128,7 +129,7 @@ class Oauth extends Component
     {
         return (new Query())
             ->select(['accessToken'])
-            ->from(['craftnet_vcstokens'])
+            ->from([Table::VCSTOKENS])
             ->where(['userId' => $userId, 'provider' => $providerClass])
             ->scalar();
     }
@@ -152,7 +153,7 @@ class Oauth extends Component
                 'expiryDate',
                 'refreshToken',
             ])
-            ->from(['craftnet_vcstokens'])
+            ->from([Table::VCSTOKENS])
             ->where(['userId' => $userId, 'provider' => $providerClass])
             ->one();
     }
@@ -186,7 +187,7 @@ class Oauth extends Component
     public function deleteAccessToken($userId, $provider)
     {
         Craft::$app->getDb()->createCommand()
-            ->delete('craftnet_vcstokens', ['userId' => $userId, 'provider' => $provider])
+            ->delete(Table::VCSTOKENS, ['userId' => $userId, 'provider' => $provider])
             ->execute();
     }
 }

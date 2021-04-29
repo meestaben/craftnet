@@ -5,15 +5,15 @@ namespace craftnet\sales;
 use craft\db\Query;
 use craft\elements\User;
 use craft\helpers\ArrayHelper;
+use craftnet\db\Table;
+use craft\db\Table as CraftTable;
+use craft\commerce\db\Table as CommerceTable;
 use craftnet\plugins\Plugin;
 use craftnet\plugins\PluginEdition;
 use yii\base\Component;
 
 class SaleManager extends Component
 {
-    // Public Methods
-    // =========================================================================
-
     /**
      * Get sales by plugin owner.
      *
@@ -83,7 +83,7 @@ class SaleManager extends Component
 
         $adjustments = (new Query())
             ->select(['lineItemId', 'name', 'amount'])
-            ->from(['commerce_orderadjustments'])
+            ->from([CommerceTable::ORDERADJUSTMENTS])
             ->where(['lineItemId' => $lineItemIds])
             ->all();
 
@@ -110,9 +110,6 @@ class SaleManager extends Component
         return $query->count();
     }
 
-    // Private Methods
-    // =========================================================================
-
     /**
      * Get sales query.
      *
@@ -137,13 +134,13 @@ class SaleManager extends Component
                 'elements.type AS purchasableType',
                 'licenses.editionId AS editionId',
             ])
-            ->from(['craftnet_pluginlicenses_lineitems licenses_items'])
-            ->innerJoin('commerce_lineitems lineitems', '[[lineitems.id]] = [[licenses_items.lineItemId]]')
-            ->innerJoin('commerce_orders orders', '[[orders.id]] = [[lineitems.orderId]]')
-            ->innerJoin('craftnet_pluginlicenses licenses', '[[licenses.id]] = [[licenses_items.licenseId]]')
-            ->innerJoin('craftnet_plugins plugins', '[[plugins.id]] = [[licenses.pluginId]]')
-            ->leftJoin('users', '[[users.id]] = [[licenses.ownerId]]')
-            ->leftJoin('elements', '[[elements.id]] = [[lineitems.purchasableId]]')
+            ->from([Table::PLUGINLICENSES_LINEITEMS . ' licenses_items'])
+            ->innerJoin(CommerceTable::LINEITEMS . ' lineitems', '[[lineitems.id]] = [[licenses_items.lineItemId]]')
+            ->innerJoin(CommerceTable::ORDERS . ' orders', '[[orders.id]] = [[lineitems.orderId]]')
+            ->innerJoin(Table::PLUGINLICENSES . ' licenses', '[[licenses.id]] = [[licenses_items.licenseId]]')
+            ->innerJoin(Table::PLUGINS . ' plugins', '[[plugins.id]] = [[licenses.pluginId]]')
+            ->leftJoin(CraftTable::USERS, '[[users.id]] = [[licenses.ownerId]]')
+            ->leftJoin(CraftTable::ELEMENTS, '[[elements.id]] = [[lineitems.purchasableId]]')
             ->where(['plugins.developerId' => $owner->id])
             ->orderBy(['lineitems.dateCreated' => SORT_DESC]);
 

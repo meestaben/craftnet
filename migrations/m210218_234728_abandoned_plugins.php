@@ -4,6 +4,7 @@ namespace craft\contentmigrations;
 
 use Craft;
 use craft\db\Migration;
+use craftnet\db\Table;
 
 /**
  * m210218_234728_abandoned_plugins migration.
@@ -15,9 +16,9 @@ class m210218_234728_abandoned_plugins extends Migration
      */
     public function safeUp()
     {
-        $this->addColumn('craftnet_plugins', 'abandoned', $this->boolean()->notNull()->defaultValue(false));
-        $this->addColumn('craftnet_plugins', 'replacementId', $this->integer());
-        $this->addForeignKey(null, 'craftnet_plugins', ['replacementId'], 'craftnet_plugins', ['id'], 'SET NULL');
+        $this->addColumn(Table::PLUGINS, 'abandoned', $this->boolean()->notNull()->defaultValue(false));
+        $this->addColumn(Table::PLUGINS, 'replacementId', $this->integer());
+        $this->addForeignKey(null, Table::PLUGINS, ['replacementId'], Table::PLUGINS, ['id'], 'SET NULL');
     }
 
     /**

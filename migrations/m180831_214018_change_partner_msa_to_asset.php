@@ -4,6 +4,7 @@ namespace craft\contentmigrations;
 
 use Craft;
 use craft\db\Migration;
+use craftnet\db\Table;
 
 /**
  * m180831_214018_change_parter_msa_column_type migration.
@@ -35,7 +36,7 @@ class m180831_214018_change_partner_msa_to_asset extends Migration
      */
     protected function createMsaAssetIdColumn()
     {
-        $schema = $this->db->getTableSchema('craftnet_partners');
+        $schema = $this->db->getTableSchema(Table::PARTNERS);
 
         // If this migration has already run then skip it
         if ($schema->getColumn('msaAssetId')) {
@@ -43,8 +44,8 @@ class m180831_214018_change_partner_msa_to_asset extends Migration
             return true;
         }
 
-        $this->addColumn('craftnet_partners', 'msaAssetId', $this->integer()->after('msaLink'));
-        $this->dropColumn('craftnet_partners', 'msaLink');
+        $this->addColumn(Table::PARTNERS, 'msaAssetId', $this->integer()->after('msaLink'));
+        $this->dropColumn(Table::PARTNERS, 'msaLink');
     }
 
     /**

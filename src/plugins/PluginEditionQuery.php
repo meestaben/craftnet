@@ -4,6 +4,7 @@ namespace craftnet\plugins;
 
 use craft\elements\db\ElementQuery;
 use craft\helpers\Db;
+use craftnet\db\Table;
 use yii\db\Connection;
 
 /**
@@ -82,26 +83,26 @@ class PluginEditionQuery extends ElementQuery
         $this->joinElementTable('craftnet_plugineditions');
 
         $this->query->select([
-            'craftnet_plugineditions.pluginId',
-            'craftnet_plugineditions.name',
-            'craftnet_plugineditions.handle',
-            'craftnet_plugineditions.price',
-            'craftnet_plugineditions.renewalPrice',
-            'craftnet_plugineditions.features',
+            Table::PLUGINEDITIONS . '.pluginId',
+            Table::PLUGINEDITIONS . '.name',
+            Table::PLUGINEDITIONS . '.handle',
+            Table::PLUGINEDITIONS . '.price',
+            Table::PLUGINEDITIONS . '.renewalPrice',
+            Table::PLUGINEDITIONS . '.features',
         ]);
 
         if ($this->pluginId) {
-            $this->subQuery->andWhere(Db::parseParam('craftnet_plugineditions.pluginId', $this->pluginId));
+            $this->subQuery->andWhere(Db::parseParam(Table::PLUGINEDITIONS . '.pluginId', $this->pluginId));
         }
 
         if ($this->handle) {
-            $this->subQuery->andWhere(Db::parseParam('craftnet_plugineditions.handle', $this->handle));
+            $this->subQuery->andWhere(Db::parseParam(Table::PLUGINEDITIONS . '.handle', $this->handle));
         }
 
         if ($this->commercial === true) {
-            $this->subQuery->andWhere(['not', ['craftnet_plugineditions.price' => 0]]);
+            $this->subQuery->andWhere(['not', [Table::PLUGINEDITIONS . '.price' => 0]]);
         } else if ($this->commercial === false) {
-            $this->subQuery->andWhere(['craftnet_plugineditions.price' => 0]);
+            $this->subQuery->andWhere([Table::PLUGINEDITIONS . '.price' => 0]);
         }
 
         return parent::beforePrepare();

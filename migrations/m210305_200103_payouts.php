@@ -2,8 +2,9 @@
 
 namespace craft\contentmigrations;
 
-use Craft;
 use craft\db\Migration;
+use craftnet\db\Table;
+use craft\db\Table as CraftTable;
 
 /**
  * m210305_200103_payouts migration.
@@ -15,7 +16,7 @@ class m210305_200103_payouts extends Migration
      */
     public function safeUp()
     {
-        $this->createTable('craftnet_payouts', [
+        $this->createTable(Table::PAYOUTS, [
             'id' => $this->primaryKey(),
             'payoutBatchId' => $this->string(),
             'status' => $this->string(),
@@ -23,9 +24,9 @@ class m210305_200103_payouts extends Migration
             'dateCreated' => $this->dateTime()->notNull(),
             'dateUpdated' => $this->dateTime()->notNull(),
         ]);
-        $this->createIndex(null, 'craftnet_payouts', ['status']);
+        $this->createIndex(null, Table::PAYOUTS, ['status']);
 
-        $this->createTable('craftnet_payout_items', [
+        $this->createTable(Table::PAYOUT_ITEMS, [
             'id' => $this->primaryKey(),
             'payoutId' => $this->integer()->notNull(),
             'developerId' => $this->integer()->notNull(),
@@ -38,17 +39,17 @@ class m210305_200103_payouts extends Migration
             'dateCreated' => $this->dateTime()->notNull(),
             'dateUpdated' => $this->dateTime()->notNull(),
         ]);
-        $this->addForeignKey(null, 'craftnet_payout_items', ['payoutId'], 'craftnet_payouts', ['id'], 'CASCADE');
-        $this->addForeignKey(null, 'craftnet_payout_items', ['developerId'], 'users', ['id'], 'CASCADE');
+        $this->addForeignKey(null, Table::PAYOUT_ITEMS, ['payoutId'], Table::PAYOUT_ITEMS, ['id'], 'CASCADE');
+        $this->addForeignKey(null, Table::PAYOUT_ITEMS, ['developerId'], CraftTable::USERS, ['id'], 'CASCADE');
 
-        $this->createTable('craftnet_payout_errors', [
+        $this->createTable(Table::PAYOUT_ERRORS, [
             'id' => $this->primaryKey(),
             'payoutId' => $this->integer()->notNull(),
             'message' => $this->text()->notNull(),
             'data' => $this->text(),
             'date' => $this->dateTime()->notNull(),
         ]);
-        $this->addForeignKey(null, 'craftnet_payout_errors', ['payoutId'], 'craftnet_payouts', ['id'], 'CASCADE');
+        $this->addForeignKey(null, Table::PAYOUT_ERRORS, ['payoutId'], Table::PAYOUTS, ['id'], 'CASCADE');
     }
 
     /**
@@ -56,8 +57,8 @@ class m210305_200103_payouts extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('craftnet_payout_errors');
-        $this->dropTable('craftnet_payout_items');
-        $this->dropTable('craftnet_payouts');
+        $this->dropTable(Table::PAYOUT_ERRORS);
+        $this->dropTable(Table::PAYOUT_ITEMS);
+        $this->dropTable(Table::PAYOUTS);
     }
 }

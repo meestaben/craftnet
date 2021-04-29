@@ -3,6 +3,8 @@
 namespace craft\contentmigrations;
 
 use craft\db\Migration;
+use craftnet\db\Table;
+use craft\db\Table as CraftTable;
 
 /**
  * m180323_201249_email_codes migration.
@@ -14,7 +16,7 @@ class m180323_201249_email_codes extends Migration
      */
     public function safeUp()
     {
-        $this->createTable('craftnet_emailcodes', [
+        $this->createTable(Table::EMAILCODES, [
             'id' => $this->primaryKey(),
             'userId' => $this->integer(),
             'email' => $this->string()->notNull(),
@@ -22,9 +24,9 @@ class m180323_201249_email_codes extends Migration
             'dateIssued' => $this->dateTime()->notNull(),
         ]);
 
-        $this->addForeignKey(null, 'craftnet_emailcodes', ['userId'], 'users', ['id'], 'CASCADE');
-        $this->createIndex(null, 'craftnet_emailcodes', ['userId', 'email']);
-        $this->createIndex(null, 'craftnet_emailcodes', ['dateIssued']);
+        $this->addForeignKey(null, Table::EMAILCODES, ['userId'], CraftTable::USERS, ['id'], 'CASCADE');
+        $this->createIndex(null, Table::EMAILCODES, ['userId', 'email']);
+        $this->createIndex(null, Table::EMAILCODES, ['dateIssued']);
     }
 
     /**
