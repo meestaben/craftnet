@@ -67,16 +67,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.178.9",
+            "version": "3.179.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "89710500988a8a7d77f1282fcf6a1d0ad8297eaf"
+                "reference": "f4f2c01b53f71379a1ed8ccccf4305949a69ccbe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/89710500988a8a7d77f1282fcf6a1d0ad8297eaf",
-                "reference": "89710500988a8a7d77f1282fcf6a1d0ad8297eaf",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/f4f2c01b53f71379a1ed8ccccf4305949a69ccbe",
+                "reference": "f4f2c01b53f71379a1ed8ccccf4305949a69ccbe",
                 "shasum": ""
             },
             "require": {
@@ -151,9 +151,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.178.9"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.179.1"
             },
-            "time": "2021-04-23T18:28:02+00:00"
+            "time": "2021-04-29T18:17:25+00:00"
         },
         {
             "name": "bugsnag/bugsnag",
@@ -426,20 +426,21 @@
         },
         {
             "name": "composer/composer",
-            "version": "2.0.12",
+            "version": "2.0.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/composer.git",
-                "reference": "6c12ce263da71641903e399c3ce8ecb08fd375fb"
+                "reference": "986e8b86b7b570632ad0a905c3726c33dd4c0efb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/composer/zipball/6c12ce263da71641903e399c3ce8ecb08fd375fb",
-                "reference": "6c12ce263da71641903e399c3ce8ecb08fd375fb",
+                "url": "https://api.github.com/repos/composer/composer/zipball/986e8b86b7b570632ad0a905c3726c33dd4c0efb",
+                "reference": "986e8b86b7b570632ad0a905c3726c33dd4c0efb",
                 "shasum": ""
             },
             "require": {
                 "composer/ca-bundle": "^1.0",
+                "composer/metadata-minifier": "^1.0",
                 "composer/semver": "^3.0",
                 "composer/spdx-licenses": "^1.2",
                 "composer/xdebug-handler": "^1.1",
@@ -503,7 +504,7 @@
             "support": {
                 "irc": "irc://irc.freenode.org/composer",
                 "issues": "https://github.com/composer/composer/issues",
-                "source": "https://github.com/composer/composer/tree/2.0.12"
+                "source": "https://github.com/composer/composer/tree/2.0.13"
             },
             "funding": [
                 {
@@ -519,7 +520,76 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-04-01T08:14:59+00:00"
+            "time": "2021-04-27T11:11:08+00:00"
+        },
+        {
+            "name": "composer/metadata-minifier",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/composer/metadata-minifier.git",
+                "reference": "c549d23829536f0d0e984aaabbf02af91f443207"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/composer/metadata-minifier/zipball/c549d23829536f0d0e984aaabbf02af91f443207",
+                "reference": "c549d23829536f0d0e984aaabbf02af91f443207",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.3.2 || ^7.0 || ^8.0"
+            },
+            "require-dev": {
+                "composer/composer": "^2",
+                "phpstan/phpstan": "^0.12.55",
+                "symfony/phpunit-bridge": "^4.2 || ^5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Composer\\MetadataMinifier\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jordi Boggiano",
+                    "email": "j.boggiano@seld.be",
+                    "homepage": "http://seld.be"
+                }
+            ],
+            "description": "Small utility library that handles metadata minification and expansion.",
+            "keywords": [
+                "composer",
+                "compression"
+            ],
+            "support": {
+                "issues": "https://github.com/composer/metadata-minifier/issues",
+                "source": "https://github.com/composer/metadata-minifier/tree/1.0.0"
+            },
+            "funding": [
+                {
+                    "url": "https://packagist.com",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/composer",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/composer/composer",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2021-04-07T13:37:33+00:00"
         },
         {
             "name": "composer/semver",
@@ -804,20 +874,20 @@
         },
         {
             "name": "craftcms/cms",
-            "version": "3.6.12",
+            "version": "3.6.12.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/craftcms/cms.git",
-                "reference": "06a2e1d78b8b097f824efede5a6b36807a5bed5a"
+                "reference": "d950f6841c5d63b4320bc4b54b915968eddb4047"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/craftcms/cms/zipball/06a2e1d78b8b097f824efede5a6b36807a5bed5a",
-                "reference": "06a2e1d78b8b097f824efede5a6b36807a5bed5a",
+                "url": "https://api.github.com/repos/craftcms/cms/zipball/d950f6841c5d63b4320bc4b54b915968eddb4047",
+                "reference": "d950f6841c5d63b4320bc4b54b915968eddb4047",
                 "shasum": ""
             },
             "require": {
-                "composer/composer": "2.0.12",
+                "composer/composer": "2.0.13",
                 "craftcms/oauth2-craftid": "~1.0.0",
                 "craftcms/plugin-installer": "~1.5.6",
                 "craftcms/server-check": "~1.2.0",
@@ -903,20 +973,20 @@
                 "rss": "https://github.com/craftcms/cms/releases.atom",
                 "source": "https://github.com/craftcms/cms"
             },
-            "time": "2021-04-13T17:05:18+00:00"
+            "time": "2021-04-29T17:23:09+00:00"
         },
         {
             "name": "craftcms/commerce",
-            "version": "3.3.0",
+            "version": "3.3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/craftcms/commerce.git",
-                "reference": "8e4189fed5a6009e5b534e2ea48a60b906b5989f"
+                "reference": "b0f2cd530038f8f0ff41ccd36f790ea021b584a7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/craftcms/commerce/zipball/8e4189fed5a6009e5b534e2ea48a60b906b5989f",
-                "reference": "8e4189fed5a6009e5b534e2ea48a60b906b5989f",
+                "url": "https://api.github.com/repos/craftcms/commerce/zipball/b0f2cd530038f8f0ff41ccd36f790ea021b584a7",
+                "reference": "b0f2cd530038f8f0ff41ccd36f790ea021b584a7",
                 "shasum": ""
             },
             "require": {
@@ -969,7 +1039,7 @@
                 "rss": "https://github.com/craftcms/commerce/releases.atom",
                 "source": "https://github.com/craftcms/commerce"
             },
-            "time": "2021-04-20T15:54:53+00:00"
+            "time": "2021-04-26T12:33:38+00:00"
         },
         {
             "name": "craftcms/commerce-stripe",
@@ -2001,16 +2071,16 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "1.8.1",
+            "version": "1.8.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "35ea11d335fd638b5882ff1725228b3d35496ab1"
+                "reference": "dc960a912984efb74d0a90222870c72c87f10c91"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/35ea11d335fd638b5882ff1725228b3d35496ab1",
-                "reference": "35ea11d335fd638b5882ff1725228b3d35496ab1",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/dc960a912984efb74d0a90222870c72c87f10c91",
+                "reference": "dc960a912984efb74d0a90222870c72c87f10c91",
                 "shasum": ""
             },
             "require": {
@@ -2070,9 +2140,9 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/psr7/issues",
-                "source": "https://github.com/guzzle/psr7/tree/1.8.1"
+                "source": "https://github.com/guzzle/psr7/tree/1.8.2"
             },
-            "time": "2021-03-21T16:25:00+00:00"
+            "time": "2021-04-26T09:17:50+00:00"
         },
         {
             "name": "ibericode/vat",
@@ -3581,16 +3651,16 @@
         },
         {
             "name": "nystudio107/craft-twigpack",
-            "version": "1.2.13",
+            "version": "1.2.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nystudio107/craft-twigpack.git",
-                "reference": "8bb90a5d465140b6466c34a3fdcf87352bd2ab77"
+                "reference": "53d8eb90a72c4fa9e7a907a943a15ab0ea6d90cd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nystudio107/craft-twigpack/zipball/8bb90a5d465140b6466c34a3fdcf87352bd2ab77",
-                "reference": "8bb90a5d465140b6466c34a3fdcf87352bd2ab77",
+                "url": "https://api.github.com/repos/nystudio107/craft-twigpack/zipball/53d8eb90a72c4fa9e7a907a943a15ab0ea6d90cd",
+                "reference": "53d8eb90a72c4fa9e7a907a943a15ab0ea6d90cd",
                 "shasum": ""
             },
             "require": {
@@ -3600,12 +3670,7 @@
             "extra": {
                 "name": "Twigpack",
                 "handle": "twigpack",
-                "hasCpSettings": false,
-                "hasCpSection": false,
                 "changelogUrl": "https://raw.githubusercontent.com/craft-nystudio107/twigpack/v1/CHANGELOG.md",
-                "components": {
-                    "manifest": "nystudio107\\twigpack\\services\\Manifest"
-                },
                 "class": "nystudio107\\twigpack\\Twigpack"
             },
             "autoload": {
@@ -3636,9 +3701,9 @@
             "support": {
                 "docs": "https://nystudio107.com/plugins/twigpack/documentation",
                 "issues": "https://nystudio107.com/plugins/twigpack/support",
-                "source": "https://github.com/nystudio107/craft-twigpack/tree/1.2.13"
+                "source": "https://github.com/nystudio107/craft-twigpack/tree/1.2.14"
             },
-            "time": "2021-04-14T02:08:19+00:00"
+            "time": "2021-04-28T21:08:54+00:00"
         },
         {
             "name": "omnilight/yii2-scheduling",
