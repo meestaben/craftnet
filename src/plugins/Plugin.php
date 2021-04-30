@@ -965,7 +965,7 @@ class Plugin extends Element
         } else {
             // Update the plugins table row
             $db->createCommand()
-                ->update(Table::PLUGIN, $pluginData, ['id' => $this->id])
+                ->update(Table::PLUGINS, $pluginData, ['id' => $this->id])
                 ->execute();
 
             // Also delete any existing category/screenshot relations
