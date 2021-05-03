@@ -11,6 +11,7 @@ use craft\commerce\services\Pdfs;
 use craft\commerce\services\Purchasables;
 use craft\console\Controller as ConsoleController;
 use craft\console\controllers\ResaveController;
+use craft\controllers\UsersController;
 use craft\elements\Asset;
 use craft\elements\db\UserQuery;
 use craft\elements\User;
@@ -35,6 +36,7 @@ use craft\services\SystemMessages;
 use craft\services\UserPermissions;
 use craft\services\Users;
 use craft\services\Utilities;
+use craft\web\Request;
 use craft\web\twig\variables\Cp;
 use craft\web\UrlManager;
 use craft\web\View;
@@ -59,7 +61,9 @@ use craftnet\services\Oauth;
 use craftnet\utilities\PullProduction;
 use craftnet\utilities\SalesReport;
 use craftnet\utilities\UnavailablePlugins;
+use yii\base\ActionEvent;
 use yii\base\Event;
+use yii\web\ForbiddenHttpException;
 
 /**
  * @property-read CmsLicenseManager $cmsLicenseManager
@@ -197,7 +201,7 @@ class Module extends \yii\base\Module
             if ($request->getIsCpRequest()) {
                 $this->_initCpRequest();
             } else {
-                $this->_initSiteRequest();
+                $this->_initSiteRequest($request);
             }
         }
 
@@ -351,7 +355,7 @@ class Module extends \yii\base\Module
         });
     }
 
-    private function _initSiteRequest()
+    private function _initSiteRequest(Request $request)
     {
         $idOrigin = rtrim(App::env('URL_ID'), '/');
 
@@ -363,5 +367,19 @@ class Module extends \yii\base\Module
         }
 
         Craft::$app->getResponse()->getHeaders()->set('X-Frame-Options', 'sameorigin');
+
+        Event::on(UsersController::class, UsersController::EVENT_BEFORE_ACTION, function(ActionEvent $event) use ($request) {
+            if ($event->action->id == 'save-user') {
+                $fieldsLocation = $request->getParam('fieldsLocation') ?? 'fields';
+                $fields = $request->getBodyParam($fieldsLocation);
+
+                foreach ($fields as $key => $value) {
+                    // Throw an exception if the field is disallowed.
+                    if (in_array($key, ['supportPlan', 'supportPlanExpiryDate'])) {
+                        throw new ForbiddenHttpException('One or more disallowed fields were submitted.');
+                    }
+                }
+            }
+        });
     }
 }
