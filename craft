@@ -42,6 +42,7 @@ if (file_exists($envVars) && is_file($envVars)) {
         $firstEqual = strpos($newLine, '=');
         $name = substr($newLine, 0, $firstEqual);
         $value = substr($newLine, $firstEqual + 1);
+        $value = trim($value, '"');
         putenv($name . '=' . $value);
     }
 }
