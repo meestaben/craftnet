@@ -476,7 +476,7 @@ class Partner extends Element
         // Capabilities
 
         $db->createCommand()
-            ->delete(Table::PARTNERCAPABILITIES, ['partnerId' => $this->id])
+            ->delete(Table::PARTNERS_PARTNERCAPABILITIES, ['partnerId' => $this->id])
             ->execute();
 
         if (is_array($this->_capabilities) && count($this->_capabilities) > 0) {
@@ -489,7 +489,7 @@ class Partner extends Element
 
             $db->createCommand()
                 ->batchInsert(
-                    Table::PARTNERCAPABILITIES,
+                    Table::PARTNERS_PARTNERCAPABILITIES,
                     ['partnerId', 'partnercapabilitiesId'],
                     $rows,
                     false
