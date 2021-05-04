@@ -371,7 +371,7 @@ class Module extends \yii\base\Module
         Event::on(UsersController::class, UsersController::EVENT_BEFORE_ACTION, function(ActionEvent $event) use ($request) {
             if ($event->action->id == 'save-user') {
                 $fieldsLocation = $request->getParam('fieldsLocation') ?? 'fields';
-                $fields = $request->getBodyParam($fieldsLocation);
+                $fields = $request->getBodyParam($fieldsLocation) ?? [];
 
                 foreach ($fields as $key => $value) {
                     // Throw an exception if the field is disallowed.
