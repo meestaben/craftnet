@@ -25,9 +25,6 @@ use yii\web\Response;
  */
 class PartnersController extends Controller
 {
-    // Public Methods
-    // =========================================================================
-
     /**
      * @inheritdoc
      */
@@ -41,7 +38,7 @@ class PartnersController extends Controller
     }
 
     /**
-     * Fetches the parter for the currently logged in user.
+     * Fetches the partner for the currently logged in user.
      *
      * @return Response
      * @throws ForbiddenHttpException
@@ -228,8 +225,6 @@ class PartnersController extends Controller
         ));
     }
 
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
     /**
      * TODO: Implement user permissions for editing partners
      *
@@ -377,8 +372,5 @@ class PartnersController extends Controller
     {
         return '';
     }
-
-    // Private Methods
-    // =========================================================================
 
 }
