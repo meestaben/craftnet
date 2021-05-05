@@ -58,7 +58,7 @@ class Oauth extends Component
                 $account = $resourceOwner->toArray();
 
                 $client = new GithubClient();
-                $client->authenticate($accessToken->getToken(), null, GithubClient::AUTH_HTTP_TOKEN);
+                $client->authenticate($accessToken->getToken(), null, GithubClient::AUTH_ACCESS_TOKEN);
                 $api = $client->currentUser();
                 $paginator = new ResultPager($client);
                 try {

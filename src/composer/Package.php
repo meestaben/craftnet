@@ -170,7 +170,7 @@ class Package extends Model
                 Craft::info("Using fallback token for {$this->name}: " . substr($token, 0, 10), __METHOD__);
             }
 
-            $client->authenticate($token, null, GithubClient::AUTH_HTTP_TOKEN);
+            $client->authenticate($token, null, GithubClient::AUTH_ACCESS_TOKEN);
 
             return new GitHub($this, [
                 'client' => $client,
