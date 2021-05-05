@@ -97,30 +97,50 @@ class Partner extends Element
                     'type' => Type::string(),
                     'description' => 'Partner bio.'
                 ],
+                'shortBio' => [
+                    'name' => 'shortBio',
+                    'type' => Type::string(),
+                    'description' => 'Brief partner bio.'
+                ],
                 'isCraftVerified' => [
                     'name' => 'isCraftVerified',
                     'type' => Type::boolean(),
-                    'description' => 'Whether the partner is Craft Verified.'
+                    'description' => 'Whether the partner is Craft Verified.',
+                    'resolve' => function(\craftnet\partners\Partner $partner) {
+                        return (bool)$partner->isCraftVerified;
+                    }
                 ],
                 'isCommerceVerified' => [
                     'name' => 'isCommerceVerified',
                     'type' => Type::boolean(),
-                    'description' => 'Whether the partner is Commerce Verified.'
+                    'description' => 'Whether the partner is Commerce Verified.',
+                    'resolve' => function(\craftnet\partners\Partner $partner) {
+                        return (bool)$partner->isCommerceVerified;
+                    }
                 ],
                 'isEnterpriseVerified' => [
                     'name' => 'isEnterpriseVerified',
                     'type' => Type::boolean(),
-                    'description' => 'Whether the partner is Enterprise Verified.'
+                    'description' => 'Whether the partner is Enterprise Verified.',
+                    'resolve' => function(\craftnet\partners\Partner $partner) {
+                        return (bool)$partner->isEnterpriseVerified;
+                    }
                 ],
                 'isRegisteredBusiness' => [
                     'name' => 'isRegisteredBusiness',
                     'type' => Type::boolean(),
-                    'description' => 'Whether the partner has a registered business entity.'
+                    'description' => 'Whether the partner has a registered business entity.',
+                    'resolve' => function(\craftnet\partners\Partner $partner) {
+                        return (bool)$partner->isRegisteredBusiness;
+                    }
                 ],
                 'hasFullTimeDev' => [
                     'name' => 'hasFullTimeDev',
                     'type' => Type::boolean(),
-                    'description' => 'Whether the partner has at least one full-time developer.'
+                    'description' => 'Whether the partner has at least one full-time developer.',
+                    'resolve' => function(\craftnet\partners\Partner $partner) {
+                        return (bool)$partner->hasFullTimeDev;
+                    }
                 ],
                 'agencySize' => [
                     'name' => 'agencySize',
@@ -136,6 +156,11 @@ class Partner extends Element
                     'name' => 'region',
                     'type' => Type::string(),
                     'description' => 'Narrows query results based on geographic regions.'
+                ],
+                'capabilities' => [
+                    'name' => 'capabilities',
+                    'type' => Type::listOf(Type::string()),
+                    'description' => 'List of partner capabilities.'
                 ],
                 'expertise' => [
                     'name' => 'expertise',
@@ -190,6 +215,11 @@ class Partner extends Element
             ?: GqlEntityRegistry::createEntity($typeName, new ObjectType([
                 'name' => $typeName,
                 'fields' => [
+                    'id' => [
+                        'name' => 'id',
+                        'type' => Type::int(),
+                        'description' => 'Partner location ID.'
+                    ],
                     'title' => [
                         'name' => 'title',
                         'type' => Type::string(),
@@ -258,6 +288,11 @@ class Partner extends Element
             ?: GqlEntityRegistry::createEntity($typeName, new ObjectType([
                 'name' => $typeName,
                 'fields' => [
+                    'id' => [
+                        'name' => 'id',
+                        'type' => Type::int(),
+                        'description' => 'Partner project ID.'
+                    ],
                     'name' => [
                         'name' => 'name',
                         'type' => Type::string(),
