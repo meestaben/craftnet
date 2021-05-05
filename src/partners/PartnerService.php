@@ -276,7 +276,7 @@ class PartnerService
                 ->scalar();
 
             if (!$folderId) {
-                throw new \Exception('Parter Screenshots volume folder does not exist. Need to run migrations?');
+                throw new \Exception('Partner Screenshots volume folder does not exist. Need to run migrations?');
             }
         }
 
