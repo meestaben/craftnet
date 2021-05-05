@@ -22,6 +22,7 @@ return [
                         'devSubdomainWords' => [
                             'acc',
                             'acceptance',
+                            'acceptatie',
                             'craftdemo',
                             'dev',
                             'integration',
