@@ -30,6 +30,7 @@ return [
     'dmdr.io',
     'dotmeta.com',
     'drivedev.net',
+    'envsa.dev',
     'epwebsites.co.uk',
     'eyekillerdev.com',
     'fauna.org',
