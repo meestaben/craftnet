@@ -79,17 +79,17 @@ class Plugin extends Element
                 ],
                 'developerId' => [
                     'name' => 'developerId',
-                    'type' => Type::int(),
+                    'type' => Type::ID(),
                     'description' => ''
                 ],
                 'packageId' => [
                     'name' => 'packageId',
-                    'type' => Type::int(),
+                    'type' => Type::ID(),
                     'description' => ''
                 ],
                 'iconId' => [
                     'name' => 'iconId',
-                    'type' => Type::int(),
+                    'type' => Type::ID(),
                     'description' => ''
                 ],
                 'packageName' => [
@@ -184,7 +184,7 @@ class Plugin extends Element
                 ],
                 'replacementId' => [
                     'name' => 'replacementId',
-                    'type' => Type::int(),
+                    'type' => Type::ID(),
                     'description' => ''
                 ],
                 'editions' => [
@@ -234,6 +234,10 @@ class Plugin extends Element
         return [];
     }
 
+    /**
+     * Returns Plugin Edition type definition.
+     * @return bool|mixed
+     */
     private static function _getEditionGqlType()
     {
         $typeName = 'Plugin_Edition';
@@ -242,6 +246,11 @@ class Plugin extends Element
             ?: GqlEntityRegistry::createEntity($featureTypeName, new ObjectType([
                 'name' => $featureTypeName,
                 'fields' => [
+                    'id' => [
+                        'name' => 'id',
+                        'type' => Type::ID(),
+                        'description' => ''
+                    ],
                     'name' => [
                         'name' => 'name',
                         'type' => Type::string(),
@@ -260,6 +269,11 @@ class Plugin extends Element
             ?: GqlEntityRegistry::createEntity($typeName, new ObjectType([
                 'name' => $typeName,
                 'fields' => [
+                    'id' => [
+                        'name' => 'id',
+                        'type' => Type::ID(),
+                        'description' => ''
+                    ],
                     'name' => [
                         'name' => 'name',
                         'type' => Type::string(),
@@ -297,6 +311,10 @@ class Plugin extends Element
         return $editionGqlType;
     }
 
+    /**
+     * Returns Plugin Package type definition.
+     * @return bool|mixed
+     */
     private static function _getPackageGqlType()
     {
         $typeName = 'Plugin_Package';
@@ -304,6 +322,11 @@ class Plugin extends Element
             ?: GqlEntityRegistry::createEntity($typeName, new ObjectType([
                 'name' => $typeName,
                 'fields' => [
+                    'id' => [
+                        'name' => 'id',
+                        'type' => Type::ID(),
+                        'description' => ''
+                    ],
                     'name' => [
                         'name' => 'name',
                         'type' => Type::string(),
@@ -341,7 +364,7 @@ class Plugin extends Element
                     ],
                     'webhookId' => [
                         'name' => 'webhookId',
-                        'type' => Type::int(),
+                        'type' => Type::ID(),
                         'description' => ''
                     ],
 //                    'webhookSecret' => [
@@ -355,7 +378,5 @@ class Plugin extends Element
         );
 
         return $packageGqlType;
-
     }
-
 }
