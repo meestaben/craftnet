@@ -6,6 +6,7 @@ use craft\gql\base\Query;
 use craftnet\gql\interfaces\elements\Plugin as PluginInterface;
 use craftnet\gql\arguments\elements\Plugin as PluginArguments;
 use craftnet\gql\resolvers\elements\Plugin as PluginResolver;
+use craftnet\helpers\Gql as GqlHelper;
 use GraphQL\Type\Definition\Type;
 
 /**
@@ -20,6 +21,10 @@ class Plugin extends Query
      */
     public static function getQueries($checkToken = true): array
     {
+        if ($checkToken && !GqlHelper::canQueryPlugins()) {
+            return [];
+        }
+
         return [
             'plugins' => [
                 'type' => Type::listOf(PluginInterface::getType()),
