@@ -6,6 +6,7 @@ use craft\gql\base\Query;
 use craftnet\gql\interfaces\elements\Partner as PartnerInterface;
 use craftnet\gql\arguments\elements\Partner as PartnerArguments;
 use craftnet\gql\resolvers\elements\Partner as PartnerResolver;
+use craftnet\helpers\Gql as GqlHelper;
 use GraphQL\Type\Definition\Type;
 
 /**
@@ -20,6 +21,10 @@ class Partner extends Query
      */
     public static function getQueries($checkToken = true): array
     {
+        if ($checkToken && !GqlHelper::canQueryPartners()) {
+            return [];
+        }
+
         return [
             'partners' => [
                 'type' => Type::listOf(PartnerInterface::getType()),
