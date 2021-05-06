@@ -69,7 +69,7 @@ class Partner extends Element
             [
                 'ownerId' => [
                     'name' => 'ownerId',
-                    'type' => Type::int(),
+                    'type' => Type::ID(),
                     'description' => 'User account ID of the partner listing’s owner.'
                 ],
                 'businessName' => [
@@ -105,42 +105,27 @@ class Partner extends Element
                 'isCraftVerified' => [
                     'name' => 'isCraftVerified',
                     'type' => Type::boolean(),
-                    'description' => 'Whether the partner is Craft Verified.',
-                    'resolve' => function(\craftnet\partners\Partner $partner) {
-                        return (bool)$partner->isCraftVerified;
-                    }
+                    'description' => 'Whether the partner is Craft Verified.'
                 ],
                 'isCommerceVerified' => [
                     'name' => 'isCommerceVerified',
                     'type' => Type::boolean(),
-                    'description' => 'Whether the partner is Commerce Verified.',
-                    'resolve' => function(\craftnet\partners\Partner $partner) {
-                        return (bool)$partner->isCommerceVerified;
-                    }
+                    'description' => 'Whether the partner is Commerce Verified.'
                 ],
                 'isEnterpriseVerified' => [
                     'name' => 'isEnterpriseVerified',
                     'type' => Type::boolean(),
-                    'description' => 'Whether the partner is Enterprise Verified.',
-                    'resolve' => function(\craftnet\partners\Partner $partner) {
-                        return (bool)$partner->isEnterpriseVerified;
-                    }
+                    'description' => 'Whether the partner is Enterprise Verified.'
                 ],
                 'isRegisteredBusiness' => [
                     'name' => 'isRegisteredBusiness',
                     'type' => Type::boolean(),
                     'description' => 'Whether the partner has a registered business entity.',
-                    'resolve' => function(\craftnet\partners\Partner $partner) {
-                        return (bool)$partner->isRegisteredBusiness;
-                    }
                 ],
                 'hasFullTimeDev' => [
                     'name' => 'hasFullTimeDev',
                     'type' => Type::boolean(),
-                    'description' => 'Whether the partner has at least one full-time developer.',
-                    'resolve' => function(\craftnet\partners\Partner $partner) {
-                        return (bool)$partner->hasFullTimeDev;
-                    }
+                    'description' => 'Whether the partner has at least one full-time developer.'
                 ],
                 'agencySize' => [
                     'name' => 'agencySize',
@@ -174,7 +159,7 @@ class Partner extends Element
                 ],
                 'logoAssetId' => [
                     'name' => 'logoAssetId',
-                    'type' => Type::int(),
+                    'type' => Type::ID(),
                     'description' => 'Partner logo asset ID.'
                 ],
                 'website' => [
@@ -208,6 +193,10 @@ class Partner extends Element
         ), self::getName());
     }
 
+    /**
+     * Returns Partner Location type definition.
+     * @return ObjectType
+     */
     private static function _getLocationGqlType(): ObjectType
     {
         $typeName = 'Partner_Location';
@@ -217,7 +206,7 @@ class Partner extends Element
                 'fields' => [
                     'id' => [
                         'name' => 'id',
-                        'type' => Type::int(),
+                        'type' => Type::ID(),
                         'description' => 'Partner location ID.'
                     ],
                     'title' => [
@@ -281,6 +270,10 @@ class Partner extends Element
         return $locationGqlType;
     }
 
+    /**
+     * Returns Partner Project type definition.
+     * @return ObjectType
+     */
     private static function _getProjectGqlType(): ObjectType
     {
         $typeName = 'Partner_Project';
@@ -290,7 +283,7 @@ class Partner extends Element
                 'fields' => [
                     'id' => [
                         'name' => 'id',
-                        'type' => Type::int(),
+                        'type' => Type::ID(),
                         'description' => 'Partner project ID.'
                     ],
                     'name' => [

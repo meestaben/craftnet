@@ -254,6 +254,21 @@ class Partner extends Element
     private $_projects = null;
 
     /**
+     * @inheritdoc
+     */
+    public function init(): void
+    {
+        // Typecast DB values
+        $this->hasFullTimeDev = (bool)$this->hasFullTimeDev;
+        $this->isCommerceVerified = (bool)$this->isCommerceVerified;
+        $this->isCraftVerified = (bool)$this->isCraftVerified;
+        $this->isEnterpriseVerified = (bool)$this->isEnterpriseVerified;
+        $this->isRegisteredBusiness = (bool)$this->isRegisteredBusiness;
+
+        parent::init();
+    }
+
+    /**
      * Important: Set a scenario on every rule set. Craft ID needs to validate
      * in chunks: basic info, locations, and projects. Validation errors on an
      * unrelated chunk will cause problems.

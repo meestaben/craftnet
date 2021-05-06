@@ -53,8 +53,6 @@ class Partner extends ElementArguments
                 'type' => Type::listOf(Type::string()),
                 'description' => 'Narrows query results by agency size.'
             ],
-            // locations (mysterious matrix-y field)
-            // projects (mysterious matrix-y field)
         ]);
     }
 }
