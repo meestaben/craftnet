@@ -26,7 +26,7 @@ class Partner extends ElementResolver
             $query = $source->$fieldName;
         }
 
-        // If it’s preloaded, it’s preloaded.
+        // If it’s an array, it’s been preloaded.
         if (is_array($query)) {
             return $query;
         }
