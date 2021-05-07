@@ -13,6 +13,7 @@ use craft\commerce\stripe\models\forms\payment\PaymentIntent as PaymentForm;
 use craft\commerce\stripe\Plugin as Stripe;
 use craft\helpers\App;
 use craft\helpers\StringHelper;
+use craftnet\controllers\api\RateLimiterTrait;
 use craftnet\errors\ValidationException;
 use Stripe\Customer as StripeCustomer;
 use Stripe\Exception\ApiErrorException;
@@ -28,6 +29,8 @@ use yii\web\Response;
  */
 class PaymentsController extends CartsController
 {
+    use RateLimiterTrait;
+
     // Properties
     // =========================================================================
 

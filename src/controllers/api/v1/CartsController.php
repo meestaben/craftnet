@@ -14,6 +14,7 @@ use craft\helpers\StringHelper;
 use craftnet\cms\CmsEdition;
 use craftnet\cms\CmsRenewal;
 use craftnet\controllers\api\BaseApiController;
+use craftnet\controllers\api\RateLimiterTrait;
 use craftnet\errors\LicenseNotFoundException;
 use craftnet\errors\ValidationException;
 use craftnet\helpers\KeyHelper;
@@ -33,6 +34,8 @@ use yii\web\Response;
  */
 class CartsController extends BaseApiController
 {
+    use RateLimiterTrait;
+
     // Properties
     // =========================================================================
 
