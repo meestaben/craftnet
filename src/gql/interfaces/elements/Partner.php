@@ -69,7 +69,7 @@ class Partner extends Element
             [
                 'ownerId' => [
                     'name' => 'ownerId',
-                    'type' => Type::ID(),
+                    'type' => Type::id(),
                     'description' => 'User account ID of the partner listing’s owner.'
                 ],
                 'businessName' => [
@@ -159,7 +159,7 @@ class Partner extends Element
                 ],
                 'logoAssetId' => [
                     'name' => 'logoAssetId',
-                    'type' => Type::ID(),
+                    'type' => Type::id(),
                     'description' => 'Partner logo asset ID.'
                 ],
                 'website' => [
@@ -206,7 +206,7 @@ class Partner extends Element
                 'fields' => [
                     'id' => [
                         'name' => 'id',
-                        'type' => Type::ID(),
+                        'type' => Type::id(),
                         'description' => 'Partner location ID.'
                     ],
                     'title' => [
@@ -283,7 +283,7 @@ class Partner extends Element
                 'fields' => [
                     'id' => [
                         'name' => 'id',
-                        'type' => Type::ID(),
+                        'type' => Type::id(),
                         'description' => 'Partner project ID.'
                     ],
                     'name' => [

@@ -79,17 +79,17 @@ class Plugin extends Element
                 ],
                 'developerId' => [
                     'name' => 'developerId',
-                    'type' => Type::ID(),
+                    'type' => Type::id(),
                     'description' => ''
                 ],
                 'packageId' => [
                     'name' => 'packageId',
-                    'type' => Type::ID(),
+                    'type' => Type::id(),
                     'description' => ''
                 ],
                 'iconId' => [
                     'name' => 'iconId',
-                    'type' => Type::ID(),
+                    'type' => Type::id(),
                     'description' => ''
                 ],
                 'packageName' => [
@@ -184,7 +184,7 @@ class Plugin extends Element
                 ],
                 'replacementId' => [
                     'name' => 'replacementId',
-                    'type' => Type::ID(),
+                    'type' => Type::id(),
                     'description' => ''
                 ],
                 'editions' => [
@@ -248,7 +248,7 @@ class Plugin extends Element
                 'fields' => [
                     'id' => [
                         'name' => 'id',
-                        'type' => Type::ID(),
+                        'type' => Type::id(),
                         'description' => ''
                     ],
                     'name' => [
@@ -271,7 +271,7 @@ class Plugin extends Element
                 'fields' => [
                     'id' => [
                         'name' => 'id',
-                        'type' => Type::ID(),
+                        'type' => Type::id(),
                         'description' => ''
                     ],
                     'name' => [
@@ -324,7 +324,7 @@ class Plugin extends Element
                 'fields' => [
                     'id' => [
                         'name' => 'id',
-                        'type' => Type::ID(),
+                        'type' => Type::id(),
                         'description' => ''
                     ],
                     'name' => [
@@ -364,7 +364,7 @@ class Plugin extends Element
                     ],
                     'webhookId' => [
                         'name' => 'webhookId',
-                        'type' => Type::ID(),
+                        'type' => Type::id(),
                         'description' => ''
                     ],
 //                    'webhookSecret' => [
