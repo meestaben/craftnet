@@ -5,6 +5,7 @@ namespace craftnet\controllers\api\v1;
 use Craft;
 use craft\commerce\Plugin as Commerce;
 use craftnet\controllers\api\BaseApiController;
+use craftnet\controllers\api\RateLimiterTrait;
 use yii\helpers\Json;
 use yii\web\Response;
 use yii\web\UnauthorizedHttpException;
@@ -14,6 +15,8 @@ use yii\web\UnauthorizedHttpException;
  */
 class AccountController extends BaseApiController
 {
+    use RateLimiterTrait;
+
     // Public Methods
     // =========================================================================
 
