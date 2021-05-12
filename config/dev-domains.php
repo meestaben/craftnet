@@ -118,6 +118,7 @@ return [
     'untuckstage.com',
     'venveodev.com',
     'victhorious.com',
+    'vigetx.com',
     'vmgdev.com',
     'vrielingdev.nl',
     'wave-dev.com',
