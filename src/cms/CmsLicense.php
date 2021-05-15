@@ -41,6 +41,11 @@ class CmsLicense extends License
     public $dateUpdated;
     public $uid;
 
+    /**
+     * @var bool Whether validation should allow a custom domain through
+     */
+    public $allowCustomDomain = false;
+
     public function rules()
     {
         return [
@@ -54,7 +59,7 @@ class CmsLicense extends License
 
     public function validateDomain()
     {
-        $this->domain = Module::getInstance()->getCmsLicenseManager()->normalizeDomain($this->domain);
+        $this->domain = Module::getInstance()->getCmsLicenseManager()->normalizeDomain($this->domain, $this->allowCustomDomain);
     }
 
     /**

@@ -67,9 +67,10 @@ class CmsLicenseManager extends Component
      * Normalizes a public domain.
      *
      * @param string $url
+     * @param bool $allowCustom
      * @return string|null
      */
-    public function normalizeDomain(string $url)
+    public function normalizeDomain(string $url, bool $allowCustom = false)
     {
         $isPunycoded = StringHelper::contains($url, 'xn--', false);
 
@@ -77,13 +78,22 @@ class CmsLicenseManager extends Component
             $url = (new IDN())->toUTF8($url);
         }
 
-        $result = (new Extract(null, null, Extract::MODE_ALLOW_ICANN | Extract::MODE_ALLOW_PRIVATE))
+        $extractionMode = Extract::MODE_ALLOW_ICANN | Extract::MODE_ALLOW_PRIVATE;
+
+        if ($allowCustom) {
+            $extractionMode |= Extract::MODE_ALLOW_NOT_EXISTING_SUFFIXES;
+        }
+
+        $result = (new Extract(null, null, $extractionMode))
             ->parse(mb_strtolower($url));
 
         if (($domain = $result->getRegistrableDomain()) === null) {
             return null;
         }
 
+        if ($allowCustom) {
+            return $domain;
+        }
         // ignore if it's a private domain, unless we consider its suffix to be public (e.g. uk.com)
         if (!in_array($result->getSuffix(), $this->publicDomainSuffixes, true)) {
             $altDomain = (new Extract(null, null, Extract::MODE_ALLOW_ICANN))
