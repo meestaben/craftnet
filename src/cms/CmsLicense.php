@@ -46,12 +46,7 @@ class CmsLicense extends License
         return [
             [['expirable', 'expired', 'editionHandle', 'email', 'key'], 'required'],
             [['id', 'editionId', 'ownerId'], 'number', 'integerOnly' => true, 'min' => 1],
-            [
-                ['editionHandle'], 'in', 'range' => [
-                CmsLicenseManager::EDITION_SOLO,
-                CmsLicenseManager::EDITION_PRO,
-            ],
-            ],
+            [['editionHandle'], 'in', 'range' => [CmsLicenseManager::EDITION_SOLO, CmsLicenseManager::EDITION_PRO]],
             [['email'], 'email'],
             [['domain'], 'validateDomain'],
         ];
