@@ -253,7 +253,7 @@ abstract class BaseApiController extends Controller
                     $cmsLicenseManager = $this->module->getCmsLicenseManager();
                     $cmsLicense = $this->cmsLicenses[] = $cmsLicenseManager->getLicenseByKey($cmsLicenseKey);
                     $cmsLicenseStatus = self::LICENSE_STATUS_VALID;
-                    $cmsLicenseDomain = $oldCmsLicenseDomain = $cmsLicense->domain ? $cmsLicenseManager->normalizeDomain($cmsLicense->domain) : null;
+                    $cmsLicenseDomain = $oldCmsLicenseDomain = $cmsLicense->domain;
 
                     // was a host provided with the request?
                     if (($host = $requestHeaders->get('X-Craft-Host')) !== null) {

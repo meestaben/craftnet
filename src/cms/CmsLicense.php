@@ -41,17 +41,17 @@ class CmsLicense extends License
     public $dateUpdated;
     public $uid;
 
+    /**
+     * @var bool Whether validation should allow a custom domain through
+     */
+    public $allowCustomDomain = false;
+
     public function rules()
     {
         return [
             [['expirable', 'expired', 'editionHandle', 'email', 'key'], 'required'],
             [['id', 'editionId', 'ownerId'], 'number', 'integerOnly' => true, 'min' => 1],
-            [
-                ['editionHandle'], 'in', 'range' => [
-                CmsLicenseManager::EDITION_SOLO,
-                CmsLicenseManager::EDITION_PRO,
-            ],
-            ],
+            [['editionHandle'], 'in', 'range' => [CmsLicenseManager::EDITION_SOLO, CmsLicenseManager::EDITION_PRO]],
             [['email'], 'email'],
             [['domain'], 'validateDomain'],
         ];
@@ -59,7 +59,7 @@ class CmsLicense extends License
 
     public function validateDomain()
     {
-        $this->domain = Module::getInstance()->getCmsLicenseManager()->normalizeDomain($this->domain);
+        $this->domain = Module::getInstance()->getCmsLicenseManager()->normalizeDomain($this->domain, $this->allowCustomDomain);
     }
 
     /**
