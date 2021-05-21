@@ -17,7 +17,7 @@ class PdfRenderer extends BaseObject
     public function render(Order $order): string
     {
         // TCPDF config
-        $imagesPath = __DIR__ . '/receipt/images';
+        $imagesPath = '../src/orders/receipt/images';
         if (!defined('K_PATH_IMAGES')) {
             define('K_PATH_IMAGES', $imagesPath);
             require_once __DIR__ . '/receipt/tcpdf_config.php';
