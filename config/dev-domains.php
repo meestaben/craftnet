@@ -86,6 +86,7 @@ return [
     'oneis.us',
     'ontwikkeling.site',
     'our-staging-server.net',
+    'pc-web.dev',
     'pennystamps.dev',
     'preflight.space',
     'preview.dev',
