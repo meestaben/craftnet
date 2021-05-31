@@ -50,6 +50,7 @@ return [
     'hpsmartdev.com',
     'hyperlane.co',
     'infomedia-dev.com',
+    'inspireserverc.com',
     'isted.dev',
     'joshbutts.dev',
     'lewisjenkins.dev',
