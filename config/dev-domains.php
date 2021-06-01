@@ -28,6 +28,7 @@ return [
     'devhandle.com',
     'devprevu.com',
     'digitalliondev.com',
+    'digitalpulse.dev',
     'dmdr.io',
     'dotmeta.com',
     'drivedev.net',
