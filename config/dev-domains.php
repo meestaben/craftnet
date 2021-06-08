@@ -21,6 +21,7 @@ return [
     'craft2.dev',
     'craft3.dev',
     'craftcms.com', // for demo.craftcms.com
+    'craftdemos.io',
     'crudecode.com',
     'ddev.site',
     'designandbuildsandbox.com',
