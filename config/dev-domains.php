@@ -89,6 +89,7 @@ return [
     'ondev.co',
     'oneis.us',
     'ontwikkeling.site',
+    'onyep.dev'
     'our-staging-server.net',
     'pc-web.dev',
     'pennystamps.dev',
