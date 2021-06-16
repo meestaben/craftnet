@@ -57,6 +57,8 @@ return [
     'inspireserverc.com',
     'isted.dev',
     'joshbutts.dev',
+    'kreisvier.com',
+    'kreisvier.dev',
     'lewisjenkins.dev',
     'lndo.site',
     'madebymasuga.com',
