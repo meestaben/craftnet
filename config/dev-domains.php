@@ -126,6 +126,7 @@ return [
     'umstesting.com',
     'untuckstage.com',
     'venveodev.com',
+    'vericreative.dev',
     'victhorious.com',
     'vigetx.com',
     'vmgdev.com',
