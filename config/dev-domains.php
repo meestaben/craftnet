@@ -9,6 +9,7 @@ return [
     'azurewebsites.us',
     'berts.space',
     'borabora.dev',
+    'brilliancenw.dev',
     'buildwithcraft.com',
     'builtbymighty.com',
     'cdwstaging.com',
