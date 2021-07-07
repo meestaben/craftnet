@@ -50,6 +50,7 @@ return [
     'gw-staging.com',
     'h6.vc',
     'happycogdev.com',
+    'hcog.io',
     'herokuapp.com',
     'hpc3.hpconnected.com',
     'hpsmartdev.com',
