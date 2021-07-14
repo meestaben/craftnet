@@ -116,9 +116,15 @@ class UpdatesController extends BaseApiController
                 // Treat ~3.0.41.1 as a breakpoint for 3.0 releases
                 $constraints[] = '~3.0.41.1';
                 $breakpoint = true;
-            } else if (version_compare($this->cmsVersion, '3.1.20', '>=') && version_compare($this->cmsVersion, '3.1.34.3', '<')) {
-                // Treat ~3.1.34.3 as a breakpoint for ~3.1.20 releases (where project-config/rebuild was added)
-                $constraints[] = '~3.1.34.3';
+            } else if (version_compare($this->cmsVersion, '3.1.34.3', '<')) {
+                if (version_compare($this->cmsVersion, '3.1.20', '>=')) {
+                    // Treat ~3.1.34.3 as a breakpoint for ~3.1.20 releases (where project-config/rebuild was added)
+                    $constraints[] = '~3.1.34.3';
+                    $breakpoint = true;
+                }
+            } else if (version_compare($this->cmsVersion, '3.6.8', '<')) {
+                // Must be on 3.6.8+ before updating to 3.7.0
+                $constraints[] = '~3.6.8';
                 $breakpoint = true;
             }
         }
