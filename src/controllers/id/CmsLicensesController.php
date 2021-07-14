@@ -215,6 +215,7 @@ class CmsLicensesController extends BaseController
                 if ($domain !== null) {
                     $oldDomain = $license->domain;
                     $license->domain = $domain ?: null;
+                    $license->allowCustomDomain = true;
                 }
 
                 if ($notes !== null) {
