@@ -122,10 +122,6 @@ class UpdatesController extends BaseApiController
                     $constraints[] = '~3.1.34.3';
                     $breakpoint = true;
                 }
-            } else if (version_compare($this->cmsVersion, '3.6.8', '<')) {
-                // Must be on 3.6.8+ before updating to 3.7.0
-                $constraints[] = '~3.6.8';
-                $breakpoint = true;
             }
         }
 
