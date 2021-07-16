@@ -105,6 +105,7 @@ return [
     'psclients.net',
     'putyourlightson.dev',
     'rantsports.org',
+    'redeye.dev',
     'runcloud.site',
     'sandboxdsm.com',
     'servd.dev',
