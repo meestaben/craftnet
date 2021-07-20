@@ -47,6 +47,7 @@ return [
     'gbdev.co',
     'gcx.dev',
     'ghdev.xyz',
+    'gitpod.io',
     'gw-staging.com',
     'h6.vc',
     'happycogdev.com',
