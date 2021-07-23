@@ -3,6 +3,7 @@
 namespace craftnet;
 
 use Craft;
+use craft\awss3\Volume as S3Volume;
 use craft\commerce\elements\Order;
 use craft\commerce\events\PdfEvent;
 use craft\commerce\models\Discount;
@@ -40,6 +41,7 @@ use craft\services\SystemMessages;
 use craft\services\UserPermissions;
 use craft\services\Users;
 use craft\services\Utilities;
+use craft\volumes\Local as LocalVolume;
 use craft\web\Request;
 use craft\web\twig\variables\Cp;
 use craft\web\UrlManager;
@@ -145,6 +147,30 @@ class Module extends \yii\base\Module
                 $this->_initSiteRequest($request);
             }
         }
+
+        // environment-specific stuff
+        if (\Craft::$app->env === 'dev') {
+            \Craft::$container->set(S3Volume::class, function($container, $params, $config) {
+                if (empty($config['id'])) {
+                    return new S3Volume($config);
+                }
+
+                return new LocalVolume([
+                    'id' => $config['id'],
+                    'uid' => $config['uid'],
+                    'name' => $config['name'],
+                    'handle' => $config['handle'],
+                    'hasUrls' => $config['hasUrls'],
+                    'url' => "@web/local-volumes/{$config['handle']}",
+                    'path' => "@webroot/local-volumes/{$config['handle']}",
+                    'sortOrder' => $config['sortOrder'],
+                    'dateCreated' => $config['dateCreated'],
+                    'dateUpdated' => $config['dateUpdated'],
+                    'fieldLayoutId' => $config['fieldLayoutId'],
+                ]);
+            });
+        }
+
 
         parent::init();
     }

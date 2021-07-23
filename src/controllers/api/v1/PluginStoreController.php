@@ -270,6 +270,7 @@ class PluginStoreController extends BaseApiController
 
         if (!$data) {
             $query = $this->_createPluginQuery()
+                ->orderBy([Table::PLUGINS . '.abandoned' => SORT_ASC])
                 ->limit($perPage);
 
             if ($handle) {
@@ -308,13 +309,13 @@ class PluginStoreController extends BaseApiController
 
                 switch ($orderBy) {
                     case 'dateUpdated':
-                        $query->orderBy(['latestVersionTime' => $direction]);
+                        $query->addOrderBy(['latestVersionTime' => $direction]);
                         break;
                     case 'name':
-                        $query->orderBy(['lower([[name]])' => $direction]);
+                        $query->addOrderBy(['lower([[name]])' => $direction]);
                         break;
                     case 'popularity':
-                        $query->orderBy(['activeInstalls' => $direction]);
+                        $query->addOrderBy(['activeInstalls' => $direction]);
                         break;
                     default:
                         throw new BadRequestHttpException('Unsupported orderBy param: ' . $orderBy);

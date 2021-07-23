@@ -14,6 +14,7 @@
 /templates/test.twig
 /web/test.php
 /web/scratch.php
+/web/local-volumes
 /.pgpass
 /storage/config-backups
 /storage/composer-backups

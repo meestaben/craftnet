@@ -64,7 +64,7 @@ return [
         'useCompressedJs' => false,
         'allowUpdates' => true,
         'testToEmailAddress' => App::env('TEST_EMAIL') ?: null,
-        'defaultCookieDomain' => '.craftcms.test',
+        'defaultCookieDomain' => '.craftcms.nitro',
         'disabledPlugins' => ['webhooks'],
         'enableBasicHttpAuth' => true,
     ],
