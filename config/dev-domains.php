@@ -42,6 +42,7 @@ return [
     'fosterstaging.com',
     'fncdev.in.ua',
     'frb.io',
+    'front.app',
     'fusionarydev.com',
     'fusiondgdev.com',
     'gbdev.co',
