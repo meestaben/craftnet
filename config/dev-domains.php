@@ -138,7 +138,7 @@ return [
     'vrielingdev.nl',
     'wave-dev.com',
     'wave-stage.com',
-    'web.front.app',
+    'front.app',
     'webdnatest.co.uk',
     'websitetestlink.com',
     'wrkcpt.dev',
