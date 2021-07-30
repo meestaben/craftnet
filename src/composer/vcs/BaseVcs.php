@@ -6,6 +6,7 @@ use Composer\Semver\VersionParser;
 use Craft;
 use craftnet\composer\Package;
 use craftnet\composer\PackageRelease;
+use UnexpectedValueException;
 use yii\base\BaseObject;
 
 abstract class BaseVcs extends BaseObject implements VcsInterface
@@ -58,7 +59,14 @@ abstract class BaseVcs extends BaseObject implements VcsInterface
     {
         // Make sure the versions line up
         if (isset($config['version'])) {
-            $normalized = (new VersionParser())->normalize($config['version']);
+            try {
+                $normalized = (new VersionParser())->normalize($config['version']);
+            } catch (UnexpectedValueException $e) {
+                Craft::warning("Ignoring package version {$this->package->name}:{$release->version} due to an error parsing config.version in composer.json: {$e->getMessage()}", __METHOD__);
+                $release->invalidate("invalid config version: {$e->getMessage()}");
+                return false;
+            }
+
             if ($normalized !== $release->getNormalizedVersion()) {
                 Craft::warning("Ignoring package version {$this->package->name}:{$release->version} due to a version mismatch in composer.json: {$config['version']}", __METHOD__);
                 $release->invalidate("version mismatch -- config says {$config['version']}; tag says {$release->version}");
