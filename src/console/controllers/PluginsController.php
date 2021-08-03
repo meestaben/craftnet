@@ -39,7 +39,7 @@ OUTPUT;
         if ($totalPending) {
             $output .= "\nPending plugins:\n\n";
             $pending = Plugin::find()->status(Plugin::STATUS_PENDING)->all();
-            $maxLength = max(ArrayHelper::getColumn($pending, 'name')) + 2;
+            $maxLength = max(array_map('mb_strlen', ArrayHelper::getColumn($pending, 'name'))) + 2;
             foreach ($pending as $plugin) {
                 $output .= str_pad($plugin->name, $maxLength) . $plugin->getCpEditUrl() . "\n";
             }
