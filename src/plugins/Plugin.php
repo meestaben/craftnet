@@ -35,6 +35,7 @@ use yii\helpers\Markdown;
 class Plugin extends Element
 {
     const STATUS_PENDING = 'pending';
+    const STATUS_ABANDONED = 'abandoned';
 
     /**
      * @event Event The event that is triggered when the plugin is first published to the Plugin Store.

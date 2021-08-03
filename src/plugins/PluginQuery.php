@@ -293,8 +293,11 @@ class PluginQuery extends ElementQuery
      */
     protected function statusCondition(string $status)
     {
-        if ($status === Plugin::STATUS_PENDING) {
-            return [CraftTable::ELEMENTS . '.enabled' => false, Table::PLUGINS . '.pendingApproval' => true];
+        switch ($status) {
+            case Plugin::STATUS_PENDING:
+                return [CraftTable::ELEMENTS . '.enabled' => false, Table::PLUGINS . '.pendingApproval' => true];
+            case Plugin::STATUS_ABANDONED:
+                return [CraftTable::ELEMENTS . '.enabled' => true, Table::PLUGINS . '.abandoned' => true];
         }
 
         return parent::statusCondition($status);
