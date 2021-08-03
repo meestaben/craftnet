@@ -8,6 +8,7 @@ use craftnet\Module;
 use craftnet\plugins\Plugin;
 use yii\console\Controller;
 use yii\console\ExitCode;
+use yii\helpers\ArrayHelper;
 
 /**
  * Manages plugins.
@@ -25,15 +26,24 @@ class PluginsController extends Controller
     {
         $formatter = Craft::$app->getFormatter();
         $total = $formatter->asDecimal(Plugin::find()->count(), 0);
-        $abandoned = $formatter->asDecimal(Plugin::find()->status(Plugin::STATUS_ABANDONED)->count(), 0);
-        $pending = $formatter->asDecimal(Plugin::find()->status(Plugin::STATUS_PENDING)->count(), 0);
+        $totalAbandoned = $formatter->asDecimal(Plugin::find()->status(Plugin::STATUS_ABANDONED)->count(), 0);
+        $totalPending = $formatter->asDecimal(Plugin::find()->status(Plugin::STATUS_PENDING)->count(), 0);
 
         $output = <<<OUTPUT
-Total approved: $total
-Abandoned:      $abandoned
-Pending:        $pending
+Total approved:  $total
+Total abandoned: $totalAbandoned
+Total pending:   $totalPending
 
 OUTPUT;
+
+        if ($totalPending) {
+            $output .= "\nPending plugins:\n\n";
+            $pending = Plugin::find()->status(Plugin::STATUS_PENDING)->all();
+            $maxLength = max(ArrayHelper::getColumn($pending, 'name')) + 2;
+            foreach ($pending as $plugin) {
+                $output .= str_pad($plugin->name, $maxLength) . $plugin->getCpEditUrl() . "\n";
+            }
+        }
 
         $this->stdout($output);
         return ExitCode::OK;
