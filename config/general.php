@@ -49,13 +49,13 @@ return [
             '--exclude-table-data \'apilog.request_errors\' ' .
             '--exclude-table-data \'apilog.request_pluginlicenses\' ' .
             '--exclude-table-data \'apilog.requests\'',
+        'testToEmailAddress' => App::env('TEST_EMAIL') ?: null,
     ],
     'prod' => [
         'defaultCookieDomain' => '.craftcms.com',
         'runQueueAutomatically' => false,
     ],
     'stage' => [
-        'testToEmailAddress' => App::env('TEST_EMAIL') ?: null,
         'defaultCookieDomain' => '.craftcms.com',
         'disabledPlugins' => ['webhooks'],
     ],
@@ -63,7 +63,6 @@ return [
         'devMode' => true,
         'useCompressedJs' => false,
         'allowUpdates' => true,
-        'testToEmailAddress' => App::env('TEST_EMAIL') ?: null,
         'defaultCookieDomain' => '.craftcms.nitro',
         'disabledPlugins' => ['webhooks'],
         'enableBasicHttpAuth' => true,
@@ -72,7 +71,6 @@ return [
         'devMode' => true,
         'useCompressedJs' => false,
         'allowUpdates' => true,
-        'testToEmailAddress' => App::env('TEST_EMAIL') ?: null,
         'defaultCookieDomain' => '.craftcms.next',
         'disabledPlugins' => ['webhooks'],
     ]
