@@ -141,6 +141,7 @@ return [
     'wave-stage.com',
     'webdnatest.co.uk',
     'websitetestlink.com',
+    'website-stage.com',
     'wrkcpt.dev',
     'xip.io',
     'yourstruly.space',
