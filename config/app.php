@@ -28,6 +28,7 @@ return [
                             'integration',
                             'loc',
                             'local',
+                            'preprod',
                             'qa',
                             'sandbox',
                             'stage',
