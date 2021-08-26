@@ -8,15 +8,15 @@ fieldLayouts:
             label: Title
             type: craft\fieldlayoutelements\EntryTitleField
           -
-            fieldUid: fdc2e766-f2a8-4ee0-9ad8-9b7d64b8d86b
+            fieldUid: fdc2e766-f2a8-4ee0-9ad8-9b7d64b8d86b # Description
             required: false
             type: craft\fieldlayoutelements\CustomField
           -
-            fieldUid: 3729338a-bc60-4be2-9fc4-0e63b4a62d4a
+            fieldUid: 3729338a-bc60-4be2-9fc4-0e63b4a62d4a # Plugins
             required: false
             type: craft\fieldlayoutelements\CustomField
           -
-            fieldUid: 05fb56bd-4689-45e9-9445-a535cfa2460c
+            fieldUid: 05fb56bd-4689-45e9-9445-a535cfa2460c # Limit
             required: true
             type: craft\fieldlayoutelements\CustomField
         name: Settings

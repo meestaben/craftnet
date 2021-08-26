@@ -2,7 +2,7 @@ tabs:
   -
     elements:
       -
-        fieldUid: db4da419-ca41-4a13-b4a4-9c3f59c217fd
+        fieldUid: db4da419-ca41-4a13-b4a4-9c3f59c217fd # Developer Name
         instructions: null
         label: null
         required: false
@@ -11,7 +11,7 @@ tabs:
         warning: null
         width: 100
       -
-        fieldUid: a4a501f3-5e4f-4708-99e6-69599fe86b31
+        fieldUid: a4a501f3-5e4f-4708-99e6-69599fe86b31 # Developer URL
         instructions: null
         label: null
         required: false
@@ -20,7 +20,7 @@ tabs:
         warning: null
         width: 100
       -
-        fieldUid: 4c92f946-0a98-4d19-8a70-ba643f88c1a0
+        fieldUid: 4c92f946-0a98-4d19-8a70-ba643f88c1a0 # Business Address Line 1
         instructions: null
         label: null
         required: false
@@ -29,7 +29,7 @@ tabs:
         warning: null
         width: 100
       -
-        fieldUid: b384f570-e131-42f9-8c20-8d0faacb734f
+        fieldUid: b384f570-e131-42f9-8c20-8d0faacb734f # Business Address Line 2
         instructions: null
         label: null
         required: false
@@ -38,7 +38,7 @@ tabs:
         warning: null
         width: 100
       -
-        fieldUid: db187b36-568c-470a-ac7c-127e3a42f8b6
+        fieldUid: db187b36-568c-470a-ac7c-127e3a42f8b6 # Business City
         instructions: null
         label: null
         required: false
@@ -47,7 +47,7 @@ tabs:
         warning: null
         width: 100
       -
-        fieldUid: 23676c77-087c-4f52-908d-3eee1deb6004
+        fieldUid: 23676c77-087c-4f52-908d-3eee1deb6004 # Business Country
         instructions: null
         label: null
         required: false
@@ -56,7 +56,7 @@ tabs:
         warning: null
         width: 100
       -
-        fieldUid: 205a826f-1701-41c7-804d-f7998cec0442
+        fieldUid: 205a826f-1701-41c7-804d-f7998cec0442 # Business Name
         instructions: null
         label: null
         required: false
@@ -65,7 +65,7 @@ tabs:
         warning: null
         width: 100
       -
-        fieldUid: ea05b292-0026-4bec-a15c-1e09055223fc
+        fieldUid: ea05b292-0026-4bec-a15c-1e09055223fc # Business State
         instructions: null
         label: null
         required: false
@@ -74,7 +74,7 @@ tabs:
         warning: null
         width: 100
       -
-        fieldUid: 34358d6d-9fda-49bb-a56d-f0fe2b05027f
+        fieldUid: 34358d6d-9fda-49bb-a56d-f0fe2b05027f # Business VAT ID
         instructions: null
         label: null
         required: false
@@ -83,7 +83,7 @@ tabs:
         warning: null
         width: 100
       -
-        fieldUid: 02269d9f-bbaa-4ea2-8b91-909e27e6ce05
+        fieldUid: 02269d9f-bbaa-4ea2-8b91-909e27e6ce05 # Business Zip Code
         instructions: null
         label: null
         required: false
@@ -92,7 +92,7 @@ tabs:
         warning: null
         width: 100
       -
-        fieldUid: a1deff4e-43ef-4a67-870e-813cfa36700c
+        fieldUid: a1deff4e-43ef-4a67-870e-813cfa36700c # Enable showcase features
         instructions: null
         label: null
         required: false
@@ -101,7 +101,7 @@ tabs:
         warning: null
         width: 100
       -
-        fieldUid: 4234aa0a-59b0-4777-80ee-aeb7b931b924
+        fieldUid: 4234aa0a-59b0-4777-80ee-aeb7b931b924 # Enable Partner Features
         instructions: null
         label: null
         required: false
@@ -110,7 +110,7 @@ tabs:
         warning: null
         width: 100
       -
-        fieldUid: e76f9c9f-363c-476e-ae6d-c48eed173468
+        fieldUid: e76f9c9f-363c-476e-ae6d-c48eed173468 # Location
         instructions: null
         label: null
         required: false
@@ -148,7 +148,7 @@ tabs:
         warning: null
         width: 100
       -
-        fieldUid: 0ff67b0d-c811-4767-9d75-25472eee67a3
+        fieldUid: 0ff67b0d-c811-4767-9d75-25472eee67a3 # Purchased Plugins
         instructions: null
         label: null
         required: false
@@ -161,7 +161,7 @@ tabs:
   -
     elements:
       -
-        fieldUid: 42b088ed-cffc-4382-aeb1-56e192d4138b
+        fieldUid: 42b088ed-cffc-4382-aeb1-56e192d4138b # Support Plan
         instructions: null
         label: null
         required: false
@@ -170,7 +170,7 @@ tabs:
         warning: null
         width: 100
       -
-        fieldUid: bb6ba697-14a2-4342-baa5-c01d41641a48
+        fieldUid: bb6ba697-14a2-4342-baa5-c01d41641a48 # Support Plan Expiry Date
         instructions: null
         label: null
         required: false

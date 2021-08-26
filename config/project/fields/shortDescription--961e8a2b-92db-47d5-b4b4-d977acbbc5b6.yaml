@@ -1,5 +1,5 @@
 contentColumnType: text
-fieldGroup: ec01a46c-7aae-4b10-95ce-6ae6648b9745
+fieldGroup: ec01a46c-7aae-4b10-95ce-6ae6648b9745 # Plugin
 handle: shortDescription
 instructions: ''
 name: 'Short Description'

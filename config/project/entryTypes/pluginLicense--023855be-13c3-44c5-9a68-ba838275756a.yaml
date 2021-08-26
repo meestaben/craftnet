@@ -8,23 +8,23 @@ fieldLayouts:
             label: null
             type: craft\fieldlayoutelements\EntryTitleField
           -
-            fieldUid: 01fcd9d2-40bb-4f54-a225-7c9b674c3db9
+            fieldUid: 01fcd9d2-40bb-4f54-a225-7c9b674c3db9 # Plugin
             required: true
             type: craft\fieldlayoutelements\CustomField
           -
-            fieldUid: 69c15f3c-6ae1-4906-879f-495ab5c76102
+            fieldUid: 69c15f3c-6ae1-4906-879f-495ab5c76102 # Craft License
             required: false
             type: craft\fieldlayoutelements\CustomField
           -
-            fieldUid: 4a4fdb04-6086-4fbd-b79f-1d99cefc9a31
+            fieldUid: 4a4fdb04-6086-4fbd-b79f-1d99cefc9a31 # Domain
             required: false
             type: craft\fieldlayoutelements\CustomField
           -
-            fieldUid: 8965f5ae-4c8e-4529-bfc5-e7345e40d7ce
+            fieldUid: 8965f5ae-4c8e-4529-bfc5-e7345e40d7ce # Auto Renew
             required: false
             type: craft\fieldlayoutelements\CustomField
           -
-            fieldUid: 1f6eaf1e-6f42-4dc2-86cb-62fd3665751a
+            fieldUid: 1f6eaf1e-6f42-4dc2-86cb-62fd3665751a # Notes
             required: false
             type: craft\fieldlayoutelements\CustomField
         name: License

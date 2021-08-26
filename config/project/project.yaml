@@ -1,4 +1,4 @@
-dateModified: 1619733051
+dateModified: 1629938618
 email:
   fromEmail: support@pixelandtonic.com
   fromName: 'Pixel & Tonic'
@@ -7,6 +7,53 @@ email:
   transportSettings:
     token: $POSTMARK_TOKEN
   transportType: craftcms\postmark\Adapter
+meta:
+  __names__:
+    0d6b333e-7fc4-4832-b4ed-e47af16e8d0c: Common # Common
+    0ff67b0d-c811-4767-9d75-25472eee67a3: 'Purchased Plugins' # Purchased Plugins
+    1f6eaf1e-6f42-4dc2-86cb-62fd3665751a: Notes # Notes
+    01fcd9d2-40bb-4f54-a225-7c9b674c3db9: Plugin # Plugin
+    3d8608c4-0726-4a47-8051-5319922c2a72: 'GitHub Repo URL' # GitHub Repo URL
+    4a4fdb04-6086-4fbd-b79f-1d99cefc9a31: Domain # Domain
+    4c92f946-0a98-4d19-8a70-ba643f88c1a0: 'Business Address Line 1' # Business Address Line 1
+    4d402868-09e4-4629-b0ca-5cf9a79c1efc: Categories # Categories
+    05fb56bd-4689-45e9-9445-a535cfa2460c: Limit # Limit
+    7b80e1c3-fc1b-447d-a346-872ec9b0b853: 'Card Token' # Card Token
+    8b796e49-612b-4477-9567-64c11f929737: 'Customer Email' # Customer Email
+    8c77d2c1-8b2d-4175-894d-3360298ed704: Screenshots # Screenshots
+    42b088ed-cffc-4382-aeb1-56e192d4138b: 'Support Plan' # Support Plan
+    69c15f3c-6ae1-4906-879f-495ab5c76102: 'Craft License' # Craft License
+    205a826f-1701-41c7-804d-f7998cec0442: 'Business Name' # Business Name
+    961e8a2b-92db-47d5-b4b4-d977acbbc5b6: 'Short Description' # Short Description
+    02269d9f-bbaa-4ea2-8b91-909e27e6ce05: 'Business Zip Code' # Business Zip Code
+    4234aa0a-59b0-4777-80ee-aeb7b931b924: 'Enable Partner Features' # Enable Partner Features
+    4987fb8d-cf45-4b60-a94f-51c591336558: License # License
+    8965f5ae-4c8e-4529-bfc5-e7345e40d7ce: 'Auto Renew' # Auto Renew
+    23676c77-087c-4f52-908d-3eee1deb6004: 'Business Country' # Business Country
+    34358d6d-9fda-49bb-a56d-f0fe2b05027f: 'Business VAT ID' # Business VAT ID
+    68465f6c-a70b-4b6b-a3ab-feaece178361: 'Customer Name' # Customer Name
+    3729338a-bc60-4be2-9fc4-0e63b4a62d4a: Plugins # Plugins
+    63801519-f6aa-468d-9ce9-1a0c289e5ddb: 'Craft Edition' # Craft Edition
+    a1deff4e-43ef-4a67-870e-813cfa36700c: 'Enable showcase features' # Enable showcase features
+    a4a501f3-5e4f-4708-99e6-69599fe86b31: 'Developer URL' # Developer URL
+    a5c336d7-efe7-4bed-9e5f-5619084feb99: 'Plugin Handle' # Plugin Handle
+    a773b9fb-cbc5-423a-977f-8210c987176c: Store # Store
+    a8588216-5d01-4fea-ae5f-31e6836a0fc9: Price # Price
+    add7f1c8-5c4a-4d23-9398-8a9472f169e8: User # User
+    b1a59dd4-5d0c-4d32-925c-8a2349747691: Order # Order
+    b384f570-e131-42f9-8c20-8d0faacb734f: 'Business Address Line 2' # Business Address Line 2
+    bb6ba697-14a2-4342-baa5-c01d41641a48: 'Support Plan Expiry Date' # Support Plan Expiry Date
+    cc3f9ff0-2259-4ed0-bcfc-b19a91dc4d67: Customer # Customer
+    db4da419-ca41-4a13-b4a4-9c3f59c217fd: 'Developer Name' # Developer Name
+    db187b36-568c-470a-ac7c-127e3a42f8b6: 'Business City' # Business City
+    dd2601c5-8443-448c-980a-c9a1ee040ee9: Icon # Icon
+    ddeba8ad-70bf-49cf-8a64-72affe458a48: 'Package Name' # Package Name
+    e76f9c9f-363c-476e-ae6d-c48eed173468: Location # Location
+    e9867fdd-c7b2-458c-b500-410b25166656: 'Update Price' # Update Price
+    ea05b292-0026-4bec-a15c-1e09055223fc: 'Business State' # Business State
+    ec01a46c-7aae-4b10-95ce-6ae6648b9745: Plugin # Plugin
+    ecbbfebe-c824-4e29-b927-a3bcc10c9e24: Items # Items
+    fdc2e766-f2a8-4ee0-9ad8-9b7d64b8d86b: Description # Description
 plugins:
   aws-s3:
     enabled: true
@@ -21,7 +68,7 @@ plugins:
     edition: pro
     enabled: true
     licenseKey: $COMMERCE_LICENSE
-    schemaVersion: 3.3.2
+    schemaVersion: 3.4.11
     settings:
       activeCartDuration: PT1H
       allowEmptyCartOnCheckout: true
@@ -80,5 +127,5 @@ system:
   edition: pro
   live: true
   name: Craftnet
-  schemaVersion: 3.6.8
+  schemaVersion: 3.7.7
   timeZone: UTC

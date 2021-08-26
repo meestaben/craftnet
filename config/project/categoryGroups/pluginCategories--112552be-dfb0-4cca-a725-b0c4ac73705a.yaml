@@ -3,10 +3,10 @@ fieldLayouts:
     tabs:
       -
         fields:
-          dd2601c5-8443-448c-980a-c9a1ee040ee9:
+          dd2601c5-8443-448c-980a-c9a1ee040ee9: # Icon
             required: false
             sortOrder: 1
-          fdc2e766-f2a8-4ee0-9ad8-9b7d64b8d86b:
+          fdc2e766-f2a8-4ee0-9ad8-9b7d64b8d86b: # Description
             required: false
             sortOrder: 2
         name: Content

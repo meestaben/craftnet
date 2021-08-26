@@ -1,5 +1,5 @@
 contentColumnType: integer(10)
-fieldGroup: a773b9fb-cbc5-423a-977f-8210c987176c
+fieldGroup: a773b9fb-cbc5-423a-977f-8210c987176c # Store
 handle: limit
 instructions: ''
 name: Limit
